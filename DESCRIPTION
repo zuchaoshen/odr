@@ -1,0 +1,32 @@
+Package: odr
+Type: Package
+Title: Optimal Design and Statistical Power of Multilevel Randomized Trials
+Version: 1.0.3
+Date: 2020-7-15
+Authors@R: c(person("Zuchao", "Shen", email = "zuchao.shen@gmail.com", role = c("aut", "cre")),
+            person("Ben", "Kelcey", role = "aut"))
+Description: Calculate the optimal sample allocation that produces smallest variance of a 
+    treatment effect or the highest statistical power
+    for experimental studies under a budget constraint,
+    perform power analyses with and without accommodating cost structures of sampling, and calculate
+    the relative efficiency between two sample allocations. 
+    The references 
+    for the proposed methods are: 
+    (1) Shen, Z. (2019). Optimal sample allocation in multilevel Experiments.
+    (Doctoral dissertation). University of Cincinnati, Cincinnati, OH.
+    (2) Shen, Z., & Kelcey, B. (2020). 
+    Optimal sample allocation under unequal costs in 
+    cluster-randomized trials.
+    Journal of Educational and Behavioral Statistics, 45(4): 446–474.
+    (3) Shen, Z., & Kelcey, B. (revised & resubmitted). Optimal sample 
+    allocation in multisite randomized trials. The Journal of Experimental Education.
+    (4) Champely, S. (2020). pwr: Basic functions for power analysis 
+    (Version 1.3-0) [Software]. Available from 
+    <https://CRAN.R-project.org/package=pwr>.
+Depends: R (>= 3.3.0), stats (>= 3.0.0), graphics (>= 3.0.0), base(>= 3.0.0)
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.1.0
+Suggests: knitr, rmarkdown
+VignetteBuilder: rmarkdown, knitr

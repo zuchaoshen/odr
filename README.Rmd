@@ -1,0 +1,52 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+# odr
+
+<!-- badges: start -->
+<!-- badges: end -->
+
+The goal of *odr* is to help design efficient and well-powered multilevel experiments. We achieve this goal through three sets of functions. The *od* functions calculate the optimal sample size allocation by leveraging sampling cost information and other design parameters across levels and treatment conditions. The *re* function compares the relative efficiency across sample allocations. The *power* functions perform power analysis with and without accommodating cost and budget.
+
+## Installation
+
+You can install the released version of odr from [CRAN](https://CRAN.R-project.org) with:
+
+``` r
+install.packages("odr")
+```
+
+## Example
+
+This is a basic example which shows you how to solve a common problem:
+
+```{r example}
+library(odr)
+ # unconstrained optimal design
+myod1 <- od.2(icc = 0.2, r12 = 0.5, r22 = 0.5, c1 = 1, c2 = 5, c1t = 1, c2t = 50, 
+              varlim = c(0.01, 0.02))
+
+ # constrained optimal design with n = 20
+myod2 <- od.2(icc = 0.2, r12 = 0.5, r22 = 0.5, c1 = 1, c2 = 5, c1t = 1, c2t = 50,
+              plot.by = list(p = "p"), n = 20, varlim = c(0.005, 0.030))
+
+ # relative efficiency
+myre <- re(od = myod1, subod = myod2) # Functions rpe and re are same
+
+# required budget calculation
+mym <- power.2(expr = myod1, d = 0.3, q = 1, power = 0.8)
+
+# See https://cran.r-project.org/web/packages/odr/vignettes/odr.html for more examples
+```
