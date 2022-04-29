@@ -1,7 +1,7 @@
 ---
 title: "Package 'odr'"
 author: "Zuchao Shen, Benjamin Kelcey, Walter Leite"
-date: "`r Sys.Date()`"
+date: "2021-08-23"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Package 'odr'}
@@ -61,44 +61,88 @@ we need the following information
 - m: a total fixed budget used to plot the variance curves, default value is the cost of sampling 60 level-two units across treatment conditions.
 
 ### 1.1 Examples
-```{r}
+
+```r
 library(odr)
 ```
 
-```{r fig.width = 7, fig.height = 3.5}
+
+```r
  # unconstrained optimal design
 myod1 <- od.2(icc = 0.2, r12 = 0.5, r22 = 0.5, c1 = 1, c2 = 5, c1t = 1, c2t = 50, 
               varlim = c(0.01, 0.02))
+```
+
+```
+## The optimal level-1 sample size per level-2 unit (n) is 8.878572.
+## The optimal proportion of level-2 units in treatment (p) is 0.326828.
+```
+
+![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2-1.png)
+
+```r
  # The function by default prints messages of output and plots the variance curves; one can turn off message and specify one or no plot.
  # myod1$out # output; 
  # myod1$par # parameters used in the calculation.
 ```
 
-```{r fig.width = 5, fig.height = 5}
+
+```r
  # constrained optimal design with n = 20
 myod2 <- od.2(icc = 0.2, r12 = 0.5, r22 = 0.5, c1 = 1, c2 = 5, c1t = 1, c2t = 50,
               plot.by = list(p = "p"), n = 20, varlim = c(0.005, 0.030))
+```
+
+```
+## The constrained level-1 sample size per level-2 unit (n) is 20.
+## The optimal proportion of level-2 units in treatment (p) is 0.3740667.
+```
+
+![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3-1.png)
+
+```r
  # myod2$out # output
  # myod2$par # parameters used in the calculation.
 ```
 
-```{r fig.width = 7, fig.height = 3.5}
+
+```r
  # constrained optimal design with p = 0.5
 myod3 <- od.2(icc = 0.2, r12 = 0.5, r22 = 0.5, c1 = 1, c2 = 5, c1t = 1, c2t = 50, 
              p = 0.5, varlim = c(0.005, 0.020))
+```
+
+```
+## The optimal level-1 sample size per level-2 unit (n) is 10.48809.
+## The constrained proportion of level-2 units in treatment (p) is 0.5.
+```
+
+![plot of chunk unnamed-chunk-4](figure/unnamed-chunk-4-1.png)
+
+```r
  # myod3$out # output; 
  # myod3$par # parameters used in the calculation.
 ```
 
-```{r fig.width = 7, fig.height = 3.5}
+
+```r
  # constrained n and p, no calculation performed
 myod4 <- od.2(icc = 0.2, r12 = 0.5, r22 = 0.5, c1 = 1, c2 = 5, c1t = 1, c2t = 50,
               plots = FALSE, n = 20, p = 0.5, varlim = c(0.005, 0.025))
 ```
 
+```
+## ===============================
+## Both p and n are constrained, there is no calculation from other parameters.
+## ===============================
+## The constrained level-1 sample size per level-2 unit (n) is 20.
+## The constrained proportion of level-2 units in treatment (p) is 0.5.
+```
+
 ### 1.2 Examples for other types of trials
 Please see examples in corresponding functions by uncommenting below lines.
-```{r}
+
+```r
 # ?od.1 
 # ?od.3
 # ?od.4
@@ -124,12 +168,14 @@ and required sample size calculation.
 ### 2.1 Examples of power analyses accommodating cost structures (cost.model = TRUE)
 ###### Required budget for desired power
 - Required budget calculation
-```{r}
+
+```r
 mym <- power.2(expr = myod1, d = 0.3, q = 1, power = 0.8)
 # mym$out  # m =1702, J = 59
 ```
 - Effects on required budget to maintain same level power when designs depart from the optimal one 
-```{r fig.width = 7, fig.height = 3.5}
+
+```r
 figure <- par(mfrow = c(1, 2))
 budget <- NULL
 nrange <- c(2:50)
@@ -146,17 +192,24 @@ for (p in prange)
 plot(prange, budget, type = "l", lty = 1, xlim = c(0, 1), ylim = c(1500, 7000),
      xlab = "Porportion groups in treatment: p", ylab = "Budget", main = "", col = "black")
  abline(v = 0.33, lty = 2, col = "Blue")
+```
+
+![plot of chunk unnamed-chunk-8](figure/unnamed-chunk-8-1.png)
+
+```r
 par(figure)
 ```
 
 ###### Statistical power under a fixed budget
 - Power calculation
-```{r}
+
+```r
 mypower <- power.2(expr = myod1, q = 1, d = 0.3, m = 1702)
 # mypower$out  # power = 0.80
 ```
 - Effects on power under same budget when designs depart from the optimal one
-```{r fig.width = 7, fig.height = 3.5}
+
+```r
 figure <- par(mfrow = c (1, 2))
 pwr <- NULL
 nrange <- c(2:50)
@@ -173,12 +226,18 @@ for (p in prange)
 plot(prange, pwr, type = "l", lty = 1, xlim = c(0, 1), ylim = c(0.1, 0.9),
      xlab = "Porportion groups in treatment: p", ylab = "Power",  main = "", col = "black")
  abline(v = 0.33, lty = 2, col = "Blue")
+```
+
+![plot of chunk unnamed-chunk-10](figure/unnamed-chunk-10-1.png)
+
+```r
  par(figure)
 ```
 
 ###### Minimum detectable effect size under a fixed budget
 - minimum detectable effect size calculation
-```{r}
+
+```r
 mymdes <- power.2(expr = myod1, q = 1, power = 0.80, m = 1702)
 # above experssion takes parameters and outputs from od.2 function. Equivalently, each parameter can be explicitly specified.
 # mym <- power.2(icc = 0.2, r12 = 0.5, r22 = 0.5, c1 = 1, c2 = 5, c1t = 1, c2t = 50,
@@ -186,7 +245,8 @@ mymdes <- power.2(expr = myod1, q = 1, power = 0.80, m = 1702)
 # mymdes$out  # d = 0.30
 ```
 - Effects on minimum detectable effect size under same budget when designs depart from the optimal one 
-```{r fig.width = 7, fig.height = 3.5}
+
+```r
 figure <- par(mfrow = c (1, 2))
 MDES <- NULL
 nrange <- c(2:50)
@@ -203,28 +263,54 @@ for (p in prange)
 plot(prange, MDES, type = "l", lty = 1, xlim = c(0, 1), ylim = c(0.3, 0.8),
      xlab = "Porportion groups in treatment: p", ylab = "MDES", main = "", col = "black")
  abline(v = 0.33, lty = 2, col = "Blue")
+```
+
+![plot of chunk unnamed-chunk-12](figure/unnamed-chunk-12-1.png)
+
+```r
  par(figure)
 ```
 
 ### 2.2 Examples of conventional power analyses (cost.model = FALSE)
-```{r}
+
+```r
 # Required level-2 sample size calculation
 myJ <- power.2(cost.model = FALSE, expr = myod1, d = 0.3, q = 1, power = 0.8)
 # above experssion takes parameters and outputs from od.2 function. Equivalently, each parameter can be explicitly specified.
 # myJ <- power.2(icc = 0.2, r12 = 0.5, r22 = 0.5, 
 #                     cost.model = FALSE, n = 9, p = 0.33, d = 0.3, q = 1, power = 0.8)
 myJ$out  # J = 59
+```
 
+```
+## $J
+## [1] 58.99295
+```
+
+```r
 # Power calculation
 mypower1 <- power.2(cost.model = FALSE, expr = myod1, J = 59, d = 0.3, q = 1)
 mypower1$out  # power = 0.80
+```
 
+```
+## $power
+## [1] 0.8000486
+```
+
+```r
 # Minimum detectable effect size calculation
 mymdes1 <- power.2(cost.model = FALSE, expr = myod1, J = 59, power = 0.8, q = 1)
 mymdes1$out  # d = 0.30
 ```
+
+```
+## $d
+## [1] 0.2999819
+```
 ### 2.3 Examples of conventional power curves
-```{r fig.width = 7, fig.height = 3.5}
+
+```r
 figure <- par(mfrow = c (1, 2))
 pwr <- NULL
 mrange <- c(300:3000)
@@ -241,12 +327,18 @@ for (J in Jrange)
 plot(Jrange, pwr, type = "l", lty = 1, xlim = c(4, 100), ylim = c(0, 1),
      xlab = "Level-2 sample size: J", ylab = "Power", main = "", col = "black")
  abline(v = 59, lty = 2, col = "Blue")
+```
+
+![plot of chunk unnamed-chunk-14](figure/unnamed-chunk-14-1.png)
+
+```r
 par(figure)
 ```
 
 ### 2.4 Examples for other types of trials
 Please see examples in corresponding functions by uncommenting below lines.
-```{r}
+
+```r
 # ?power.1
 # ?power.3
 # ?power.4
@@ -260,22 +352,45 @@ Calculate the relative efficiency (RE) of two designs, this function uses the re
 
 ### 3.1 Examples
 Based on above examples in *od* functions, calculate the relative efficiency
-```{r}
+
+```r
 # relative efficiency (RE) of a constrained design comparing with the optimal design
 myre <- re(od = myod1, subod= myod2)
-myre$re # get the output (i.e., RE = 0.88)
+```
 
+```
+## The relative efficiency (RE) of the two two-level CRTs is 0.8790305.
+```
+
+```r
+myre$re # get the output (i.e., RE = 0.88)
+```
+
+```
+## [1] 0.8790305
+```
+
+```r
 # relative efficiency (RE) of a constrained design comparing with the unconstrained optimal one
 myre <- re(od = myod1, subod= myod3)
+```
 
+```
+## The relative efficiency (RE) of the two two-level CRTs is 0.8975086.
+```
+
+```r
 # relative efficiency (RE) of a constrained design comparing with the unconstrained optimal one
 myre <- re(od = myod1, subod= myod4)
+```
 
-
+```
+## The relative efficiency (RE) of the two two-level CRTs is 0.8266527.
 ```
 ### 3.2 Examples for other types of trials
 For additional examples, please see example sections in corresponding *od* functions by uncommenting below lines.
-```{r}
+
+```r
 # ?od.1
 # ?od.2
 # ?od.3

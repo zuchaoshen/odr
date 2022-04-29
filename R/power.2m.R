@@ -1,4 +1,5 @@
-#' Budget and/or sample size, power, MDES calculation for two-level multisite randomized trials
+#' Budget and/or sample size, power, MDES calculation for two-level
+#' MRTs detecting main effects
 #'
 #' @description This function can calculate required budget for desired power,
 #'     power or minimum detectable effect size (MDES) under fixed budget
@@ -10,7 +11,7 @@
 #' @inheritParams power.2
 #' @inheritParams power.3m
 #'
-#' @param expr returned objects from function \code{\link{od.2m}}; default is NULL;
+#' @param expr Returned objects from function \code{\link{od.2m}}; default is NULL;
 #'     if \code{expr} is specified, parameter values of \code{icc},
 #'     \code{r12}, \code{r22m},
 #'     \code{c1}, \code{c2},
@@ -20,13 +21,13 @@
 #'     only the values of \code{p} and \code{n} that specified or solved in
 #'     function \code{\link{od.2m}} can be overwritten
 #'     if \code{constraint} is specified.
-#' @param constraint specify the constrained values of \code{p} and/or \code{n}
+#' @param constraint Specify the constrained values of \code{p} and/or \code{n}
 #'     in list format to overwrite those from \code{expr}; default value is NULL.
-#' @param r22m the proportion of variance of site-specific treatment effect explained by covariates.
-#' @param c2 the cost of sampling one level-2 unit.
-#' @param p the proportion of level-1 units to be assigned to treatment.
-#' @param q the number of covariates at level 2.
-#' @param mlim the range for searching the root of budget (\code{m}) numerically,
+#' @param r22m The proportion of variance of site-specific treatment effect explained by covariates.
+#' @param c2 The cost of sampling one level-2 unit.
+#' @param p The proportion of level-1 units to be assigned to treatment.
+#' @param q The number of covariates at level 2.
+#' @param mlim The range for searching the root of budget (\code{m}) numerically,
 #'     default is the costs sampling \code{Jlim} level-2 units
 #'     or c(4 * Jcost, 1e+10 * Jcost) with Jcost =
 #'     (1 - p) * c1 * n + p * c1t * n + c2.
@@ -39,31 +40,32 @@
 #' @export power.2m
 #'
 #' @references
-#'   Shen, Z. (2019). Optimal sample allocation in multilevel experiments
-#'   (Doctoral dissertation). University of Cincinnati, Cincinnati, OH.
+#'    Shen, Z., & Kelcey, B. (in press). Optimal sample
+#'    allocation in multisite randomized trials. The Journal of Experimental Education.
+#'    <https://doi.org/10.1080/00220973.2020.1830361>
 #'
 #' @examples
-#' # unconstrained optimal design #---------
+#' # Unconstrained optimal design #---------
 #'   myod1 <- od.2m(icc = 0.2, omega = 0.02, r12 = 0.5, r22m = 0.5,
 #'               c1 = 1, c2 = 10, c1t = 10,
 #'               varlim = c(0, 0.005))
 #'   myod1$out # n = 19.8, p = 0.37
 #'
-#' # ------- power analyses by default considering costs and budget -------
-#' # required budget and sample size
+#' # ------- Power analyses by default considering costs and budget -------
+#' # Required budget and sample size
 #'   mym.1 <- power.2m(expr = myod1, d = 0.2, q = 1, power = 0.8)
 #'   mym.1$out  # m = 2019, J = 20.9
 #'   # mym.1$par  # parameters and their values used for the function
-#' # or equivalently, specify every argument in the function
+#' # Or, equivalently, specify every argument in the function
 #'   mym.1 <- power.2m(d = 0.2, power = 0.8, q = 1,
 #'                  icc = 0.2, omega = 0.02, r12 = 0.5, r22m = 0.5,
 #'                  c1 = 1, c2 = 10, c1t = 10,
 #'                  n = 20, p = 0.37)
-#' # required budget and sample size with constrained p
+#' # Required budget and sample size with constrained p
 #'   mym.2 <- power.2m(expr = myod1, d = 0.2, q = 1, power = 0.8,
 #'                  constraint = list(p = 0.5))
 #'   mym.2$out  # m = 2373, J = 19.8
-#' # required budget and sample size with constrained p and n
+#' # Required budget and sample size with constrained p and n
 #'   mym.3 <- power.2m(expr = myod1, d = 0.2, q = 1, power = 0.8,
 #'                  constraint = list(p = 0.5, n = 5))
 #'   mym.3$out  # m = 2502, J = 66.7
@@ -81,12 +83,12 @@
 #'   mymdes$out  # d = 0.20
 #'
 #'
-#' # ------- conventional power analyses with cost.model = FALSE-------
+#' # ------- Conventional power analyses with cost.model = FALSE-------
 #' # Required sample size
 #'   myJ <- power.2m(cost.model = FALSE, expr = myod1, d = 0.2, q = 1, power = 0.8)
 #'   myJ$out  # J = 6.3
 #'   # myL$par  # parameters and their values used for the function
-#' # or equivalently, specify every argument in the function
+#' # Or, equivalently, specify every argument in the function
 #'   myJ <- power.2m(cost.model = FALSE, d = 0.2, power = 0.8, q = 1,
 #'                  icc = 0.2, omega = 0.02, r12 = 0.5, r22m = 0.5,
 #'                  c1 = 1, c2 = 10, c1t = 10,

@@ -1,4 +1,5 @@
-#' Budget and/or sample size, power, MDES calculation for four-level multisite randomized trials
+#' Budget and/or sample size, power, MDES calculation for
+#' four-level MRTs detecting main effects
 #'
 #' @description This function can calculate required budget for desired power,
 #'     power or minimum detectable effect size (MDES) under fixed budget
@@ -8,7 +9,7 @@
 #'
 #' @inheritParams power.4
 #'
-#' @param expr returned objects from function \code{\link{od.4m}}; default is NULL;
+#' @param expr Returned objects from function \code{\link{od.4m}}; default is NULL;
 #'     if \code{expr} is specified, parameter values of \code{icc2}, \code{icc3}, \code{icc4},
 #'     \code{r12}, \code{r22}, \code{r32}, \code{r42m},
 #'     \code{c1}, \code{c2}, \code{c3}, \code{c4},
@@ -18,15 +19,15 @@
 #'     only the values of \code{p}, \code{n}, \code{J}, and/or \code{K} that specified or solved in
 #'     function \code{\link{od.4m}} can be overwritten
 #'     if \code{constraint} is specified.
-#' @param constraint specify the constrained values of \code{p}, \code{n}, \code{J},
+#' @param constraint The constrained values of \code{p}, \code{n}, \code{J},
 #'     and/or \code{K} in list format to overwrite
 #'     those from \code{expr}; default value is NULL.
-#' @param omega the standardized variance of site-specific treatment effect
-#' @param r42m the proportion of variance of site-specific treatment effect explained by covariates.
-#' @param c4 the cost of sampling one level-4 unit.
-#' @param p the proportion of level-3 units to be assigned to treatment.
-#' @param q the number of covariates at level 4.
-#' @param mlim the range for searching the root of budget (\code{m}) numerically,
+#' @param omega The standardized variance of site-specific treatment effect.
+#' @param r42m The proportion of variance of site-specific treatment effect explained by covariates.
+#' @param c4 The cost of sampling one level-4 unit.
+#' @param p The proportion of level-3 units to be assigned to treatment.
+#' @param q The number of covariates at level 4.
+#' @param mlim The range for searching the root of budget (\code{m}) numerically,
 #'     default is the costs sampling \code{Llim} level-4 units
 #'     or c(4 * Lcost, 1e+10 * Lcost) with Lcost =
 #'     ((1 - p) * (c1 * n * J * K + c2 * J * K + c3 * K) +
@@ -39,12 +40,8 @@
 #'
 #' @export power.4m
 #'
-#' @references
-#'   Shen, Z. (2019). Optimal sample allocation in multilevel experiments
-#'   (Doctoral dissertation). University of Cincinnati, Cincinnati, OH.
-#'
 #' @examples
-#' # unconstrained optimal design #---------
+#' # Unconstrained optimal design #---------
 #'   myod1 <- od.4m(icc2 = 0.2, icc3 = 0.1, icc4 = 0.05, omega = 0.02,
 #'               r12 = 0.5, r22 = 0.5, r32 = 0.5, r42m = 0.5,
 #'               c1 = 1, c2 = 5, c3 = 25,
@@ -52,23 +49,23 @@
 #'               varlim = c(0, 0.005))
 #'   myod1$out # n = 8.3, J = 3.2, K = 4.9, p = 0.36
 #'
-#' # ------- power analyses by default considering costs and budget -------
-#' # required budget and sample size
+#' # ------- Power analyses by default considering costs and budget -------
+#' # Required budget and sample size
 #'   mym.1 <- power.4m(expr = myod1, d = 0.2, q = 1, power = 0.8)
 #'   mym.1$out  # m = 30201, L = 20.6
 #'   # mym.1$par  # parameters and their values used for the function
-#' # or equivalently, specify every argument in the function
+#' # Or, equivalently, specify every argument in the function
 #'   mym.1 <- power.4m(d = 0.2, power = 0.8, q = 1,
 #'                  icc2 = 0.2, icc3 = 0.1, icc4 = 0.05, omega = 0.02,
 #'                  r12 = 0.5, r22 = 0.5, r32 = 0.5, r42m = 0.5,
 #'                  c1 = 1, c2 = 5, c3 = 25,
 #'                  c1t = 1, c2t = 50, c3t = 250, c4 = 500,
 #'                  n = 8, J = 3, K = 5, p = 0.36)
-#' # required budget and sample size with constrained p
+#' # Required budget and sample size with constrained p
 #'   mym.2 <- power.4m(expr = myod1, d = 0.2, q = 1, power = 0.8,
 #'                  constraint = list(p = 0.5))
 #'   mym.2$out  # m = 33183, L = 19.3
-#' # required budget and sample size with constrained p and n
+#' # Required budget and sample size with constrained p and n
 #'   mym.3 <- power.4m(expr = myod1, d = 0.2, q = 1, power = 0.8,
 #'                  constraint = list(p = 0.5, n = 20))
 #'   mym.3$out  # m = 34262, L = 18.0
@@ -86,12 +83,12 @@
 #'   mymdes$out  # d = 0.20
 #'
 #'
-#' # ------- conventional power analyses with cost.model = FALSE-------
+#' # ------- Conventional power analyses with cost.model = FALSE-------
 #' # Required sample size
 #'   myL <- power.4m(cost.model = FALSE, expr = myod1, d = 0.2, q = 1, power = 0.8)
 #'   myL$out  # L = 20.6
 #'   # myL$par  # parameters and their values used for the function
-#' # or equivalently, specify every argument in the function
+#' # Or, equivalently, specify every argument in the function
 #'   myL <- power.4m(cost.model = FALSE, d = 0.2, power = 0.8, q = 1,
 #'                   icc2 = 0.2, icc3 = 0.1, icc4 = 0.05, omega = 0.02,
 #'                  r12 = 0.5, r22 = 0.5, r32 = 0.5, r42m = 0.5,

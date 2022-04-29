@@ -1,74 +1,79 @@
-#' Optimal sample allocation calculation for two-level multisite randomized trials
+#' Optimal sample allocation calculation for two-level MRTs detecting main effects
 #'
 #' @description The optimal design of two-level
-#'     multisite randomized trials (MRTs) is to choose
+#'     multisite randomized trials (MRTs) detecting main effects is to calculate
 #'     the sample allocation that minimizes the variance of a
-#'     treatment effect under a fixed budget and cost structure.
+#'     treatment effect under a fixed budget, which is approximately the optimal
+#'     sample allocation that maximizes statistical power under a fixed budget.
 #'     The optimal design parameters include
 #'     the level-one sample size per site (\code{n})
 #'     and the proportion of level-one unit to be assigned to treatment (\code{p}).
 #'     This function solves the optimal \code{n} and/or \code{p}
-#'     with and without constraints.
+#'     with and without a constraint.
 #'
 #' @inheritParams od.4
 #' @inheritParams power.2m
 #' @inheritParams power.3m
 #'
-#' @param m total budget, default is the total costs of sampling 60
+#' @param m Total budget, default is the total costs of sampling 60
 #'     sites.
-#' @param plot.by specify variance plot by \code{n} and/or \code{p};
+#' @param plot.by Plot the variance by \code{n} and/or \code{p};
 #'     default value is plot.by = list(n = "n", p = "p").
-#' @param plab the plot label for \code{p},
+#' @param plab The plot label for \code{p},
 #'     default value is "Proportion Level-1 Units in Treatment: p".
-#' @param verbose logical; print the values of \code{n}
+#' @param verbose Logical; print the values of \code{n}
 #'    and \code{p} if TRUE, otherwise not; default value is TRUE.
 #' @return
-#'     unconstrained or constrained optimal sample allocation
+#'     Unconstrained or constrained optimal sample allocation
 #'     (\code{n} and \code{p}).
-#'     The function also returns the variance of treatment effect,
+#'     The function also returns the variance of the treatment effect,
 #'     function name, design type,
 #'     and parameters used in the calculation.
 #'
 #' @export od.2m
-#'
+#' @references
+#'    Shen, Z., & Kelcey, B. (in press). Optimal sample
+#'    allocation in multisite randomized trials.
+#'    The Journal of Experimental Education.
+#'    <https://doi.org/10.1080/00220973.2020.1830361>
 #'
 #' @examples
-#' # unconstrained optimal design #---------
+#' # Unconstrained optimal design #---------
 #'   myod1 <- od.2m(icc = 0.2, omega = 0.02, r12 = 0.5, r22m = 0.5,
 #'               c1 = 1, c2 = 10, c1t = 10,
 #'               varlim = c(0, 0.005))
 #'   myod1$out # n = 20, p =0.37
-#' # plots by p
+#' # Plots by p
 #'   myod1 <- od.2m(icc = 0.2, omega = 0.02,
 #'               r12 = 0.5, r22m = 0.5,
 #'               c1 = 1, c2 = 10, c1t = 10,
 #'               varlim = c(0, 0.005), plot.by = list(p = 'p'))
 #'
-#' # constrained optimal design with p = 0.5 #---------
+#' # Constrained optimal design with p = 0.5 #---------
 #'   myod2 <- od.2m(icc = 0.2, omega = 0.02,
 #'               r12 = 0.5, r22m = 0.5,
 #'               c1 = 1, c2 = 10, c1t = 10,
 #'               varlim = c(0, 0.005), p = 0.5)
 #'   myod2$out
-#' # relative efficiency (RE)
+#' # Relative efficiency (RE)
 #'   myre <- re(od = myod1, subod= myod2)
 #'   myre$re # RE = 0.86
 #'
-#' # constrained optimal design with n = 5 #---------
+#' # Constrained optimal design with n = 5 #---------
 #'   myod3 <- od.2m(icc = 0.2, omega = 0.02,
 #'               r12 = 0.5, r22m = 0.5, c1 = 1, c2 = 10,
 #'               c1t = 10, varlim = c(0, 0.005), n = 5)
 #'   myod3$out
-#' # relative efficiency (RE)
+#' # Relative efficiency (RE)
 #'   myre <- re(od = myod1, subod= myod3)
 #'   myre$re # RE = 0.79
 #'
-#' # constrained n and p, no calculation performed #---------
+#' # Constrained n and p, no calculation performed #---------
 #'   myod4 <- od.2m(icc = 0.2, omega = 0.02, r12 = 0.5, r22m = 0.5,
 #'               c1 = 1, c2 = 10, c1t = 10,
 #'               varlim = c(0, 0.005), p = 0.5, n = 10)
 #'   myod4$out
-#' # relative efficiency (RE)
+#' # Relative efficiency (RE)
 #'   myre <- re(od = myod1, subod= myod4)
 #'   myre$re # RE = 0.84
 #'

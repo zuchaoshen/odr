@@ -2,7 +2,7 @@
 % Please edit documentation in R/od.2.R
 \name{od.2}
 \alias{od.2}
-\title{Optimal sample allocation calculation for two-level CRTs}
+\title{Optimal sample allocation calculation for two-level CRTs detecting main effects}
 \usage{
 od.2(
   n = NULL,
@@ -28,63 +28,65 @@ od.2(
 )
 }
 \arguments{
-\item{n}{the level-1 sample size per level-2 unit.}
+\item{n}{The level-1 sample size per level-2 unit.}
 
-\item{p}{the proportion of level-2 clusters/units to be assigned to treatment.}
+\item{p}{The proportion of level-2 clusters/units to be assigned to treatment.}
 
-\item{icc}{the unconditional intraclass correlation coefficient (ICC) in population or in
+\item{icc}{The unconditional intraclass correlation coefficient (ICC) in population or in
 each treatment condition.}
 
-\item{r12}{the proportion of level-1 variance explained by covariates.}
+\item{r12}{The proportion of level-1 variance explained by covariates.}
 
-\item{r22}{the proportion of level-2 variance explained by covariates.}
+\item{r22}{The proportion of level-2 variance explained by covariates.}
 
-\item{c1}{the cost of sampling one level-1 unit in control condition.}
+\item{c1}{The cost of sampling one level-1 unit in control condition.}
 
-\item{c2}{the cost of sampling one level-2 unit in control condition.}
+\item{c2}{The cost of sampling one level-2 unit in control condition.}
 
-\item{c1t}{the cost of sampling one level-1 unit in treatment condition.}
+\item{c1t}{The cost of sampling one level-1 unit in treatment condition.}
 
-\item{c2t}{the cost of sampling one level-2 unit in treatment condition.}
+\item{c2t}{The cost of sampling one level-2 unit in treatment condition.}
 
-\item{m}{total budget, default value is the total costs of sampling 60
+\item{m}{Total budget, default value is the total costs of sampling 60
 level-2 units across treatment conditions.}
 
-\item{plots}{logical, provide variance plots if TRUE, otherwise not; default value is TRUE.}
+\item{plots}{Logical, provide variance plots if TRUE, otherwise not; default value is TRUE.}
 
-\item{plot.by}{specify variance plot by \code{n} and/or \code{p}; default value is
+\item{plot.by}{Plot the variance by \code{n} and/or \code{p}; default value is
 plot.by = list(n = "n", p = "p").}
 
-\item{nlim}{the plot range for n, default value is c(2, 50).}
+\item{nlim}{The plot range for n, default value is c(2, 50).}
 
-\item{plim}{the plot range for p, default value is c(0, 1).}
+\item{plim}{The plot range for p, default value is c(0, 1).}
 
-\item{varlim}{the plot range for variance, default value is c(0, 0.05).}
+\item{varlim}{The plot range for variance, default value is c(0, 0.05).}
 
-\item{nlab}{the plot label for \code{n},
+\item{nlab}{The plot label for \code{n},
 default value is "Level-1 Sample Size: n".}
 
-\item{plab}{the plot label for p, default value is "Proportion Level-2 Units in Treatment: p"}
+\item{plab}{The plot label for p,
+default value is "Proportion Level-2 Units in Treatment: p".}
 
-\item{varlab}{the plot label for variance,
+\item{varlab}{The plot label for variance,
 default value is "Variance".}
 
-\item{vartitle}{the title of variance plot, default value is NULL.}
+\item{vartitle}{The title of variance plot, default value is NULL.}
 
-\item{verbose}{logical; print the values of \code{n} and \code{p} if TRUE,
+\item{verbose}{Logical; print the values of \code{n} and \code{p} if TRUE,
 otherwise not; default value is TRUE.}
 }
 \value{
-unconstrained or constrained optimal sample allocation (\code{n} and \code{p}).
-    The function also returns the variance of treatment effect,
+Unconstrained or constrained optimal sample allocation (\code{n} and \code{p}).
+    The function also returns the variance of the treatment effect,
     function name, design type,
     and parameters used in the calculation.
 }
 \description{
 The optimal design of two-level
-    cluster randomized trials (CRTs) is to choose
-    the sample allocation that minimizes the variance of
-    treatment effect under fixed budget and cost structure.
+    cluster randomized trials (CRTs) detecting main effects is to calculate
+    the optimal sample allocation that minimizes the variance of
+    a treatment effect under a fixed budget, which is approximately the optimal
+    sample allocation that maximizes statistical power under a fixed budget.
     The optimal design parameters include
     the level-1 sample size per level-2 unit (\code{n})
     and the proportion of level-2 clusters/groups to be assigned to treatment (\code{p}).
@@ -92,49 +94,41 @@ The optimal design of two-level
     with and without constraints.
 }
 \examples{
-# unconstrained optimal design #---------
+# Unconstrained optimal design #---------
   myod1 <- od.2(icc = 0.2, r12 = 0.5, r22 = 0.5, c1 = 1, c2 = 5, c1t = 1, c2t = 50,
               varlim = c(0.01, 0.02))
   myod1$out # output
-# plot by p
+# Plot by p
   myod1 <- od.2(icc = 0.2, r12 = 0.5, r22 = 0.5, c1 = 1, c2 = 5, c1t = 1, c2t = 50,
               varlim = c(0.01, 0.02), plot.by = list(p = 'p'))
 
-# constrained optimal design with n = 20 #---------
+# Constrained optimal design with n = 20 #---------
   myod2 <- od.2(icc = 0.2, r12 = 0.5, r22 = 0.5, c1 = 1, c2 = 5, c1t = 1, c2t = 50,
               n = 20, varlim = c(0.005, 0.025))
   myod2$out
-# relative efficiency (RE)
+# Relative efficiency (RE)
   myre <- re(od = myod1, subod= myod2)
   myre$re # RE = 0.88
 
-# constrained optimal design with p = 0.5 #---------
+# Constrained optimal design with p = 0.5 #---------
   myod3 <- od.2(icc = 0.2, r12 = 0.5, r22 = 0.5, c1 = 1, c2 = 5, c1t = 1, c2t = 50,
              p = 0.5, varlim = c(0.005, 0.025))
   myod3$out
-# relative efficiency (RE)
+# Relative efficiency (RE)
   myre <- re(od = myod1, subod= myod3)
   myre$re # RE = 0.90
 
-# constrained n and p, no calculation performed #---------
+# Constrained n and p, no calculation performed #---------
   myod4 <- od.2(icc = 0.2, r12 = 0.5, r22 = 0.5, c1 = 1, c2 = 5, c1t = 1, c2t = 50,
               n = 20, p = 0.5, varlim = c(0.005, 0.025))
   myod4$out
-# relative efficiency (RE)
+# Relative efficiency (RE)
   myre <- re(od = myod1, subod= myod4)
   myre$re # RE = 0.83
 
 }
 \references{
-Shen, Z., & Kelcey, B. (2018, April). Optimal design of cluster
-  randomized trials under condition- and unit-specific cost structures. Roundtable
-  discussion presented at American Educational Research Association (AERA)
-  annual conference, New York City, NY;
-
-  Shen, Z., & Kelcey, B. (2020). Optimal sample allocation under unequal
+Shen, Z., & Kelcey, B. (2020). Optimal sample allocation under unequal
   costs in cluster-randomized trials. Journal of Educational
-  and Behavioral Statistics, 45(4): 446–474.
-
-  Shen, Z. (2019). Optimal sample allocation in multilevel experiments
-  (Doctoral dissertation). University of Cincinnati, Cincinnati, OH.
+  and Behavioral Statistics, 45(4): 446–474. <https://doi.org/10.3102/1076998620912418>
 }

@@ -1,9 +1,10 @@
-#' Optimal sample allocation calculation for four-level CRTs
+#' Optimal sample allocation calculation for four-level CRTs detecting main effects
 #'
 #' @description The optimal design of four-level
-#'     cluster randomized trials (CRTs) is to choose
-#'     the sample allocation that minimizes the variance of
-#'     treatment effect under fixed budget and cost structure.
+#'     cluster randomized trials (CRTs) is to calculate
+#'     the optimal sample allocation that minimizes the variance of
+#'     treatment effect under fixed budget, which is approximately the optimal
+#'     sample allocation that maximizes statistical power under a fixed budget.
 #'     The optimal design parameters include
 #'     the level-1 sample size per level-2 unit (\code{n}),
 #'     the level-2 sample size per level-3 unit (\code{J}),
@@ -13,83 +14,78 @@
 #'     with and without constraints.
 #'
 #' @inheritParams power.4
-#' @param m total budget, default value is the total costs of sampling 60
+#' @param m Total budget, default value is the total costs of sampling 60
 #'     level-4 units across treatment conditions.
-#' @param plots logical, provide variance plots if TRUE, otherwise not; default value is TRUE.
-#' @param plot.by specify variance plot by \code{n}, \code{J}, \code{K} and/or \code{p};
+#' @param plots Logical, provide variance plots if TRUE, otherwise not; default value is TRUE.
+#' @param plot.by Plot the variance by \code{n}, \code{J}, \code{K} and/or \code{p};
 #'     default value is plot.by = list(n = "n", J = "J", K = 'K', p = "p").
-#' @param nlim the plot range for n, default value is c(2, 50).
-#' @param Jlim the plot range for J, default value is c(2, 50).
-#' @param Klim the plot range for K, default value is c(2, 50).
-#' @param plim the plot range for p, default value is c(0, 1).
-#' @param varlim the plot range for variance, default value is c(0, 0.05).
-#' @param nlab the plot label for \code{n},
+#' @param nlim The plot range for n, default value is c(2, 50).
+#' @param Jlim The plot range for J, default value is c(2, 50).
+#' @param Klim The plot range for K, default value is c(2, 50).
+#' @param plim The plot range for p, default value is c(0, 1).
+#' @param varlim The plot range for variance, default value is c(0, 0.05).
+#' @param nlab The plot label for \code{n},
 #'     default value is "Level-1 Sample Size: n".
-#' @param Jlab the plot label for \code{J},
+#' @param Jlab The plot label for \code{J},
 #'     default value is "Level-2 Sample Size: J".
-#' @param Klab the plot label for \code{K},
+#' @param Klab The plot label for \code{K},
 #'     default value is "Level-3 Sample Size: K".
-#' @param plab the plot label for \code{p},
+#' @param plab The plot label for \code{p},
 #'     default value is "Proportion Level-4 Units in Treatment: p".
-#' @param varlab the plot label for variance,
+#' @param varlab The plot label for variance,
 #'     default value is "Variance".
-#' @param vartitle the title of variance plot, default value is NULL.
-#' @param verbose logical; print the values of \code{n}, \code{J},
+#' @param vartitle The title of variance plot, default value is NULL.
+#' @param verbose Logical; print the values of \code{n}, \code{J},
 #'    \code{K}, and \code{p} if TRUE,
 #'    otherwise not; default value is TRUE.
-#' @param iter number of iterations; default value is 100.
-#' @param tol tolerance for convergence; default value is 1e-10.
+#' @param iter Number of iterations; default value is 100.
+#' @param tol Tolerance for convergence; default value is 1e-10.
 #' @return
-#'     unconstrained or constrained optimal sample allocation
+#'     Unconstrained or constrained optimal sample allocation
 #'     (\code{n}, \code{J}, \code{K}, and \code{p}).
-#'     The function also returns the variance of treatment effect,
+#'     The function also returns the variance of the treatment effect,
 #'     function name, design type,
 #'     and parameters used in the calculation.
-#'
 #' @export od.4
 #'
-#' @references
-#'   Shen, Z. (2019). Optimal sample allocation in multilevel experiments
-#'   (Doctoral dissertation). University of Cincinnati, Cincinnati, OH.
-#'
 #' @examples
-#' # unconstrained optimal design #---------
+#' # Unconstrained optimal design #---------
 #'   myod1 <- od.4(icc2 = 0.2, icc3 = 0.1, icc4 = 0.05,
 #'               r12 = 0.5, r22 = 0.5, r32 = 0.5, r42 = 0.5,
 #'               c1 = 1, c2 = 5, c3 = 25, c4 = 125,
 #'               c1t = 1, c2t = 50, c3t = 250, c4t = 2500,
 #'               varlim = c(0, 0.01))
 #'   myod1$out # output
-#' # plots by p and K
+#' # Plots by p and K
 #'   myod1 <- od.4(icc2 = 0.2, icc3 = 0.1, icc4 = 0.05,
 #'               r12 = 0.5, r22 = 0.5, r32 = 0.5, r42 = 0.5,
 #'               c1 = 1, c2 = 5, c3 = 25, c4 = 125,
 #'               c1t = 1, c2t = 50, c3t = 250, c4t = 2500,
 #'               varlim = c(0, 0.01), plot.by = list(p = 'p', K = 'K'))
 #'
-#' # constrained optimal design with p = 0.5 #---------
+#' # Constrained optimal design with p = 0.5 #---------
 #'   myod2 <- od.4(icc2 = 0.2, icc3 = 0.1, icc4 = 0.05, p = 0.5,
 #'               r12 = 0.5, r22 = 0.5, r32 = 0.5, r42 = 0.5,
 #'               c1 = 1, c2 = 5, c3 = 25, c4 = 125,
 #'               c1t = 1, c2t = 50, c3t = 250, c4t = 2500,
 #'               varlim = c(0, 0.01))
 #'   myod2$out
-#' # relative efficiency (RE)
+#' # Relative efficiency (RE)
 #'   myre <- re(od = myod1, subod= myod2)
 #'   myre$re # RE = 0.78
 #'
-#' # constrained optimal design with K = 20 #---------
+#' # Constrained optimal design with K = 20 #---------
 #'   myod3 <- od.4(icc2 = 0.2, icc3 = 0.1, icc4 = 0.05,  K = 20,
 #'               r12 = 0.5, r22 = 0.5, r32 = 0.5, r42 = 0.5,
 #'               c1 = 1, c2 = 5, c3 = 25, c4 = 125,
 #'               c1t = 1, c2t = 50, c3t = 250, c4t = 2500,
 #'               varlim = c(0, 0.01))
 #'   myod3$out
-#' # relative efficiency (RE)
+#' # Relative efficiency (RE)
 #'   myre <- re(od = myod1, subod= myod3)
 #'   myre$re # RE = 0.67
 #'
-#' # constrained n, J, K and p, no calculation performed #---------
+#' # Constrained n, J, K and p, no calculation performed #---------
 #'   myod4 <- od.4(icc2 = 0.2, icc3 = 0.1, icc4 = 0.05,
 #'               r12 = 0.5, n = 10, J = 10, K = 20, p = 0.5,
 #'               r22 = 0.5, r32 = 0.5, r42 = 0.5,
@@ -97,7 +93,7 @@
 #'               c1t = 1, c2t = 50, c3t = 250, c4t = 2500,
 #'               varlim = c(0, 0.01))
 #'   myod4$out
-#' # relative efficiency (RE)
+#' # Relative efficiency (RE)
 #'   myre <- re(od = myod1, subod= myod4)
 #'   myre$re # RE = 0.27
 #'

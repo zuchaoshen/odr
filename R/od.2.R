@@ -1,9 +1,10 @@
-#' Optimal sample allocation calculation for two-level CRTs
+#' Optimal sample allocation calculation for two-level CRTs detecting main effects
 #'
 #' @description The optimal design of two-level
-#'     cluster randomized trials (CRTs) is to choose
-#'     the sample allocation that minimizes the variance of
-#'     treatment effect under fixed budget and cost structure.
+#'     cluster randomized trials (CRTs) detecting main effects is to calculate
+#'     the optimal sample allocation that minimizes the variance of
+#'     a treatment effect under a fixed budget, which is approximately the optimal
+#'     sample allocation that maximizes statistical power under a fixed budget.
 #'     The optimal design parameters include
 #'     the level-1 sample size per level-2 unit (\code{n})
 #'     and the proportion of level-2 clusters/groups to be assigned to treatment (\code{p}).
@@ -12,65 +13,58 @@
 #'
 #' @inheritParams power.2
 #' @inheritParams od.4
-#' @param m total budget, default value is the total costs of sampling 60
+#' @param m Total budget, default value is the total costs of sampling 60
 #'     level-2 units across treatment conditions.
-#' @param plot.by specify variance plot by \code{n} and/or \code{p}; default value is
+#' @param plot.by Plot the variance by \code{n} and/or \code{p}; default value is
 #'     plot.by = list(n = "n", p = "p").
-#' @param plab the plot label for p, default value is "Proportion Level-2 Units in Treatment: p"
-#' @param verbose logical; print the values of \code{n} and \code{p} if TRUE,
+#' @param plab The plot label for p,
+#'     default value is "Proportion Level-2 Units in Treatment: p".
+#' @param verbose Logical; print the values of \code{n} and \code{p} if TRUE,
 #'    otherwise not; default value is TRUE.
 #'
 #' @return
-#'     unconstrained or constrained optimal sample allocation (\code{n} and \code{p}).
-#'     The function also returns the variance of treatment effect,
+#'     Unconstrained or constrained optimal sample allocation (\code{n} and \code{p}).
+#'     The function also returns the variance of the treatment effect,
 #'     function name, design type,
 #'     and parameters used in the calculation.
 #'
 #' @export od.2
 #'
 #' @references
-#'   Shen, Z., & Kelcey, B. (2018, April). Optimal design of cluster
-#'   randomized trials under condition- and unit-specific cost structures. Roundtable
-#'   discussion presented at American Educational Research Association (AERA)
-#'   annual conference, New York City, NY;
-#'
 #'   Shen, Z., & Kelcey, B. (2020). Optimal sample allocation under unequal
 #'   costs in cluster-randomized trials. Journal of Educational
-#'   and Behavioral Statistics, 45(4): 446–474.
-#'
-#'   Shen, Z. (2019). Optimal sample allocation in multilevel experiments
-#'   (Doctoral dissertation). University of Cincinnati, Cincinnati, OH.
+#'   and Behavioral Statistics, 45(4): 446–474. <https://doi.org/10.3102/1076998620912418>
 #'
 #' @examples
-#' # unconstrained optimal design #---------
+#' # Unconstrained optimal design #---------
 #'   myod1 <- od.2(icc = 0.2, r12 = 0.5, r22 = 0.5, c1 = 1, c2 = 5, c1t = 1, c2t = 50,
 #'               varlim = c(0.01, 0.02))
 #'   myod1$out # output
-#' # plot by p
+#' # Plot by p
 #'   myod1 <- od.2(icc = 0.2, r12 = 0.5, r22 = 0.5, c1 = 1, c2 = 5, c1t = 1, c2t = 50,
 #'               varlim = c(0.01, 0.02), plot.by = list(p = 'p'))
 #'
-#' # constrained optimal design with n = 20 #---------
+#' # Constrained optimal design with n = 20 #---------
 #'   myod2 <- od.2(icc = 0.2, r12 = 0.5, r22 = 0.5, c1 = 1, c2 = 5, c1t = 1, c2t = 50,
 #'               n = 20, varlim = c(0.005, 0.025))
 #'   myod2$out
-#' # relative efficiency (RE)
+#' # Relative efficiency (RE)
 #'   myre <- re(od = myod1, subod= myod2)
 #'   myre$re # RE = 0.88
 #'
-#' # constrained optimal design with p = 0.5 #---------
+#' # Constrained optimal design with p = 0.5 #---------
 #'   myod3 <- od.2(icc = 0.2, r12 = 0.5, r22 = 0.5, c1 = 1, c2 = 5, c1t = 1, c2t = 50,
 #'              p = 0.5, varlim = c(0.005, 0.025))
 #'   myod3$out
-#' # relative efficiency (RE)
+#' # Relative efficiency (RE)
 #'   myre <- re(od = myod1, subod= myod3)
 #'   myre$re # RE = 0.90
 #'
-#' # constrained n and p, no calculation performed #---------
+#' # Constrained n and p, no calculation performed #---------
 #'   myod4 <- od.2(icc = 0.2, r12 = 0.5, r22 = 0.5, c1 = 1, c2 = 5, c1t = 1, c2t = 50,
 #'               n = 20, p = 0.5, varlim = c(0.005, 0.025))
 #'   myod4$out
-#' # relative efficiency (RE)
+#' # Relative efficiency (RE)
 #'   myre <- re(od = myod1, subod= myod4)
 #'   myre$re # RE = 0.83
 #'

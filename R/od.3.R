@@ -1,9 +1,10 @@
-#' Optimal sample allocation calculation for three-level CRTs
+#' Optimal sample allocation calculation for three-level CRTs detecting main effects
 #'
 #' @description The optimal design of three-level
-#'     cluster randomized trials (CRTs) is to choose
-#'     the sample allocation that minimizes the variance of
-#'     treatment effect under fixed budget and cost structure.
+#'     cluster randomized trials (CRTs) is to calculate
+#'     the optimal sample allocation that minimizes the variance of
+#'     treatment effect under fixed budget, which is approximately the optimal
+#'     sample allocation that maximizes statistical power under a fixed budget.
 #'     The optimal design parameters include
 #'     the level-1 sample size per level-2 unit (\code{n}),
 #'     the level-2 sample size per level-3 unit (\code{J}),
@@ -13,19 +14,19 @@
 #'
 #' @inheritParams power.3
 #' @inheritParams od.4
-#' @param m total budget, default is the total costs of sampling 60
+#' @param m Total budget, default is the total costs of sampling 60
 #'     level-3 units across treatment conditions.
-#' @param plot.by specify variance plot by \code{n}, \code{J}
+#' @param plot.by Plot the variance by \code{n}, \code{J}
 #'     and/or \code{p}; default is plot.by = list(n = "n", J = "J", p = "p").
-#' @param plab the plot label for p, default is "Proportion Level-3
-#'     Units in Treatment: p"
-#' @param verbose logical; print the values of \code{n}, \code{J}, and \code{p} if TRUE,
+#' @param plab The plot label for p, default is "Proportion Level-3
+#'     Units in Treatment: p".
+#' @param verbose Logical; print the values of \code{n}, \code{J}, and \code{p} if TRUE,
 #'    otherwise not; default is TRUE.
 #'
 #' @return
-#'     unconstrained or constrained optimal sample allocation
+#'     Unconstrained or constrained optimal sample allocation
 #'     (\code{n}, \code{J}, and \code{p}).
-#'     The function also returns the variance of treatment effect,
+#'     The function also returns the variance of the treatment effect,
 #'     function name, design type,
 #'     and parameters used in the calculation.
 #'
@@ -35,45 +36,43 @@
 #'   Shen, Z., & Kelcey, B. (2020).
 #'   Optimal sample allocation under unequal costs in cluster-randomized trials.
 #'   Journal of Educational and Behavioral Statistics, 45(4): 446–474.
-#'
-#'   Shen, Z. (2019). Optimal sample allocation in multilevel experiments
-#'   (Doctoral dissertation). University of Cincinnati, Cincinnati, OH.
+#'   <https://doi.org/10.3102/1076998620912418>
 #'
 #' @examples
-#' # unconstrained optimal design #---------
+#' # Unconstrained optimal design #---------
 #'   myod1 <- od.3(icc2 = 0.2, icc3 = 0.1, r12 = 0.5, r22 = 0.5, r32 = 0.5,
 #'              c1 = 1, c2 = 5, c3 = 25, c1t = 1, c2t = 50, c3t = 250,
 #'              varlim = c(0.005, 0.025))
 #'   myod1$out # output
-#' # plots by p and J
+#' # Plots by p and J
 #'   myod1 <- od.3(icc2 = 0.2, icc3 = 0.1, r12 = 0.5, r22 = 0.5, r32 = 0.5,
 #'              c1 = 1, c2 = 5, c3 = 25, c1t = 1, c2t = 50, c3t = 250,
 #'              varlim = c(0.005, 0.025), plot.by = list(p = 'p', J = 'J'))
 #'
-#' # constrained optimal design with J = 20 #---------
+#' # Constrained optimal design with J = 20 #---------
 #'   myod2 <- od.3(icc2 = 0.2, icc3 = 0.1, r12 = 0.5, r22 = 0.5, r32 = 0.5, J = 20,
 #'              c1 = 1, c2 = 5, c3 = 25, c1t = 1, c2t = 50, c3t = 250,
 #'              varlim = c(0, 0.025))
 #'   myod2$out
-#' # relative efficiency (RE)
+#' # Relative efficiency (RE)
 #'   myre <- re(od = myod1, subod= myod2)
 #'   myre$re # RE = 0.53
 #'
-#' # constrained optimal design with p = 0.5 #---------
+#' # Constrained optimal design with p = 0.5 #---------
 #'   myod3 <- od.3(icc2 = 0.2, icc3 = 0.1, r12 = 0.5, r22 = 0.5, r32 = 0.5, p = 0.5,
 #'              c1 = 1, c2 = 5, c3 = 25, c1t = 1, c2t = 50, c3t = 250,
 #'              varlim = c(0.005, 0.025))
 #'   myod3$out
-#' # relative efficiency (RE)
+#' # Relative efficiency (RE)
 #'   myre <- re(od = myod1, subod= myod3)
 #'   myre$re # RE = 0.84
 #'
-#' # constrained n, J and p, no calculation performed #---------
+#' # Constrained n, J and p, no calculation performed #---------
 #'   myod4 <- od.3(icc2 = 0.2, icc3 = 0.1, r12 = 0.5, r22 = 0.5, r32 = 0.5, n = 10, J = 10, p = 0.5,
 #'              c1 = 1, c2 = 5, c3 = 25, c1t = 1, c2t = 50, c3t = 250,
 #'              varlim = c(0, 0.025))
 #'   myod4$out
-#' # relative efficiency (RE)
+#' # Relative efficiency (RE)
 #'   myre <- re(od = myod1, subod= myod4)
 #'   myre$re # RE = 0.61
 #'
@@ -90,14 +89,10 @@ od.3 <- function(n = NULL, J = NULL, p = NULL, icc2 = NULL, icc3 = NULL, r12 = N
                  function(x) is.null(x))) >= 1)
     stop("All of 'icc2', 'icc3', 'r12', 'r22', 'r32', 'c1', 'c2', 'c3',
          'c1t', 'c2t', 'c3t' must be specified")
-  if (sum(sapply(list(icc2, icc3), function(x) {
-    NumberCheck(x) || any(0 >= x | x >= 1)
-  })) >= 1)
-    stop("'icc2', 'icc3' must be numeric in (0, 1)")
-    if (sum(sapply(list(r12, r22, r32), function(x) {
+    if (sum(sapply(list(icc2, icc3, r12, r22, r32), function(x) {
     NumberCheck(x) || any(0 > x | x > 1)
   })) >= 1)
-    stop("'r12', 'r22', 'r32' must be numeric in [0, 1]")
+    stop("'icc2', 'icc3', 'r12', 'r22', 'r32' must be numeric in [0, 1]")
   if (sum(sapply(list(c1, c2, c3, c1t, c2t, c3t), function(x) {
     NumberCheck(x) || x < 0})) >= 1)
     stop("'c1', 'c2', 'c3', 'c1t', 'c2t', 'c3t' must be numeric in [0, inf)")

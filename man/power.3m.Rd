@@ -2,7 +2,8 @@
 % Please edit documentation in R/power.3m.R
 \name{power.3m}
 \alias{power.3m}
-\title{Budget and/or sample size, power, MDES calculation for three-level multisite randomized trials}
+\title{Budget and/or sample size, power, MDES calculation for
+three-level MRTs detecting main effects}
 \usage{
 power.3m(
   cost.model = TRUE,
@@ -37,12 +38,12 @@ power.3m(
 )
 }
 \arguments{
-\item{cost.model}{logical; power analyses accommodating costs and budget
+\item{cost.model}{Logical; power analyses accommodating costs and budget
 (e.g., required budget for desired power, power/MDES under fixed budget)
 if TRUE, otherwise conventional power analyses
 (e.g., required sample size, power, or MDES calculation); default value is TRUE.}
 
-\item{expr}{returned objects from function \code{\link{od.3m}}; default is NULL;
+\item{expr}{Returned objects from function \code{\link{od.3m}}; default is NULL;
 if \code{expr} is specified, parameter values of \code{icc2}, \code{icc3},
 \code{r12}, \code{r22}, \code{r32m},
 \code{c1}, \code{c2}, \code{c3},
@@ -53,69 +54,69 @@ only the values of \code{p}, \code{n}, and/or \code{J} that specified or solved 
 function \code{\link{od.3m}} can be overwritten
 if \code{constraint} is specified.}
 
-\item{constraint}{specify the constrained values of \code{p}, \code{n}, and/or \code{J},
+\item{constraint}{Specify the constrained values of \code{p}, \code{n}, and/or \code{J},
 in list format to overwrite
 those from \code{expr}; default value is NULL.}
 
-\item{sig.level}{significance level or type I error rate, default value is 0.05.}
+\item{sig.level}{Significance level or type I error rate, default value is 0.05.}
 
-\item{two.tailed}{logical; two-tailed tests if TRUE,
+\item{two.tailed}{Logical; two-tailed tests if TRUE,
 otherwise one-tailed tests; default value is TRUE.}
 
-\item{d}{effect size.}
+\item{d}{Effect size.}
 
-\item{power}{statistical power.}
+\item{power}{Statistical power.}
 
-\item{m}{total budget.}
+\item{m}{Total budget.}
 
-\item{n}{the level-1 sample size per level-2 unit.}
+\item{n}{The level-1 sample size per level-2 unit.}
 
-\item{J}{the level-2 sample size per level-3 unit.}
+\item{J}{The level-2 sample size per level-3 unit.}
 
-\item{K}{the level-3 sample size per level-4 unit.}
+\item{K}{The level-3 sample size per level-4 unit.}
 
-\item{p}{the proportion of level-2 units to be assigned to treatment.}
+\item{p}{The proportion of level-2 units to be assigned to treatment.}
 
-\item{icc2}{the unconditional intraclass correlation coefficient (ICC) at level 2.}
+\item{icc2}{The unconditional intraclass correlation coefficient (ICC) at level 2.}
 
-\item{icc3}{the unconditional intraclass correlation coefficient (ICC) at level 3.}
+\item{icc3}{The unconditional intraclass correlation coefficient (ICC) at level 3.}
 
-\item{r12}{the proportion of level-1 variance explained by covariates.}
+\item{r12}{The proportion of level-1 variance explained by covariates.}
 
-\item{r22}{the proportion of level-2 variance explained by covariates.}
+\item{r22}{The proportion of level-2 variance explained by covariates.}
 
-\item{r32m}{the proportion of variance of site-specific treatment effect explained by covariates.}
+\item{r32m}{The proportion of variance of site-specific treatment effect explained by covariates.}
 
-\item{q}{the number of covariates at level 3.}
+\item{q}{The number of covariates at level 3.}
 
-\item{c1}{the cost of sampling one level-1 unit in control condition.}
+\item{c1}{The cost of sampling one level-1 unit in control condition.}
 
-\item{c2}{the cost of sampling one level-2 unit in control condition.}
+\item{c2}{The cost of sampling one level-2 unit in control condition.}
 
-\item{c3}{the cost of sampling one level-3 unit.}
+\item{c3}{The cost of sampling one level-3 unit.}
 
-\item{c1t}{the cost of sampling one level-1 unit in treatment condition.}
+\item{c1t}{The cost of sampling one level-1 unit in treatment condition.}
 
-\item{c2t}{the cost of sampling one level-2 unit in treatment condition.}
+\item{c2t}{The cost of sampling one level-2 unit in treatment condition.}
 
-\item{omega}{the standardized variance of site-specific treatment effect}
+\item{omega}{The standardized variance of site-specific treatment effect.}
 
-\item{dlim}{the range for searching the root of effect size (\code{d}) numerically,
+\item{dlim}{The range for searching the root of effect size (\code{d}) numerically,
 default value is c(0, 5).}
 
-\item{powerlim}{the range for searching the root of power (\code{power}) numerically,
+\item{powerlim}{The range for searching the root of power (\code{power}) numerically,
 default value is c(1e-10, 1 - 1e-10).}
 
-\item{Klim}{the range for searching the root of level-3 sample size (\code{K}) numerically,
-default value is c(4, 1e+10)}
+\item{Klim}{The range for searching the root of level-3 sample size (\code{K}) numerically,
+default value is c(4, 1e+10).}
 
-\item{mlim}{the range for searching the root of budget (\code{m}) numerically,
+\item{mlim}{The range for searching the root of budget (\code{m}) numerically,
 default is the costs sampling \code{Klim} level-3 units
 or c(4 * Kcost, 1e+10 * Kcost) with Kcost =
 ((1 - p) * (c1 * n * J + c2 * J) +
 p * (c1t * n * J + c2t * J) + c3.}
 
-\item{rounded}{logical; round the values of \code{p}, \code{n}/\code{J}/\code{K}
+\item{rounded}{Logical; round the values of \code{p}, \code{n}/\code{J}/\code{K}
 that are from functions \code{\link{od.4}}
 to two decimal places and integer, respectively if TRUE,
 otherwise no rounding; default value is TRUE.}
@@ -134,7 +135,7 @@ This function can calculate required budget for desired power,
     (e.g., required sample size, power, and MDES calculation).
 }
 \examples{
-# unconstrained optimal design #---------
+# Unconstrained optimal design #---------
   myod1 <- od.3m(icc2 = 0.2, icc3 = 0.1, omega = 0.02,
               r12 = 0.5, r22 = 0.5, r32m = 0.5,
               c1 = 1, c2 = 5,
@@ -142,23 +143,23 @@ This function can calculate required budget for desired power,
               varlim = c(0, 0.005))
   myod1$out # n = 13.1, J = 15.3, p = 0.23
 
-# ------- power analyses by default considering costs and budget -------
-# required budget and sample size
+# ------- Power analyses by default considering costs and budget -------
+# Required budget and sample size
   mym.1 <- power.3m(expr = myod1, d = 0.2, q = 1, power = 0.8)
   mym.1$out  # m = 15491, K = 13.6
   # mym.1$par  # parameters and their values used for the function
-# or equivalently, specify every argument in the function
+# Or, equivalently, specify every argument in the function
   mym.1 <- power.3m(d = 0.2, power = 0.8, q = 1,
                  icc2 = 0.2, icc3 = 0.1, omega = 0.02,
                   r12 = 0.5, r22 = 0.5, r32m = 0.5,
                   c1 = 1, c2 = 5,
                   c1t = 1, c2t = 200, c3 = 200,
                   n = 13, J = 15, p = 0.23)
-# required budget and sample size with constrained p
+# Required budget and sample size with constrained p
   mym.2 <- power.3m(expr = myod1, d = 0.2, q = 1, power = 0.8,
                  constraint = list(p = 0.5))
   mym.2$out  # m = 21072, K = 10.9
-# required budget and sample size with constrained p and n
+# Required budget and sample size with constrained p and n
   mym.3 <- power.3m(expr = myod1, d = 0.2, q = 1, power = 0.8,
                  constraint = list(p = 0.5, n = 20))
   mym.3$out  # m = 21252, K = 10.4
@@ -176,12 +177,12 @@ This function can calculate required budget for desired power,
   mymdes$out  # d = 0.20
 
 
-# ------- conventional power analyses with cost.model = FALSE-------
+# ------- Conventional power analyses with cost.model = FALSE-------
 # Required sample size
   myK <- power.3m(cost.model = FALSE, expr = myod1, d = 0.2, q = 1, power = 0.8)
   myK$out  # K = 13.6
   # myK$par  # parameters and their values used for the function
-# or equivalently, specify every argument in the function
+# Or, equivalently, specify every argument in the function
   myK <- power.3m(cost.model = FALSE, d = 0.2, power = 0.8, q = 1,
                   icc2 = 0.2, icc3 = 0.1, omega = 0.02,
                   r12 = 0.5, r22 = 0.5, r32m = 0.5,
@@ -199,6 +200,6 @@ This function can calculate required budget for desired power,
 
 }
 \references{
-Shen, Z. (2019). Optimal sample allocation in multilevel experiments
-  (Doctoral dissertation). University of Cincinnati, Cincinnati, OH.
+Shen, Z., & Kelcey, B. (in press). Optimal sampling ratios in three-level
+  multisite experiments. Journal of Research on Educational Effectiveness.
 }

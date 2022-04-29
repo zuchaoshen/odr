@@ -1,27 +1,28 @@
 ## Resubmission
 
-This is a resubmission for updating the package. In this version, we updated references and improved documentation.
+This is for updating the package. In this version, we added functions od.2.221 and power.2.221, for optimal design and statistical power of two-level cluster-randomized trials (CRTs) probing mediation effects with cluster-level mediators under the Sobel test and joint significance test across different optimization methods (partial derivative, ant colony optimization).
 
-Across opertional system we tested, there is one note that can be ignored (detailed below).
+Across operational system we tested, there is one note that can be ignored (detailed below).
 Please help process this package at your convenience! Thanks a lot! 
 
 ## Test environments
-* local Windows 10, R 3.6.3
+* local Windows 10, R 4.0.5
 * win-builder (devel and release)
 
 ## R CMD check results
 0 errors v | 0 warnings v | 0 notes v (local Windows 10)
 0 errors √ | 0 warnings √ | 1 note x   (rhub)
+0 errors √ | 0 warnings √ | 1 note x  (win-builder )
 
 ## Reverse dependencies
 
-This is an update of new release, there are no issues on reverse dependencies.
+There are no issues on reverse dependencies.
 
 ---
 * One note is "checking CRAN incoming feasibility ... NOTE
-  Maintainer: 'Zuchao Shen <zuchao.shen@gmail.com>'
+  Maintainer: 'Zuchao Shen <zuchao.shen at gmail.com>'
   
-  New maintainer:
-  Old maintainer(s):
-    Zuchao Shen <shenzo@mail.uc.edu>
-    Zuchao Shen <zuchao.shen@gmail.com>", I have confirmed this the maintainer email in previous versions and did not change the email from the previous version.
+  Old maintainer(s): Zuchao Shen <shenzo@mail.uc.edu>
+  New maintainer:  Zuchao Shen <zuchao.shen@gmail.com>", I have confirmed this the maintainer email in previous versions.
+
+  "Possibly misspelled words in DESCRIPTION:..." but they are correct (doi).

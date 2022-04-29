@@ -2,7 +2,7 @@
 % Please edit documentation in R/od.3m.R
 \name{od.3m}
 \alias{od.3m}
-\title{Optimal sample allocation calculation for three-level multisite randomized trials}
+\title{Optimal sample allocation calculation for three-level MRTs detecting main effects}
 \usage{
 od.3m(
   n = NULL,
@@ -37,83 +37,84 @@ od.3m(
 )
 }
 \arguments{
-\item{n}{the level-1 sample size per level-2 unit.}
+\item{n}{The level-1 sample size per level-2 unit.}
 
-\item{J}{the level-2 sample size per level-3 unit.}
+\item{J}{The level-2 sample size per level-3 unit.}
 
-\item{p}{the proportion of level-4 clusters/units to be assigned to treatment.}
+\item{p}{The proportion of level-4 clusters/units to be assigned to treatment.}
 
-\item{icc2}{the unconditional intraclass correlation coefficient (ICC) at level 2.}
+\item{icc2}{The unconditional intraclass correlation coefficient (ICC) at level 2.}
 
-\item{icc3}{the unconditional intraclass correlation coefficient (ICC) at level 3.}
+\item{icc3}{The unconditional intraclass correlation coefficient (ICC) at level 3.}
 
-\item{r12}{the proportion of level-1 variance explained by covariates.}
+\item{r12}{The proportion of level-1 variance explained by covariates.}
 
-\item{r22}{the proportion of level-2 variance explained by covariates.}
+\item{r22}{The proportion of level-2 variance explained by covariates.}
 
-\item{r32m}{the proportion of variance of site-specific treatment effect explained by covariates.}
+\item{r32m}{The proportion of variance of site-specific treatment effect explained by covariates.}
 
-\item{c1}{the cost of sampling one level-1 unit in control condition.}
+\item{c1}{The cost of sampling one level-1 unit in control condition.}
 
-\item{c2}{the cost of sampling one level-2 unit in control condition.}
+\item{c2}{The cost of sampling one level-2 unit in control condition.}
 
-\item{c3}{the cost of sampling one level-3 unit in control condition.}
+\item{c3}{The cost of sampling one level-3 unit in control condition.}
 
-\item{c1t}{the cost of sampling one level-1 unit in treatment condition.}
+\item{c1t}{The cost of sampling one level-1 unit in treatment condition.}
 
-\item{c2t}{the cost of sampling one level-2 unit in treatment condition.}
+\item{c2t}{The cost of sampling one level-2 unit in treatment condition.}
 
-\item{omega}{the standardized variance of site-specific treatment effect}
+\item{omega}{The standardized variance of site-specific treatment effect.}
 
-\item{m}{total budget, default is the total costs of sampling 60
+\item{m}{Total budget, default is the total costs of sampling 60
 level-3 units.}
 
-\item{plots}{logical, provide variance plots if TRUE, otherwise not; default value is TRUE.}
+\item{plots}{Logical, provide variance plots if TRUE, otherwise not; default value is TRUE.}
 
-\item{plot.by}{specify variance plot by \code{n}, \code{J} and/or \code{p};
+\item{plot.by}{Plot the variance by \code{n}, \code{J} and/or \code{p};
 default value is plot.by = list(n = "n", J = "J", p = "p").}
 
-\item{nlim}{the plot range for n, default value is c(2, 50).}
+\item{nlim}{The plot range for n, default value is c(2, 50).}
 
-\item{Jlim}{the plot range for J, default value is c(2, 50).}
+\item{Jlim}{The plot range for J, default value is c(2, 50).}
 
-\item{plim}{the plot range for p, default value is c(0, 1).}
+\item{plim}{The plot range for p, default value is c(0, 1).}
 
-\item{varlim}{the plot range for variance, default value is c(0, 0.05).}
+\item{varlim}{The plot range for variance, default value is c(0, 0.05).}
 
-\item{nlab}{the plot label for \code{n},
+\item{nlab}{The plot label for \code{n},
 default value is "Level-1 Sample Size: n".}
 
-\item{Jlab}{the plot label for \code{J},
+\item{Jlab}{The plot label for \code{J},
 default value is "Level-2 Sample Size: J".}
 
-\item{plab}{the plot label for \code{p},
+\item{plab}{The plot label for \code{p},
 default value is "Proportion Level-2 Units in Treatment: p".}
 
-\item{varlab}{the plot label for variance,
+\item{varlab}{The plot label for variance,
 default value is "Variance".}
 
-\item{vartitle}{the title of variance plot, default value is NULL.}
+\item{vartitle}{The title of variance plot, default value is NULL.}
 
-\item{verbose}{logical; print the values of \code{n}, \code{J},
+\item{verbose}{Logical; print the values of \code{n}, \code{J},
 and \code{p} if TRUE, otherwise not; default value is TRUE.}
 
-\item{iter}{number of iterations; default value is 100.}
+\item{iter}{Number of iterations; default value is 100.}
 
-\item{tol}{tolerance for convergence; default value is 1e-10.}
+\item{tol}{Tolerance for convergence; default value is 1e-10.}
 }
 \value{
-unconstrained or constrained optimal sample allocation
+Unconstrained or constrained optimal sample allocation
     (\code{n}, \code{J}, and \code{p}).
-    The function also returns the variance of treatment effect,
+    The function also returns the variance of the treatment effect,
     function name, design type,
     and parameters used in the calculation.
 }
 \description{
 The optimal design of three-level
-    multisite randomized trials (MRTs) is to choose
-    the sample allocation that minimizes the variance of
-    treatment effect under fixed budget and cost structure.
+    multisite randomized trials (MRTs) is to calculate
+    the optimal sample allocation that minimizes the variance of
+    treatment effect under fixed budget, which is approximately the optimal
+    sample allocation that maximizes statistical power under a fixed budget.
     The optimal design parameters include
     the level-1 sample size per level-2 unit (\code{n}),
     the level-2 sample size per level-3 unit (\code{J}),
@@ -122,55 +123,55 @@ The optimal design of three-level
     with and without constraints.
 }
 \examples{
-# unconstrained optimal design #---------
+# Unconstrained optimal design #---------
   myod1 <- od.3m(icc2 = 0.2, icc3 = 0.1, omega = 0.02,
               r12 = 0.5, r22 = 0.5, r32m = 0.5,
               c1 = 1, c2 = 5,
               c1t = 1, c2t = 200, c3 = 200,
               varlim = c(0, 0.005))
   myod1$out # output
-# plots by p and J
+# Plots by p and J
   myod1 <- od.3m(icc2 = 0.2, icc3 = 0.1, omega = 0.02,
               r12 = 0.5, r22 = 0.5, r32m = 0.5,
               c1 = 1, c2 = 5,
               c1t = 1, c2t = 200, c3 = 200,
               varlim = c(0, 0.005), plot.by = list(p = 'p', J = 'J'))
 
-# constrained optimal design with p = 0.5 #---------
+# Constrained optimal design with p = 0.5 #---------
   myod2 <- od.3m(icc2 = 0.2, icc3 = 0.1, omega = 0.02,
               r12 = 0.5, r22 = 0.5, r32m = 0.5,
               c1 = 1, c2 = 5,
               c1t = 1, c2t = 200, c3 = 200,
               varlim = c(0, 0.005), p = 0.5)
   myod2$out
-# relative efficiency (RE)
+# Relative efficiency (RE)
   myre <- re(od = myod1, subod= myod2)
   myre$re # RE = 0.81
 
-# constrained optimal design with n = 5 #---------
+# Constrained optimal design with n = 5 #---------
   myod3 <- od.3m(icc2 = 0.2, icc3 = 0.1, omega = 0.02,
               r12 = 0.5, r22 = 0.5, r32m = 0.5,
               c1 = 1, c2 = 5,
               c1t = 1, c2t = 200, c3 = 200,
               varlim = c(0, 0.005), n = 5)
   myod3$out
-# relative efficiency (RE)
+# Relative efficiency (RE)
   myre <- re(od = myod1, subod= myod3)
   myre$re # RE = 0.89
 
-# constrained n, J and p, no calculation performed #---------
+# Constrained n, J and p, no calculation performed #---------
   myod4 <- od.3m(icc2 = 0.2, icc3 = 0.1, omega = 0.02,
               r12 = 0.5, r22 = 0.5, r32m = 0.5,
               c1 = 1, c2 = 5,
               c1t = 1, c2t = 200, c3 = 200,
               varlim = c(0, 0.005), p = 0.5, n = 15, J = 20)
   myod4$out
-# relative efficiency (RE)
+# Relative efficiency (RE)
   myre <- re(od = myod1, subod= myod4)
   myre$re # RE = 0.75
 
 }
 \references{
-Shen, Z. (2019). Optimal sample allocation in multilevel experiments
-  (Doctoral dissertation). University of Cincinnati, Cincinnati, OH.
+Shen, Z., & Kelcey, B. (in press). Optimal sampling ratios in three-level
+  multisite experiments. Journal of Research on Educational Effectiveness.
 }

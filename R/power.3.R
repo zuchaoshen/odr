@@ -1,4 +1,5 @@
-#' Budget and/or sample size, power, MDES calculation for three-level CRTs
+#' Budget and/or sample size, power, MDES calculation for
+#' three-level CRTs detecting main effects
 #'
 #' @description This function can calculate required budget for desired power,
 #'     power or minimum detectable effect size (MDES) under fixed budget
@@ -7,7 +8,7 @@
 #'     (e.g., required sample size, power, and MDES calculation).
 #'
 #' @inheritParams power.4
-#' @param expr returned objects from function \code{\link{od.3}}; default is NULL;
+#' @param expr Returned objects from function \code{\link{od.3}}; default is NULL;
 #'     if \code{expr} is specified, parameter values of \code{icc2}, \code{icc3},
 #'     \code{r12}, \code{r22}, \code{r32},
 #'     \code{c1}, \code{c2}, \code{c3}, \code{c1t}, \code{c2t}, \code{c3t},
@@ -17,19 +18,19 @@
 #'     only the values of \code{p}, \code{n}, and/or \code{J} that specified or solved in
 #'     function \code{\link{od.3}} can be overwritten
 #'     if \code{constraint} is specified.
-#' @param constraint specify the constrained values of \code{p}, \code{n},
+#' @param constraint Specify the constrained values of \code{p}, \code{n},
 #'     and/or \code{J} in list format to overwrite those
 #'     from \code{expr}; default is NULL.
-#' @param K the total level-3 sample size.
-#' @param p the proportion of level-3 clusters/units assigned to treatment.
-#' @param q the number of covariates at level 3.
-#' @param Klim the range for searching the root of level-3 sample size (\code{K}) numerically,
-#'     default value is c(4, 1e+10)
-#' @param mlim the range for searching the root of budget (\code{m}) numerically,
+#' @param K The total level-3 sample size.
+#' @param p The proportion of level-3 clusters/units assigned to treatment.
+#' @param q The number of covariates at level 3.
+#' @param Klim The range for searching the root of level-3 sample size (\code{K}) numerically,
+#'     default value is c(4, 1e+10).
+#' @param mlim The range for searching the root of budget (\code{m}) numerically,
 #'     default value is the costs sampling \code{Klim} level-3 units across treatment conditions
 #'     or c(4 * Kcost, 1e+10 * Kcost) with Kcost =
-#'     ((1 - p) * (c1 * n * J + c2 * J + c3) + p * (c1t * n * J + c2t * J + c3t))
-#' @param rounded logical; round the values of \code{p}, \code{n}/\code{J} that are
+#'     ((1 - p) * (c1 * n * J + c2 * J + c3) + p * (c1t * n * J + c2t * J + c3t)).
+#' @param rounded Logical; round the values of \code{p}, \code{n}/\code{J} that are
 #'     from functions \code{\link{od.3}}
 #'     to two decimal places and integer, respectively if TRUE,
 #'     otherwise no rounding; default value is TRUE.
@@ -45,30 +46,28 @@
 #'   Shen, Z., & Kelcey, B. (2020). Optimal sample allocation under unequal
 #'   costs in cluster-randomized trials. Journal of Educational
 #'   and Behavioral Statistics, 45(4): 446–474.
-#'
-#'   Shen, Z. (2019). Optimal sample allocation in multilevel experiments
-#'   (Doctoral dissertation). University of Cincinnati, Cincinnati, OH.
+#'    <https://doi.org/10.3102/1076998620912418>
 #' @examples
-#' # unconstrained optimal design
+#' # Unconstrained optimal design
 #'   myod1 <- od.3(icc2 = 0.2, icc3 = 0.1, r12 = 0.5, r22 = 0.5, r32 = 0.5,
 #'               c1 = 1, c2 = 5, c3 = 25, c1t = 1, c2t = 50, c3t = 250)
 #'   myod1$out # output  # n = 7.9, J = 3.2, p = 0.28
 #'
-#' # ------- power analyses by default considering costs and budget -------
-#' # required budget and sample size
+#' # ------- Power analyses by default considering costs and budget -------
+#' # Required budget and sample size
 #'   mym.1 <- power.3(expr = myod1, d = 0.2, q = 1, power = 0.8)
 #'   mym.1$out  # m = 16032, K = 97.3
 #'   #mym.1$par  # parameters and their values used for the function
-#' # or equivalently, specify every argument in the function
+#' # Or, equivalently, specify every argument in the function
 #'   mym.1 <- power.3(d = 0.2, power = 0.8, q = 1,
 #'                  icc2 = 0.2, icc3 = 0.1, r12 = 0.5, r22 = 0.5, r32 = 0.5,
 #'                  c1 = 1, c2 = 5, c3 = 25, c1t = 1, c2t = 50, c3t = 250,
 #'                  n = 8, J = 3, p = 0.28)
-#' # required budget and sample size with constrained p
+#' # Required budget and sample size with constrained p
 #'   mym.2 <- power.3(expr = myod1, d = 0.2, q = 1, power = 0.8,
 #'                  constraint = list(p = 0.5))
 #'   mym.2$out  # m = 19239, K = 78.8
-#' # required budget and sample size with constrained p and J
+#' # Required budget and sample size with constrained p and J
 #'   mym.3 <- power.3(expr = myod1, d = 0.2, q = 1, power = 0.8,
 #'                  constraint = list(p = 0.5, J = 20))
 #'   mym.3$out  # m = 39774, K = 46.9
@@ -86,12 +85,12 @@
 #'   mymdes$out  # d = 0.20
 #'
 #'
-#' # ------- conventional power analyses with cost.model = FALSE-------
+#' # ------- Conventional power analyses with cost.model = FALSE-------
 #' # Required sample size
 #'   myK <- power.3(cost.model = FALSE, expr = myod1, d = 0.2, q = 1, power = 0.8)
 #'   myK$out  # K = 97.3
 #'   #myK$par  # parameters and their values used for the function
-#' # or equivalently, specify every argument in the function
+#' # Or, equivalently, specify every argument in the function
 #'   myK <- power.3(cost.model = FALSE, d = 0.2, power = 0.8, q = 1,
 #'                   icc2 = 0.2, icc3 = 0.1, r12 = 0.5, r22 = 0.5, r32 = 0.5,
 #'                   n = 8, J = 3, p = 0.28)
@@ -186,13 +185,13 @@ power.3 <- function(cost.model = TRUE, expr = NULL, constraint = NULL,
       stop("constrained 'p' must be numeric in (0, 1)")
     p <- constraint$p
   }
-  if (sum(sapply(list(icc2, icc3, p, power, sig.level), function(x) {
+  if (sum(sapply(list(p, power, sig.level), function(x) {
     NumberCheck(x) || any(0 > x | x >= 1)
-  })) >= 1) stop("'icc2', 'icc3', 'p', 'power', and 'sig.level'
+  })) >= 1) stop("'p', 'power', and 'sig.level'
                  must be numeric in (0, 1)")
-  if (sum(sapply(list(r12, r22, r32), function(x) {
-    NumberCheck(x) || any(0 > x | x >= 1)
-  })) >= 1) stop("'r12', 'r22', 'r32' must be numeric in [0, 1)")
+  if (sum(sapply(list(icc2, icc3, r12, r22, r32), function(x) {
+    NumberCheck(x) || any(0 > x | x > 1)
+  })) >= 1) stop("'icc2', 'icc3', 'r12', 'r22', 'r32' must be numeric in [0, 1]")
   if (cost.model == TRUE){
     if (sum(sapply(list(c1, c2, c3, c1t, c2t, c3t), function(x) {
       NumberCheck(x) || x < 0})) >= 1)

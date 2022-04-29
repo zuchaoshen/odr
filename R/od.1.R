@@ -1,45 +1,44 @@
-#' Optimal sample allocation calculation for individual randomized controlled trials
+#' Optimal sample allocation calculation for single-level experiments
+#' detecting main effects
 #'
-#' @description The optimal design of individual randomized controlled trials
-#'     (RCTs) is to choose
-#'     the sample allocation that minimizes the variance of
-#'     treatment effect under fixed budget and cost structure.
+#' @description The optimal design of single-level experiments detecting main effects
+#'     is to choose
+#'     the optimal sample allocation that minimizes the variance of
+#'     a treatment effect under a fixed budget,  which is approximately the optimal
+#'     sample allocation that maximizes statistical power under a fixed budget.
 #'     The optimal design parameter is
 #'     the proportion of individuals to be assigned to treatment (\code{p}).
 #'
 #' @inheritParams power.1
 #' @inheritParams od.4
-#' @param m total budget, default value is the total costs of sampling 60
+#' @param m Total budget, default value is the total costs of sampling 60
 #'     individuals across treatment conditions.
-#' @param plab the plot label for \code{p} , default value is "Proportion of Individuals in Treatment: p"
-#' @param verbose logical; print the value of \code{p} if TRUE,
+#' @param plab The plot label for \code{p} ,
+#'     default value is "Proportion of Individuals in Treatment: p".
+#' @param verbose Logical; print the value of \code{p} if TRUE,
 #'    otherwise not; default value is TRUE.
 #'
 #' @return
-#'     unconstrained or constrained optimal sample allocation (\code{p}).
-#'     The function also returns the variance of treatment effect,
+#'     Unconstrained or constrained optimal sample allocation (\code{p}).
+#'     The function also returns the variance of the treatment effect,
 #'     function name, design type,
 #'     and parameters used in the calculation.
 #'
 #' @export od.1
 #'
-#' @references
-#'   Shen, Z. (2019). Optimal sample allocation in multilevel experiments
-#'   (Doctoral dissertation). University of Cincinnati, Cincinnati, OH.
-#'
 #' @examples
-#' # unconstrained optimal design #---------
+#' # Unconstrained optimal design #---------
 #'   myod1 <- od.1(r12 = 0.5, c1 = 1, c1t = 5, varlim = c(0, 0.2))
 #'   myod1$out # output
 #'
-#' # constrained p, no calculation performed #---------
+#' # Constrained p, no calculation performed #---------
 #'   myod2 <- od.1(r12 = 0.5, c1 = 1, c1t = 5, varlim = c(0, 0.2), p = 0.5)
 #'   myod2$out
-#' # relative efficiency (RE)
+#' # Relative efficiency (RE)
 #'   myre <- re(od = myod1, subod= myod2)
 #'   myre$re # RE = 0.87
 #'
-#' # when sampling costs are equal, a balanced  design with p = 0.5 is the best #---------
+#' # When sampling costs are equal, a balanced  design with p = 0.5 is the best #---------
 #'   myod3 <- od.1(r12 = 0.5, c1 = 1, c1t = 1, varlim = c(0, 0.2))
 #'   myod3$out # output
 #'

@@ -1,4 +1,5 @@
-#' Budget and/or sample size, power, MDES calculation for four-level CRTs
+#' Budget and/or sample size, power, MDES calculation for
+#' four-level CRTs detecting main effects
 #'
 #' @description This function can calculate required budget for desired power,
 #'     power or minimum detectable effect size (MDES) under fixed budget
@@ -6,11 +7,11 @@
 #'     It also can perform conventional power analyses
 #'     (e.g., required sample size, power, and MDES calculation).
 #'
-#' @param cost.model logical; power analyses accommodating costs and budget
+#' @param cost.model Logical; power analyses accommodating costs and budget
 #'     (e.g., required budget for desired power, power/MDES under fixed budget)
 #'     if TRUE, otherwise conventional power analyses
 #'     (e.g., required sample size, power, or MDES calculation); default value is TRUE.
-#' @param expr returned objects from function \code{\link{od.4}}; default value is NULL;
+#' @param expr Returned objects from function \code{\link{od.4}}; default value is NULL;
 #'     if \code{expr} is specified, parameter values of \code{icc2}, \code{icc3}, \code{icc4},
 #'     \code{r12}, \code{r22}, \code{r32}, \code{r42},
 #'     \code{c1}, \code{c2}, \code{c3}, \code{c4},
@@ -20,48 +21,48 @@
 #'     only the values of \code{p}, \code{n}, \code{J}, and/or \code{K} that specified or solved in
 #'     function \code{\link{od.4}} can be overwritten
 #'     if \code{constraint} is specified.
-#' @param constraint specify the constrained values of \code{p}, \code{n}, \code{J},
+#' @param constraint Specify the constrained values of \code{p}, \code{n}, \code{J},
 #'     and/or \code{K} in list format to overwrite
 #'     those from \code{expr}; default value is NULL.
-#' @param sig.level significance level or type I error rate, default value is 0.05.
-#' @param two.tailed logical; two-tailed tests if TRUE,
+#' @param sig.level Significance level or type I error rate, default value is 0.05.
+#' @param two.tailed Logical; two-tailed tests if TRUE,
 #'     otherwise one-tailed tests; default value is TRUE.
-#' @param d effect size.
-#' @param power statistical power.
-#' @param m total budget.
-#' @param icc2 the unconditional intraclass correlation coefficient (ICC) at level 2.
-#' @param icc3 the unconditional intraclass correlation coefficient (ICC) at level 3.
-#' @param icc4 the unconditional intraclass correlation coefficient (ICC) at level 4.
-#' @param r12 the proportion of level-1 variance explained by covariates.
-#' @param r22 the proportion of level-2 variance explained by covariates.
-#' @param r32 the proportion of level-3 variance explained by covariates.
-#' @param r42 the proportion of level-4 variance explained by covariates.
-#' @param c1 the cost of sampling one level-1 unit in control condition.
-#' @param c2 the cost of sampling one level-2 unit in control condition.
-#' @param c3 the cost of sampling one level-3 unit in control condition.
-#' @param c4 the cost of sampling one level-4 unit in control condition.
-#' @param c1t the cost of sampling one level-1 unit in treatment condition.
-#' @param c2t the cost of sampling one level-2 unit in treatment condition.
-#' @param c3t the cost of sampling one level-3 unit in treatment condition.
-#' @param c4t the cost of sampling one level-4 unit in treatment condition.
-#' @param n the level-1 sample size per level-2 unit.
-#' @param J the level-2 sample size per level-3 unit.
-#' @param K the level-3 sample size per level-4 unit.
-#' @param L the total level-4 sample size.
-#' @param p the proportion of level-4 clusters/units to be assigned to treatment.
-#' @param q the number of covariates at level 4.
-#' @param dlim the range for searching the root of effect size (\code{d}) numerically,
+#' @param d Effect size.
+#' @param power Statistical power.
+#' @param m Total budget.
+#' @param icc2 The unconditional intraclass correlation coefficient (ICC) at level 2.
+#' @param icc3 The unconditional intraclass correlation coefficient (ICC) at level 3.
+#' @param icc4 The unconditional intraclass correlation coefficient (ICC) at level 4.
+#' @param r12 The proportion of level-1 variance explained by covariates.
+#' @param r22 The proportion of level-2 variance explained by covariates.
+#' @param r32 The proportion of level-3 variance explained by covariates.
+#' @param r42 The proportion of level-4 variance explained by covariates.
+#' @param c1 The cost of sampling one level-1 unit in control condition.
+#' @param c2 The cost of sampling one level-2 unit in control condition.
+#' @param c3 The cost of sampling one level-3 unit in control condition.
+#' @param c4 The cost of sampling one level-4 unit in control condition.
+#' @param c1t The cost of sampling one level-1 unit in treatment condition.
+#' @param c2t The cost of sampling one level-2 unit in treatment condition.
+#' @param c3t The cost of sampling one level-3 unit in treatment condition.
+#' @param c4t The cost of sampling one level-4 unit in treatment condition.
+#' @param n The level-1 sample size per level-2 unit.
+#' @param J The level-2 sample size per level-3 unit.
+#' @param K The level-3 sample size per level-4 unit.
+#' @param L The total level-4 sample size.
+#' @param p The proportion of level-4 clusters/units to be assigned to treatment.
+#' @param q The number of covariates at level 4.
+#' @param dlim The range for searching the root of effect size (\code{d}) numerically,
 #'     default value is c(0, 5).
-#' @param powerlim the range for searching the root of power (\code{power}) numerically,
+#' @param powerlim The range for searching the root of power (\code{power}) numerically,
 #'     default value is c(1e-10, 1 - 1e-10).
-#' @param Llim the range for searching the root of level-4 sample size (\code{L}) numerically,
+#' @param Llim The range for searching the root of level-4 sample size (\code{L}) numerically,
 #'     default value is c(4, 1e+10).
-#' @param mlim the range for searching the root of budget (\code{m}) numerically,
+#' @param mlim The range for searching the root of budget (\code{m}) numerically,
 #'     default value is the costs sampling \code{Llim} level-4 units across treatment conditions
 #'     or c(4 * Lcost, 1e+10 * Lcost) with Lcost =
 #'     ((1 - p) * (c1 * n * J * K + c2 * J * K + c3 * K + c4) +
 #'     p * (c1t * n * J * K + c2t * J * K + c3t * K + c4t)).
-#' @param rounded logical; round the values of \code{p}, \code{n}/\code{J}/\code{K}
+#' @param rounded Logical; round the values of \code{p}, \code{n}/\code{J}/\code{K}
 #'     that are from functions \code{\link{od.4}}
 #'     to two decimal places and integer, respectively if TRUE,
 #'     otherwise no rounding; default value is TRUE.
@@ -73,35 +74,31 @@
 #'
 #' @export power.4
 #'
-#' @references
-#'   Shen, Z. (2019). Optimal sample allocation in multilevel experiments
-#'   (Doctoral dissertation). University of Cincinnati, Cincinnati, OH.
-#'
 #' @examples
-#' # unconstrained optimal design
+#' # Unconstrained optimal design
 #'   myod1 <- od.4(icc2 = 0.2, icc3 = 0.1, icc4 = 0.05,
 #'               r12 = 0.5, r22 = 0.5, r32 = 0.5, r42 = 0.5,
 #'               c1 = 1, c2 = 5, c3 = 25, c4 = 125,
 #'               c1t = 1, c2t = 50, c3t = 250, c4t = 2500)
 #'   myod1$out # output # n = 7.1, J = 3.2, K = 4.2, p = 0.23
 #'
-#' # ------- power analyses by default considering costs and budget -------
-#' # required budget and sample size
+#' # ------- Power analyses by default considering costs and budget -------
+#' # Required budget and sample size
 #'   mym.1 <- power.4(expr = myod1, d = 0.2, q = 1, power = 0.8)
 #'   mym.1$out  # m = 71161, L = 57.1
 #'   #mym.1$par  # parameters and their values used for the function
-#' # or equivalently, specify every argument in the function
+#' # Or, equivalently, specify every argument in the function
 #'   mym.1 <- power.4(d = 0.2, power = 0.8, q = 1,
 #'                  icc2 = 0.2, icc3 = 0.1, icc4 = 0.05,
 #'                  r12 = 0.5, r22 = 0.5, r32 = 0.5, r42 = 0.5,
 #'                  c1 = 1, c2 = 5, c3 = 25, c4 = 125,
 #'                  c1t = 1, c2t = 50, c3t = 250, c4t = 2500,
 #'                  n = 7, J = 3, K = 4, p = 0.23)
-#' # required budget and sample size with constrained p (p = 0.5)
+#' # Required budget and sample size with constrained p (p = 0.5)
 #'   mym.2 <- power.4(expr = myod1, d = 0.2, q = 1, power = 0.8,
 #'                  constraint = list(p = 0.5))
 #'   mym.2$out  # m = 93508, L = 41.1
-#' # required budget and sample size with constrained p and K
+#' # Required budget and sample size with constrained p and K
 #'   mym.3 <- power.4(expr = myod1, d = 0.2, q = 1, power = 0.8,
 #'                  constraint = list(p = 0.5, K = 20))
 #'   mym.3$out  # m = 157365, L = 25.7
@@ -119,12 +116,12 @@
 #'   mymdes$out  # d = 0.20
 #'
 #'
-#' # ------- conventional power analyses with cost.model = FALSE-------
+#' # ------- Conventional power analyses with cost.model = FALSE-------
 #' # Required sample size
 #'   myL <- power.4(cost.model = FALSE, expr = myod1, d = 0.2, q = 1, power = 0.8)
 #'   myL$out  # L = 57.1
 #' #myL$par  # parameters and their values used for the function
-#' # or equivalently, specify every argument in the function
+#' # Or, equivalently, specify every argument in the function
 #'   myL <- power.4(cost.model = FALSE, d = 0.2, power = 0.8, q = 1,
 #'                   icc2 = 0.2, icc3 = 0.1, icc4 = 0.05,
 #'                   r12 = 0.5, r22 = 0.5, r32 = 0.5, r42 = 0.5,

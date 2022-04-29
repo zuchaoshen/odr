@@ -1,81 +1,81 @@
 #' Relative efficiency (RE) calculation
 #'
 #' @description Calculate the relative efficiency (RE) between two designs, it returns
-#'     same results as those from function \code{\link{rpe}}
+#'     same results as those from function \code{\link{rpe}}.
 #'
-#' @param od returned object of first design (e.g., unconstrained optimal design)
+#' @param od Returned object of first design (e.g., unconstrained optimal design)
 #'     from function \code{\link{od.1}}, \code{\link{od.2}},
 #'     \code{\link{od.3}}, \code{\link{od.4}}, \code{\link{od.2m}},
-#'     \code{\link{od.3m}}, or \code{\link{od.4m}}
-#' @param subod returned object of second design (e.g., constrained optimal design)
+#'     \code{\link{od.3m}}, or \code{\link{od.4m}}.
+#' @param subod Returned object of second design (e.g., constrained optimal design)
 #'     from function \code{\link{od.1}}, \code{\link{od.2}},
 #'     \code{\link{od.3}}, \code{\link{od.4}}, \code{\link{od.2m}},
-#'     \code{\link{od.3m}}, or \code{\link{od.4m}}
-#' @param verbose logical; print the value of relative efficiency if TRUE,
+#'     \code{\link{od.3m}}, or \code{\link{od.4m}}.
+#' @param verbose Logical; print the value of relative efficiency if TRUE,
 #'    otherwise not; default is TRUE.
-#' @param rounded logical; round the values of \code{p}, \code{n}/\code{J}/\code{K}
+#' @param rounded Logical; round the values of \code{p}, \code{n}/\code{J}/\code{K}
 #'     that are from functions to two decimal places and integer, respectively if TRUE,
 #'     no rounding if FALSE; default is TRUE.
 #' @return
-#'     Relative efficiency value
+#'     Relative efficiency value.
 #'
 #' @export re
 #'
 #' @references
-#'   Shen, Z., & Kelcey, B. (2018, April). Optimal design of cluster
-#'   randomized trials under condition- and unit-specific cost structures. Roundtable
-#'   discussion presented at American Educational Research Association (AERA)
-#'   annual conference, New York City, NY;
-#'
-#'   Shen, Z., & Kelcey, B. (in press). Optimal sample allocation under unequal
-#'   costs in clusterrandomized trials. Journal of Educational
-#'   and Behavioral Statistics.
-#'
-#'   Shen, Z. (2019). Optimal sample allocation in multilevel experiments
-#'   (Doctoral dissertation). University of Cincinnati, Cincinnati, OH.
+#'   (1) Shen, Z., & Kelcey, B. (2020). Optimal sample allocation under
+#'   unequal costs in cluster-randomized trials.
+#'   Journal of Educational and Behavioral Statistics, 45(4): 446–474.
+#'   <https://doi.org/10.3102/1076998620912418>
+#'   (2) Shen, Z., & Kelcey, B. (in press). Optimal sample
+#'   allocation in multisite randomized trials.
+#'   The Journal of Experimental Education.
+#'   <https://doi.org/10.1080/00220973.2020.1830361>
+#'   (3) Shen, Z., & Kelcey, B. (in press).
+#'   Optimal sampling ratios in three-level
+#'   multisite experiments. Journal of Research on Educational Effectiveness.
 #'
 #' @examples
-#' # unconstrained optimal design of 2-level CRT #----------
+#' # Unconstrained optimal design of 2-level CRT #----------
 #'   myod1 <- od.2(icc = 0.2, r12 = 0.5, r22 = 0.5, c1 = 1, c2 = 5, c1t = 1, c2t = 50,
 #'               varlim = c(0.01, 0.02))
-#' # constrained optimal design with n = 20
+#' # Constrained optimal design with n = 20
 #'   myod2 <- od.2(icc = 0.2, r12 = 0.5, r22 = 0.5, c1 = 1, c2 = 5, c1t = 1, c2t = 50,
 #'               n = 20, varlim = c(0.005, 0.025))
-#' # relative efficiency (RE)
+#' # Relative efficiency (RE)
 #'   myre <- re(od = myod1, subod= myod2)
 #'   myre$out # RE = 0.88
-#' # constrained optimal design with p = 0.5
+#' # Constrained optimal design with p = 0.5
 #'   myod2 <- od.2(icc = 0.2, r12 = 0.5, r22 = 0.5, c1 = 1, c2 = 5, c1t = 1, c2t = 50,
 #'              p = 0.5, varlim = c(0.005, 0.025))
-#' # relative efficiency (RE)
+#' # Relative efficiency (RE)
 #'   myre <- re(od = myod1, subod= myod2)
 #'   myre$out # RE = 0.90
 #'
-#' # unconstrained optimal design of 3-level CRT #----------
+#' # Unconstrained optimal design of 3-level CRT #----------
 #'   myod1 <- od.3(icc2 = 0.2, icc3 = 0.1, r12 = 0.5, r22 = 0.5, r32 = 0.5,
 #'              c1 = 1, c2 = 5, c3 = 25, c1t = 1, c2t = 50, c3t = 250,
 #'              varlim = c(0.005, 0.025))
-#' # constrained optimal design with J = 20
+#' # Constrained optimal design with J = 20
 #'   myod2 <- od.3(icc2 = 0.2, icc3 = 0.1, r12 = 0.5, r22 = 0.5, r32 = 0.5, J = 20,
 #'              c1 = 1, c2 = 5, c3 = 25, c1t = 1, c2t = 50, c3t = 250,
 #'              varlim = c(0, 0.025))
-#' # relative efficiency (RE)
+#' # Relative efficiency (RE)
 #'   myre <- re(od = myod1, subod= myod2)
 #'   myre$out # RE = 0.53
 #'
-#' # unconstrained optimal design of 4-level CRT #---------
+#' # Unconstrained optimal design of 4-level CRT #---------
 #'   myod1 <- od.4(icc2 = 0.2, icc3 = 0.1, icc4 = 0.05, r12 = 0.5,
 #'               r22 = 0.5, r32 = 0.5, r42 = 0.5,
 #'               c1 = 1, c2 = 5, c3 = 25, c4 = 125,
 #'               c1t = 1, c2t = 50, c3t = 250, c4t = 2500,
 #'               varlim = c(0, 0.01))
-#' # constrained optimal design with p = 0.5
+#' # Constrained optimal design with p = 0.5
 #'   myod2 <- od.4(icc2 = 0.2, icc3 = 0.1, icc4 = 0.05, r12 = 0.5, p = 0.5,
 #'               r22 = 0.5, r32 = 0.5, r42 = 0.5,
 #'               c1 = 1, c2 = 5, c3 = 25, c4 = 125,
 #'               c1t = 1, c2t = 50, c3t = 250, c4t = 2500,
 #'               varlim = c(0, 0.01))
-#' # relative efficiency (RE)
+#' # Relative efficiency (RE)
 #'   myre <- re(od = myod1, subod= myod2)
 #'   myre$out # RE = 0.78
 #'

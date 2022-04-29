@@ -14,24 +14,28 @@ knitr::opts_chunk$set(
 )
 ```
 
-# updates (version 1.0.2)
+# Updates (version 1.2.0)
+## New features
+- Added functions od.2.221 and power.2.221, for optimal design and statistical power of two-level cluster-randomized trials (CRTs) probing mediation effects with cluster-level mediators under the Sobel test and joint significance test across different optimization methods (partial derivative, ant colony optimization).
+
+# Updates (version 1.0.2)
 - update references
 - update documentation for these functions
 
-# updates (version 1.0.0)
-- Add functions (od.1 and power.1) for individual randomized controlled trials 
-- Add functions (od.2m and power.2m) for two-level multisite randomized trials 
-- Add functions (od.3m and power.3m) for three-level multisite randomized trials 
-- Add functions (od.4m and power.4m) for four-level multisite randomized trials 
-- updated function 're' to include all the seven types of trials
+# Updates (version 1.0.0)
+- Added functions (od.1 and power.1) for individual randomized controlled trials 
+- Added functions (od.2m and power.2m) for two-level multisite randomized trials 
+- Added functions (od.3m and power.3m) for three-level multisite randomized trials 
+- Added functions (od.4m and power.4m) for four-level multisite randomized trials 
+- Updated function 're' to include all the seven types of trials
 
-# updates (version 0.7.3)
-- Add function 're' to calculate relative efficiency of two studies
-- Add functions (od.3 and power.3) for three-level cluster randomized trials 
-- Add functions (od.4 and power.4) for four-level cluster randomized trials 
-- Change license from GPL-2 to GPL-3
-- Add variance of treatment effect to output in 'od' functions
-- Add required sample size to the output in required budget calculation in 'power' functions 
+# Updates (version 0.7.3)
+- Added function 're' to calculate relative efficiency of two studies
+- Added functions (od.3 and power.3) for three-level cluster randomized trials 
+- Added functions (od.4 and power.4) for four-level cluster randomized trials 
+- Changed license from GPL-2 to GPL-3
+- Added variance of treatment effect to output in 'od' functions
+- Added required sample size to the output in required budget calculation in 'power' functions 
 
 # Initial release of odr (version 0.3.2)
 - Optimal design and statistical power for two-level group randomized trials.
