@@ -169,18 +169,18 @@ power.2 <- function(cost.model = TRUE, expr = NULL, constraint = NULL,
     p <- constraint$p
   }
   if (sum(sapply(list(icc, p, power, sig.level), function(x) {
-    NumberCheck(x) || any(0 > x | x >= 1)
+    NumberCheck(x) || any(0 > x | x > 1)
   })) >= 1) stop("'icc', 'p', 'power', and 'sig.level'
-                 must be numeric in (0, 1)")
+                 must be numeric in [0, 1]")
   if (sum(sapply(list(r12, r22), function(x) {
-    NumberCheck(x) || any(0 > x | x >= 1)
-  })) >= 1) stop("'r12', 'r22' must be numeric in [0, 1)")
+    NumberCheck(x) || any(0 > x | x > 1)
+  })) >= 1) stop("'r12', 'r22' must be numeric in [0, 1]")
   if (cost.model == TRUE){
    if (sum(sapply(list(c1, c2, c1t, c2t), function(x) {
-    NumberCheck(x) || x < 0})) >= 1)
-    stop("'c1', 'c2', 'c1t', 'c2t' must be numeric in [0, Inf)")
+    NumberCheck(x) })) >= 1)
+    stop("'c1', 'c2', 'c1t', 'c2t' must be numeric")
    if (NumberCheck(m))
-    stop("'m' must be numeric in [0, Inf)")
+    stop("'m' must be numeric")
    }
   if (NumberCheck(q) | q < 0)
    stop("'q' must be numeric in [0, 10e3]")

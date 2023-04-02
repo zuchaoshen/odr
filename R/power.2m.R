@@ -27,6 +27,7 @@
 #' @param c2 The cost of sampling one level-2 unit.
 #' @param p The proportion of level-1 units to be assigned to treatment.
 #' @param q The number of covariates at level 2.
+#' @param J The number of sites.
 #' @param mlim The range for searching the root of budget (\code{m}) numerically,
 #'     default is the costs sampling \code{Jlim} level-2 units
 #'     or c(4 * Jcost, 1e+10 * Jcost) with Jcost =
@@ -172,18 +173,18 @@ power.2m <- function(cost.model = TRUE, expr = NULL, constraint = NULL,
     p <- constraint$p
   }
   if (sum(sapply(list(icc, p, power, sig.level), function(x) {
-    NumberCheck(x) || any(0 > x | x >= 1)
+    NumberCheck(x) || any(0 > x | x > 1)
   })) >= 1) stop("'icc', 'p', 'power', and 'sig.level'
-                 must be numeric in (0, 1)")
+                 must be numeric in [0, 1]")
   if (sum(sapply(list(r12, r22m), function(x) {
-    NumberCheck(x) || any(0 > x | x >= 1)
-  })) >= 1) stop("'r12', and 'r22m' must be numeric in [0, 1)")
+    NumberCheck(x) || any(0 > x | x > 1)
+  })) >= 1) stop("'r12', and 'r22m' must be numeric in [0, 1]")
   if (cost.model == TRUE){
     if (sum(sapply(list(c1, c2, c1t), function(x) {
-      NumberCheck(x) || x < 0})) >= 1)
-      stop("'c1', 'c2', 'c1t' must be numeric in [0, Inf)")
+      NumberCheck(x)})) >= 1)
+      stop("'c1', 'c2', 'c1t' must be numeric")
     if (NumberCheck(m))
-      stop("'m' must be numeric in [0, Inf)")
+      stop("'m' must be numeric")
   }
   if (NumberCheck(q ) | q  < 0)
     stop("'q' must be numeric with q  >= 0")

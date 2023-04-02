@@ -81,15 +81,15 @@ od.2 <- function(n = NULL, p = NULL, icc = NULL, r12 = NULL, r22 = NULL,
     stop("All of 'icc', 'r12', 'r22', 'c1', 'c2',
          'c1t', 'c2t' must be specified")
   NumberCheck <- function(x) {!is.null(x) && !is.numeric(x)}
-  if (NumberCheck(icc) || any(0 >= icc | icc >= 1))
-    stop("'icc' must be numeric in (0, 1)")
+  if (NumberCheck(icc) || any(0 > icc | icc > 1))
+    stop("'icc' must be numeric in [0, 1]")
   if (sum(sapply(list(r12, r22), function(x) {
-    NumberCheck(x) || any(0 > x | x >= 1)
+    NumberCheck(x) || any(0 > x | x > 1)
   })) >= 1)
-    stop("'r12', 'r22' must be numeric in [0, 1)")
+    stop("'r12', 'r22' must be numeric in [0, 1]")
   if (sum(sapply(list(c1, c2, c1t, c2t), function(x) {
-    NumberCheck(x) || x < 0})) >= 1)
-    stop("'c1', 'c2', 'c1t', 'c2t' must be numeric in [0, inf)")
+    NumberCheck(x) })) >= 1)
+    stop("'c1', 'c2', 'c1t', 'c2t' must be numeric")
   if (!is.null(plot.by) && !is.list(plot.by))
     stop("'plot.by' must be in list format (e.g., plot.by = list(n = 'n'))")
   if (c1 == 0 && c1t == 0 && is.null(n) && is.null(p))

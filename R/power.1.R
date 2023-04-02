@@ -146,14 +146,11 @@ power.1 <- function(cost.model = TRUE, expr = NULL, constraint = NULL,
       stop("constrained 'p' must be numeric in (0, 1)")
     p <- constraint$p
   }
-  if (sum(sapply(list(p, power, sig.level), function(x) {
-    NumberCheck(x) || any(0 > x | x >= 1)
-  })) >= 1) stop("'p', 'power', and 'sig.level'
-                 must be numeric in (0, 1)")
-  if (sum(sapply(list(r12), function(x) {
-    NumberCheck(x) || any(0 > x | x >= 1)
-  })) >= 1) stop("'r12' must be numeric in [0, 1)")
-  if (cost.model == TRUE){
+  if (sum(sapply(list(p, power, r12, sig.level), function(x) {
+    NumberCheck(x) || any(0 > x | x > 1)
+  })) >= 1) stop("'p', 'power', 'r12', and 'sig.level'
+                 must be numeric in [0, 1]")
+   if (cost.model == TRUE){
    if (sum(sapply(list(c1, c1t), function(x) {
     NumberCheck(x) || x < 0})) >= 1)
     stop("'c1', 'c1t' must be numeric in [0, Inf)")

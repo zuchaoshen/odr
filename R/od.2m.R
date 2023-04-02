@@ -94,16 +94,16 @@ od.2m <- function(n = NULL, p = NULL, icc = NULL,
     stop("All of 'icc', 'r12', 'r22m',
          'c1', 'c2', 'c1t', and 'omega' must be specified")
   if (sum(sapply(list(icc), function(x) {
-    NumberCheck(x) || any(0 >= x | x >= 1)
+    NumberCheck(x) || any(0 > x | x > 1)
   })) >= 1)
-    stop("'icc' must be numeric in (0, 1)")
-    if (sum(sapply(list(r12, r22m, omega), function(x) {
-    NumberCheck(x) || any(0 > x | x >= 1)
+    stop("'icc' must be numeric in [0, 1]")
+    if (sum(sapply(list(r12, r22m), function(x) {
+    NumberCheck(x) || any(0 > x | x > 1)
   })) >= 1)
-    stop("'r12', 'r22m', and 'omega' must be numeric in [0, 1)")
+    stop("'r12' and 'r22m' must be numeric in [0, 1]")
   if (sum(sapply(list(c1, c2, c1t), function(x) {
-    NumberCheck(x) || x < 0})) >= 1)
-    stop("'c1', 'c2', and 'c1t' must be numeric in [0, inf)")
+    NumberCheck(x)})) >= 1)
+    stop("'c1', 'c2', and 'c1t' must be numeric")
   if (!is.null(plot.by) && !is.list(plot.by))
     stop("'plot.by' must be in list format (e.g., plot.by = list(n = 'n'))")
   if (!is.numeric(iter) || iter < 2)
@@ -157,7 +157,7 @@ od.2m <- function(n = NULL, p = NULL, icc = NULL,
     } else {
       pp[i] <- p
     }
-    n <- eval(n.expr); nn[i] <- n
+    nn[i] <- eval(n.expr); n <- nn[i]
   }
   if (!is.null(par$n) && !is.null(par$p)) {
     cat("===============================\n",

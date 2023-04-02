@@ -18,7 +18,7 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 <!-- badges: end -->
 
-The goal of *odr* is to help design efficient and well-powered multilevel experiments. We achieve this goal through three sets of functions. The *od* functions calculate the optimal sample size allocation by leveraging sampling cost information and other design parameters across levels and treatment conditions. The *re* function compares the relative efficiency across sample allocations. The *power* functions perform power analysis with and without accommodating cost and budget.
+The goal of *odr* is to help design efficient and well-powered multilevel experiments detecting main, moderation, and mediation effects. We achieve this goal through three sets of functions. The *od* functions calculate the optimal sample size allocation by leveraging sampling cost information and other design parameters across levels and treatment conditions. The *re* function compares the relative efficiency across sample allocations (mainly for main effects). The *power* functions perform power analysis with and without accommodating costs and budget.
 
 ## Installation
 
@@ -30,7 +30,8 @@ install.packages("odr")
 
 ## Example
 
-This is a basic example which shows you how to solve a common problem:
+This is a basic example that shows how to identify optimal sample allocation
+for two-level cluster-randomized trials detecting main effects.
 
 ```{r example}
 library(odr)

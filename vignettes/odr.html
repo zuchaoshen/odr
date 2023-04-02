@@ -10,31 +10,44 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-<meta name="author" content="Zuchao Shen, Benjamin Kelcey, Walter Leite" />
+<meta name="author" content="Zuchao Shen &amp; Benjamin Kelcey" />
 
-<meta name="date" content="2021-08-23" />
+<meta name="date" content="2023-04-02" />
 
 <title>Package ‘odr’</title>
 
-<script src="data:application/javascript;base64,Ly8gUGFuZG9jIDIuOSBhZGRzIGF0dHJpYnV0ZXMgb24gYm90aCBoZWFkZXIgYW5kIGRpdi4gV2UgcmVtb3ZlIHRoZSBmb3JtZXIgKHRvCi8vIGJlIGNvbXBhdGlibGUgd2l0aCB0aGUgYmVoYXZpb3Igb2YgUGFuZG9jIDwgMi44KS4KZG9jdW1lbnQuYWRkRXZlbnRMaXN0ZW5lcignRE9NQ29udGVudExvYWRlZCcsIGZ1bmN0aW9uKGUpIHsKICB2YXIgaHMgPSBkb2N1bWVudC5xdWVyeVNlbGVjdG9yQWxsKCJkaXYuc2VjdGlvbltjbGFzcyo9J2xldmVsJ10gPiA6Zmlyc3QtY2hpbGQiKTsKICB2YXIgaSwgaCwgYTsKICBmb3IgKGkgPSAwOyBpIDwgaHMubGVuZ3RoOyBpKyspIHsKICAgIGggPSBoc1tpXTsKICAgIGlmICghL15oWzEtNl0kL2kudGVzdChoLnRhZ05hbWUpKSBjb250aW51ZTsgIC8vIGl0IHNob3VsZCBiZSBhIGhlYWRlciBoMS1oNgogICAgYSA9IGguYXR0cmlidXRlczsKICAgIHdoaWxlIChhLmxlbmd0aCA+IDApIGgucmVtb3ZlQXR0cmlidXRlKGFbMF0ubmFtZSk7CiAgfQp9KTsK"></script>
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
 
 <style type="text/css">
-  code{white-space: pre-wrap;}
-  span.smallcaps{font-variant: small-caps;}
-  span.underline{text-decoration: underline;}
-  div.column{display: inline-block; vertical-align: top; width: 50%;}
-  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-  ul.task-list{list-style: none;}
-    </style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
 
 
 <style type="text/css">
-  code {
-    white-space: pre;
-  }
-  .sourceCode {
-    overflow: visible;
-  }
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
 </style>
 <style type="text/css" data-origin="pandoc">
 pre > code.sourceCode { white-space: pre; position: relative; }
@@ -52,55 +65,54 @@ pre > code.sourceCode { white-space: pre-wrap; }
 pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
-  { counter-reset: source-line 0; }
+{ counter-reset: source-line 0; }
 pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
+{ position: relative; left: -4em; counter-increment: source-line; }
 pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-    color: #aaaaaa;
-  }
-pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
 div.sourceCode
-  {   }
+{ }
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
-code span.al { color: #ff0000; font-weight: bold; } /* Alert */
-code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-code span.at { color: #7d9029; } /* Attribute */
-code span.bn { color: #40a070; } /* BaseN */
-code span.bu { } /* BuiltIn */
-code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-code span.ch { color: #4070a0; } /* Char */
-code span.cn { color: #880000; } /* Constant */
-code span.co { color: #60a0b0; font-style: italic; } /* Comment */
-code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-code span.do { color: #ba2121; font-style: italic; } /* Documentation */
-code span.dt { color: #902000; } /* DataType */
-code span.dv { color: #40a070; } /* DecVal */
-code span.er { color: #ff0000; font-weight: bold; } /* Error */
-code span.ex { } /* Extension */
-code span.fl { color: #40a070; } /* Float */
-code span.fu { color: #06287e; } /* Function */
-code span.im { } /* Import */
-code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-code span.kw { color: #007020; font-weight: bold; } /* Keyword */
-code span.op { color: #666666; } /* Operator */
-code span.ot { color: #007020; } /* Other */
-code span.pp { color: #bc7a00; } /* Preprocessor */
-code span.sc { color: #4070a0; } /* SpecialChar */
-code span.ss { color: #bb6688; } /* SpecialString */
-code span.st { color: #4070a0; } /* String */
-code span.va { color: #19177c; } /* Variable */
-code span.vs { color: #4070a0; } /* VerbatimString */
-code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
 </style>
 <script>
 // apply pandoc div.sourceCode style to pre.sourceCode instead
@@ -109,13 +121,20 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   for (var i = 0; i < sheets.length; i++) {
     if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
     try { var rules = sheets[i].cssRules; } catch (e) { continue; }
-    for (var j = 0; j < rules.length; j++) {
+    var j = 0;
+    while (j < rules.length) {
       var rule = rules[j];
       // check if there is a div.sourceCode rule
-      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
       var style = rule.style.cssText;
       // check if color or background-color is set
-      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
       // replace div.sourceCode by a pre.sourceCode rule
       sheets[i].deleteRule(j);
       sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
@@ -127,7 +146,187 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 
 
-<link rel="stylesheet" href="data:text/css,body%20%7B%0Abackground%2Dcolor%3A%20%23fff%3B%0Amargin%3A%201em%20auto%3B%0Amax%2Dwidth%3A%20700px%3B%0Aoverflow%3A%20visible%3B%0Apadding%2Dleft%3A%202em%3B%0Apadding%2Dright%3A%202em%3B%0Afont%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0Afont%2Dsize%3A%2014px%3B%0Aline%2Dheight%3A%201%2E35%3B%0A%7D%0A%23TOC%20%7B%0Aclear%3A%20both%3B%0Amargin%3A%200%200%2010px%2010px%3B%0Apadding%3A%204px%3B%0Awidth%3A%20400px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Aborder%2Dradius%3A%205px%3B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Afont%2Dsize%3A%2013px%3B%0Aline%2Dheight%3A%201%2E3%3B%0A%7D%0A%23TOC%20%2Etoctitle%20%7B%0Afont%2Dweight%3A%20bold%3B%0Afont%2Dsize%3A%2015px%3B%0Amargin%2Dleft%3A%205px%3B%0A%7D%0A%23TOC%20ul%20%7B%0Apadding%2Dleft%3A%2040px%3B%0Amargin%2Dleft%3A%20%2D1%2E5em%3B%0Amargin%2Dtop%3A%205px%3B%0Amargin%2Dbottom%3A%205px%3B%0A%7D%0A%23TOC%20ul%20ul%20%7B%0Amargin%2Dleft%3A%20%2D2em%3B%0A%7D%0A%23TOC%20li%20%7B%0Aline%2Dheight%3A%2016px%3B%0A%7D%0Atable%20%7B%0Amargin%3A%201em%20auto%3B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dcolor%3A%20%23DDDDDD%3B%0Aborder%2Dstyle%3A%20outset%3B%0Aborder%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0Aborder%2Dwidth%3A%202px%3B%0Apadding%3A%205px%3B%0Aborder%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dstyle%3A%20inset%3B%0Aline%2Dheight%3A%2018px%3B%0Apadding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0Aborder%2Dleft%2Dstyle%3A%20none%3B%0Aborder%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Ap%20%7B%0Amargin%3A%200%2E5em%200%3B%0A%7D%0Ablockquote%20%7B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Apadding%3A%200%2E25em%200%2E75em%3B%0A%7D%0Ahr%20%7B%0Aborder%2Dstyle%3A%20solid%3B%0Aborder%3A%20none%3B%0Aborder%2Dtop%3A%201px%20solid%20%23777%3B%0Amargin%3A%2028px%200%3B%0A%7D%0Adl%20%7B%0Amargin%2Dleft%3A%200%3B%0A%7D%0Adl%20dd%20%7B%0Amargin%2Dbottom%3A%2013px%3B%0Amargin%2Dleft%3A%2013px%3B%0A%7D%0Adl%20dt%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Aul%20%7B%0Amargin%2Dtop%3A%200%3B%0A%7D%0Aul%20li%20%7B%0Alist%2Dstyle%3A%20circle%20outside%3B%0A%7D%0Aul%20ul%20%7B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Apre%2C%20code%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0Aborder%2Dradius%3A%203px%3B%0Acolor%3A%20%23333%3B%0Awhite%2Dspace%3A%20pre%2Dwrap%3B%20%0A%7D%0Apre%20%7B%0Aborder%2Dradius%3A%203px%3B%0Amargin%3A%205px%200px%2010px%200px%3B%0Apadding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Acode%20%7B%0Afont%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0Afont%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0Apadding%3A%202px%200px%3B%0A%7D%0Adiv%2Efigure%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Apadding%3A%202px%3B%0Aborder%3A%201px%20solid%20%23DDDDDD%3B%0Aborder%2Dradius%3A%203px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Amargin%3A%200%205px%3B%0A%7D%0Ah1%20%7B%0Amargin%2Dtop%3A%200%3B%0Afont%2Dsize%3A%2035px%3B%0Aline%2Dheight%3A%2040px%3B%0A%7D%0Ah2%20%7B%0Aborder%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%202px%3B%0Afont%2Dsize%3A%20145%25%3B%0A%7D%0Ah3%20%7B%0Aborder%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Afont%2Dsize%3A%20120%25%3B%0A%7D%0Ah4%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0Amargin%2Dleft%3A%208px%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Ah5%2C%20h6%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23ccc%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Aa%20%7B%0Acolor%3A%20%230033dd%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Aa%3Ahover%20%7B%0Acolor%3A%20%236666ff%3B%20%7D%0Aa%3Avisited%20%7B%0Acolor%3A%20%23800080%3B%20%7D%0Aa%3Avisited%3Ahover%20%7B%0Acolor%3A%20%23BB00BB%3B%20%7D%0Aa%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0Aa%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%0A" type="text/css" />
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
 
 
 
@@ -140,38 +339,217 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 
 <h1 class="title toc-ignore">Package ‘odr’</h1>
-<h4 class="author">Zuchao Shen, Benjamin Kelcey, Walter Leite</h4>
-<h4 class="date">2021-08-23</h4>
+<h4 class="author">Zuchao Shen &amp; Benjamin Kelcey</h4>
+<h4 class="date">2023-04-02</h4>
 
 
 
-<p>The costs of sampling each additional unit in multilevel experimental studies vary across levels of hierarchy and treatment conditions due to the hierarchical sampling and the delivery of treatment. This package is a tool to optimize the designs of multilevel experimental studies such that the variances of treatment effects are minimized under a fixed budget and cost structure, or the budget is minimized to achieve same level design precision or statistical power. The optimal sample allocation or optimal design parameters include</p>
+<p>The costs of sampling each additional unit in multilevel experimental
+studies vary across levels of hierarchy and treatment conditions due to
+the hierarchical sampling and the delivery of treatment. This package is
+a tool to identify the optimal sample allocation in experimental studies
+such that statistical power is maximized under a fixed budget. The
+current version covers designs detecting main and mediation effects.</p>
+<div id="optimal-design-parameters" class="section level1">
+<h1>1. Optimal Design Parameters</h1>
+<p>Optimal design parameters in an optimal sample allocation include</p>
 <ul>
-<li>the optimal sample sizes at each of the levels except the top level because the top-level sample size will be determined by total budget or power once all other parameters are decided</li>
-<li>proportion of units to be assigned to the treatment condition at the level of randomization</li>
+<li>the optimal sample sizes at each of the levels except the top level
+because the top-level sample size will be determined by total budget or
+power once all other parameters are decided, and</li>
+<li>the proportion of units to be assigned to the treatment condition at
+the level of randomization.</li>
 </ul>
-<p>This package includes three categorical of functions and they are</p>
-<ul>
-<li><p><em>od</em> function: This function calculates optimal sample allocation parameters with and without constraint(s). For each type of multilevel experimental studies, there is an additional number (and/or additional letter) to be added to the general function name. For example, the function for two-level cluster randomized trials is <em>od.2</em>, the function for two-level multisite randomized trials is <em>od.2m</em>, the function for single-level experiments assessing mediation effects is <em>od.1.m</em>.</p></li>
-<li><p><em>power</em> function: This function performs power analyses with and without accommodating cost structures of sampling. For power analysis accommodating cost structures, depending on which one parameter is left, the function calculates required budget (and sample size), statistical power, and minimum detectable effect size. For conventional power analysis without accommodating cost structures of sampling, this function calculates required sample size, statistical power, and minimum detectable effect size. For each type of multilevel experimental studies, there is an additional number (and/or additional letter) to be added to the general function name. For example, the function for two-level cluster randomized trials is <em>power.2</em>, the function for two-level multisite randomized trials is <em>power.2m</em>, the function for single-level experiments assessing mediation effects is <em>power.1.m</em>.</p></li>
-<li><p><em>re</em> function: This function calculates relative efficiency values between two designs. An alternative name for this function is <em>rpe</em> that stands for “relative precision and efficiency”.</p></li>
-</ul>
+<p>Researchers can fix one or more of the optimal design parameters for
+constrained optimal sample allocation and solve for the remainder of
+optimal design parameters.</p>
+</div>
+<div id="designs-detecting-main-effects" class="section level1">
+<h1>2. Designs Detecting Main Effects</h1>
+<div id="designs-and-functions" class="section level2">
+<h2>Designs and Functions</h2>
+<table>
+<caption>Functions for Designs Detecting Main Effects</caption>
+<thead>
+<tr class="header">
+<th align="left">Design</th>
+<th align="left">OD Function</th>
+<th align="left">Power Function</th>
+<th align="left">RE Function</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Simple Experiments</td>
+<td align="left">od.1</td>
+<td align="left">power.1</td>
+<td align="left">re</td>
+</tr>
+<tr class="even">
+<td align="left">2-Level CRTs</td>
+<td align="left">od.2</td>
+<td align="left">power.2</td>
+<td align="left">re</td>
+</tr>
+<tr class="odd">
+<td align="left">2-Level MRTs</td>
+<td align="left">od.2m</td>
+<td align="left">power.2m</td>
+<td align="left">re</td>
+</tr>
+<tr class="even">
+<td align="left">3-Level CRTs</td>
+<td align="left">od.3</td>
+<td align="left">power.3</td>
+<td align="left">re</td>
+</tr>
+<tr class="odd">
+<td align="left">3-Level MRTs</td>
+<td align="left">od.3m</td>
+<td align="left">power.3m</td>
+<td align="left">re</td>
+</tr>
+<tr class="even">
+<td align="left">4-Level CRTs</td>
+<td align="left">od.4</td>
+<td align="left">power.4</td>
+<td align="left">re</td>
+</tr>
+<tr class="odd">
+<td align="left">4-Level MRTs</td>
+<td align="left">od.4m</td>
+<td align="left">power.4m</td>
+<td align="left">re</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="rules-for-function-names" class="section level2">
+<h2>Rules for Function Names</h2>
+<p>For experiments detecting main effects, this package includes three
+categorical of functions and they are <em>od</em>, <em>power</em>, and
+<em>re</em>. For <em>od</em> and <em>power</em> functions, if a function
+name follows .# (e.g., od.2), this function is for #-level designs with
+treatment assignment at the top level (# in 1, 2, 3, 4). If a function
+name follows .#m (e.g., od.2m), this function is for #-level
+multisite-randomized trials.</p>
+</div>
+<div id="functions" class="section level2">
+<h2>Functions</h2>
+<div id="od-function" class="section level3">
+<h3><em>od</em> function</h3>
+<p>This function calculates optimal sample allocation parameters with
+and without constraint(s). For each type of multilevel experimental
+studies, there is an additional number (and one additional letter m) to
+be added to the general function name. For example, the function for
+two-level cluster randomized trials is <em>od.2</em>, the function for
+two-level multisite randomized trials is <em>od.2m</em>.</p>
+</div>
+<div id="power-function" class="section level3">
+<h3><em>power</em> function</h3>
+<p>This function performs power analyses with and without accommodating
+cost structures of sampling. For power analysis accommodating cost
+structures, depending on which one parameter is left, the function
+calculates required budget (and sample size), statistical power, and
+minimum detectable effect size. For conventional power analysis without
+accommodating cost structures of sampling, this function calculates
+required sample size, statistical power, and minimum detectable effect
+size. For each type of experiments, there is an additional number (and
+an additional letter m) to be added to the general function name. For
+example, the function for two-level cluster randomized trials is
+<em>power.2</em>, the function for two-level multisite randomized trials
+is <em>power.2m</em>.</p>
+</div>
+<div id="re-function" class="section level3">
+<h3><em>re</em> function</h3>
+<p>This function calculates relative efficiency values between two
+designs. An alternative name for this function is <em>rpe</em> that
+stands for “relative precision and efficiency”.</p>
+</div>
+</div>
+</div>
+<div id="designs-detecting-mediation-effects" class="section level1">
+<h1>3. Designs Detecting Mediation Effects</h1>
+<div id="designs-and-functions-1" class="section level2">
+<h2>Designs and Functions</h2>
+<table>
+<caption>Functions for Designs Detecting Mediation Effects (In
+Preparation)</caption>
+<thead>
+<tr class="header">
+<th align="left">Design</th>
+<th align="left">OD Function</th>
+<th align="left">Power Function</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Simple Experiments</td>
+<td align="left">od.1.111</td>
+<td align="left">power.1.111</td>
+</tr>
+<tr class="even">
+<td align="left">2-Level CRTs</td>
+<td align="left">od.2.221</td>
+<td align="left">power.2.221</td>
+</tr>
+<tr class="odd">
+<td align="left">2-Level MRTs</td>
+<td align="left">od.2m.111</td>
+<td align="left">power.2m.111</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="rules-for-function-names-1" class="section level2">
+<h2>Rules for Function Names</h2>
+<p>There are two categories of functions for designs detecting mediation
+effects. They are <em>od</em> and <em>power</em> functions. The function
+names follow additional rules as these functions will add additional
+numbers to represent the levels of the treatment assignment, the
+mediator and the outcome. For example, <em>od.2.221</em> is the
+<em>od</em> function for two-level cluster-randomized trials (.2) with
+the treatment assignment and the mediator at the level two, and the
+outcome at the level 1 (.221). <em>od.2m.111</em> is the <em>od</em>
+function for two-level multisite-randomized trials (.2m) with the
+treatment assignment, the mediator, and the outcome at the level one
+(.111).</p>
+</div>
+<div id="functions-1" class="section level2">
+<h2>Functions</h2>
+<p>There are two categorical functions for designs detecting mediation
+effects and they are <em>od</em> and <em>power</em>. <em>od</em>
+function can calculate optimal design parameters with and without a
+constraint(s). <em>power</em> function can perform power analysis.</p>
+</div>
+</div>
+<div id="examples-for-main-effects" class="section level1">
+<h1>4. Examples for Main Effects</h1>
 <div id="function-od" class="section level2">
-<h2>1. Function <em>od</em></h2>
-<p>Given cost structure (i.e., the costs of sampling each unit at different levels and treatment conditions), this function solves the optimal sample allocation with and without constraints.</p>
-<p>To solve the optimal sample allocation of a two-level cluster-randomized trial, we need the following information</p>
+<h2>Function <em>od</em></h2>
+<p>Given cost structure (i.e., the costs of sampling each unit at
+different levels and treatment conditions), this function solves the
+optimal sample allocation with and without constraints.</p>
+<p>To solve the optimal sample allocation of a two-level
+cluster-randomized trial, we need the following information</p>
 <ul>
 <li>icc: intraclass correlation coefficient</li>
-<li>r12: the proportion of level-one outcome variance explained by covariates</li>
-<li>r22: the proportion of level-two outcome variance explained by covariates</li>
-<li>c1: the cost of sampling each additional level-one unit in the control condition</li>
-<li>c2: the cost of sampling each additional level-two unit in the control condition</li>
-<li>c1t: the cost of sampling each additional level-one unit in the experimental condition</li>
-<li>c2t: the cost of sampling each additional level-two unit in the experimental condition</li>
-<li>m: a total fixed budget used to plot the variance curves, default value is the cost of sampling 60 level-two units across treatment conditions.</li>
+<li>r12: the proportion of level-one outcome variance explained by
+covariates</li>
+<li>r22: the proportion of level-two outcome variance explained by
+covariates</li>
+<li>c1: the cost of sampling each additional level-one unit in the
+control condition</li>
+<li>c2: the cost of sampling each additional level-two unit in the
+control condition</li>
+<li>c1t: the cost of sampling each additional level-one unit in the
+experimental condition</li>
+<li>c2t: the cost of sampling each additional level-two unit in the
+experimental condition</li>
+<li>m: a total fixed budget used to plot the variance curves, default
+value is the cost of sampling 60 level-two units across treatment
+conditions.</li>
 </ul>
-<div id="examples" class="section level3">
-<h3>1.1 Examples</h3>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(odr)</span></code></pre></div>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a> <span class="co"># unconstrained optimal design</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>myod1 <span class="ot">&lt;-</span> <span class="fu">od.2</span>(<span class="at">icc =</span> <span class="fl">0.2</span>, <span class="at">r12 =</span> <span class="fl">0.5</span>, <span class="at">r22 =</span> <span class="fl">0.5</span>, <span class="at">c1 =</span> <span class="dv">1</span>, <span class="at">c2 =</span> <span class="dv">5</span>, <span class="at">c1t =</span> <span class="dv">1</span>, <span class="at">c2t =</span> <span class="dv">50</span>, </span>
@@ -206,10 +584,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ## ===============================
 ## The constrained level-1 sample size per level-2 unit (n) is 20.
 ## The constrained proportion of level-2 units in treatment (p) is 0.5.</code></pre>
-</div>
-<div id="examples-for-other-types-of-trials" class="section level3">
-<h3>1.2 Examples for other types of trials</h3>
-<p>Please see examples in corresponding functions by uncommenting below lines.</p>
+<p>Please see additional examples in corresponding functions by
+uncommenting below lines.</p>
 <div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ?od.1 </span></span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="co"># ?od.3</span></span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="co"># ?od.4</span></span>
@@ -217,13 +593,24 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="co"># ?od.3m</span></span>
 <span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="co"># ?od.4m</span></span></code></pre></div>
 </div>
-</div>
 <div id="function-power" class="section level2">
-<h2>2. Function <em>power</em></h2>
-<p>This function by default can perform power analyses accommodating cost structures (i.e., cost.model = TRUE), one of ‘power’, ‘m’, and ‘d’ must be NULL. For example, if ‘power’ is NULL, the function calculates statistical power under a fixed budget and cost structure; if ‘d’ is NULL, the function calculates minimum detectable effect size (i.e., d) under a fixed budget and desired power level; if ‘m’ is NULL, the function calculate required budget (and required sample size) to achieve desired power level to detect a treatment effect.</p>
-<p>This function also can conduct conventional power analysis or power analysis without accommodating cost structures by specifying cost.model = FALSE, the conventional power analyses include statistical power calculation, minimum detectable effect size calculation, and required sample size calculation.</p>
+<h2>Function <em>power</em></h2>
+<p>This function by default can perform power analyses accommodating
+cost structures (i.e., cost.model = TRUE), one of ‘power’, ‘m’, and ‘d’
+must be NULL. For example, if ‘power’ is NULL, the function calculates
+statistical power under a fixed budget and cost structure; if ‘d’ is
+NULL, the function calculates minimum detectable effect size (i.e., d)
+under a fixed budget and desired power level; if ‘m’ is NULL, the
+function calculate required budget (and required sample size) to achieve
+desired power level to detect a treatment effect.</p>
+<p>This function also can conduct conventional power analysis or power
+analysis without accommodating cost structures by specifying cost.model
+= FALSE, the conventional power analyses include statistical power
+calculation, minimum detectable effect size calculation, and required
+sample size calculation.</p>
 <div id="examples-of-power-analyses-accommodating-cost-structures-cost.model-true" class="section level3">
-<h3>2.1 Examples of power analyses accommodating cost structures (cost.model = TRUE)</h3>
+<h3>Examples of power analyses accommodating cost structures (cost.model
+= TRUE)</h3>
 <div id="required-budget-for-desired-power" class="section level6">
 <h6>Required budget for desired power</h6>
 <ul>
@@ -232,7 +619,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>mym <span class="ot">&lt;-</span> <span class="fu">power.2</span>(<span class="at">expr =</span> myod1, <span class="at">d =</span> <span class="fl">0.3</span>, <span class="at">q =</span> <span class="dv">1</span>, <span class="at">power =</span> <span class="fl">0.8</span>)</span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="co"># mym$out  # m =1702, J = 59</span></span></code></pre></div>
 <ul>
-<li>Effects on required budget to maintain same level power when designs depart from the optimal one</li>
+<li>Effects on required budget to maintain same level power when designs
+depart from the optimal one</li>
 </ul>
 <div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>figure <span class="ot">&lt;-</span> <span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>budget <span class="ot">&lt;-</span> <span class="cn">NULL</span></span>
@@ -261,7 +649,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>mypower <span class="ot">&lt;-</span> <span class="fu">power.2</span>(<span class="at">expr =</span> myod1, <span class="at">q =</span> <span class="dv">1</span>, <span class="at">d =</span> <span class="fl">0.3</span>, <span class="at">m =</span> <span class="dv">1702</span>)</span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="co"># mypower$out  # power = 0.80</span></span></code></pre></div>
 <ul>
-<li>Effects on power under same budget when designs depart from the optimal one</li>
+<li>Effects on power under same budget when designs depart from the
+optimal one</li>
 </ul>
 <div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>figure <span class="ot">&lt;-</span> <span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span> (<span class="dv">1</span>, <span class="dv">2</span>))</span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>pwr <span class="ot">&lt;-</span> <span class="cn">NULL</span></span>
@@ -293,7 +682,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="co">#                     n = 9, p = 0.33, d = 0.3, q = 1, power = 0.8)</span></span>
 <span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a><span class="co"># mymdes$out  # d = 0.30</span></span></code></pre></div>
 <ul>
-<li>Effects on minimum detectable effect size under same budget when designs depart from the optimal one</li>
+<li>Effects on minimum detectable effect size under same budget when
+designs depart from the optimal one</li>
 </ul>
 <div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>figure <span class="ot">&lt;-</span> <span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span> (<span class="dv">1</span>, <span class="dv">2</span>))</span>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>MDES <span class="ot">&lt;-</span> <span class="cn">NULL</span></span>
@@ -316,7 +706,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 </div>
 <div id="examples-of-conventional-power-analyses-cost.model-false" class="section level3">
-<h3>2.2 Examples of conventional power analyses (cost.model = FALSE)</h3>
+<h3>Examples of conventional power analyses (cost.model = FALSE)</h3>
 <div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Required level-2 sample size calculation</span></span>
 <span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>myJ <span class="ot">&lt;-</span> <span class="fu">power.2</span>(<span class="at">cost.model =</span> <span class="cn">FALSE</span>, <span class="at">expr =</span> myod1, <span class="at">d =</span> <span class="fl">0.3</span>, <span class="at">q =</span> <span class="dv">1</span>, <span class="at">power =</span> <span class="fl">0.8</span>)</span>
 <span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="co"># above experssion takes parameters and outputs from od.2 function. Equivalently, each parameter can be explicitly specified.</span></span>
@@ -337,7 +727,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ## [1] 0.2999819</code></pre>
 </div>
 <div id="examples-of-conventional-power-curves" class="section level3">
-<h3>2.3 Examples of conventional power curves</h3>
+<h3>Examples of conventional power curves</h3>
 <div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>figure <span class="ot">&lt;-</span> <span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span> (<span class="dv">1</span>, <span class="dv">2</span>))</span>
 <span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>pwr <span class="ot">&lt;-</span> <span class="cn">NULL</span></span>
 <span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>mrange <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">300</span><span class="sc">:</span><span class="dv">3000</span>)</span>
@@ -357,9 +747,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAqAAAAFQCAMAAABXmDxzAAAAaVBMVEUAAAAAADoAAGYAAP8AOjoAOpAAZrY6AAA6ADo6AGY6Ojo6kNtmAABmADpmZmZmkJBmtrZmtv+QOgCQZgCQkGaQtpCQ2/+2ZgC2tma225C2/7a2///bkDrb////tmb/25D//7b//9v////2jO9NAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAQ90lEQVR4nO2dDXujuBVGPbNNsm3S7iZtx22HIQn//0cWIT4dA0K6V3qF3vM8nXpjuBLXB/RhLC4NIcBcUleAkC0oKIGGghJoKCiBhoISaCgogYaCEmgoKIGGghJoKCiBhoISaCgogYaCEmgoKIGGghJoKCiBhoISaCgogYaCEmgoKIGGghJoKCiBhoISaCgogYaCEmgoKIGGghJoKCiBhoISaCgogYaCEmgoKIGGghJoKCiBhoISaCgogYaCEmgoKIGGghJoKCiBhoISaCgogYaCEmgoKIGGghJoKCiBhoISaCgogYaCEmgoKIGGghJoKCiBhoISaCgogYaCEmgoKIGGghJoKCiBhoISaCgogYaCEmgoKIGGghJoKCiBhoISaCgogYaCEmgoKIGGghJoKCiBhoISaCgogYaCEmgoKIGGghJoKCiBhoISaIQFvZwW2Twxn84ZEE6obDgcUgmaplh9KKgwFFQWCioMBZWlGEF/i1ROeYLqZpaCCkNBZYks6PHBmRTnFDRdPidOJahWuH3OKWjqYg0UVAQKqgUFzYryBNWFggpDQWWhoMJQUFmKEVSrp3Q7jC5PUJXMHs8nBV2yNr9DQQO5ySoFPcrOxCMF9SbshKegzbaZw0bh5fiQtaBbiaWgLhz4soaCHmE/scUI6svRLxLLE9QXt7xS0HW8vuSmoPscSSwFvY/3DRgUdJPDeS1GUPeeUtjdQeUJ6pxZr7RS0CXBd65R0BU880pBJ0Tuq6SgdwhILAW1iN30S0FvCEwsBW0E2vV5LKlAWRRr2BQ0OLHFCLqK8O8lyhN0DZlGSUnQ6+Xy+PnWVvBVJJwa8r/m0TmwXPI5IZVXHUGrh19tTh+b5uPlWSCcEiq/NVM5sDzyOSNBl+lIiZ9vbRrrbz8am9rQcCJ86Skp/RJSIyhiPiduMyt73qsI+vHStkT195/N8G9YOBGWadT7na5GXMR8TtxmVjZ6iVdQ1Z+Rl30FlU+sch+0S21wOAnGNCovcqDbB8XJ58QkqEZmixnF92lUX4OjvFH8IGjiPn0WszF7hUZYIabUeVCt1BYkaJwFjMoUVC+12oJWKKPOWOtrKZcCk8952ZqpjXwFTbUa2+VyzrWZAFa3U85sEU28+fzOKWjqYhv1zBYgqL28UFCNUvUzqyRoNyXSstJjipjQofXLW1CcfM7LjJFZpYn6Sz+fXF/STixPnbOsBYXJ57zEOJnV+6rTkvSruRRjB7WvOi0oX3VGy6zezSKWhDc3pBnaqt0sYgG5WSRecee9giaaeSniChpziCu+oaEavjNO1mf6cvnMvA+aOp+LspaFZdgHNY2SHXWunO/aCb3TumctaOp8Lkq6LSpLQWOHuwl+J3regsIUeye1FPRo6Lu9TwoqUUr8zJ5O0LWxOwXVKoSCHoqb+sbI8wqaJrXnEjTlXT1DFc5aLPqB5SBoej3xP0fYAkLLxRd0+/LJPmhQ+I347IM6RtwOSUG1olNQt4A7ESmoVnAK6hJut/tJQb1DJz31zyGow+iIgmpFRhN0dXELnXJdYiGM3gcOVwUvn3ECS5c/bji7OTFGuQ6hUudwweHKwOVzETZ5bj2a+LV7ZnXK3Y+UPIcLjtcGLJ/6UXWqMLuCXnZ+wCVa7m4gx0iwfVCwfB4PitYHjVzuThjnOLCC4hYLcernLeiB5p2CHo3oGhJP0LZRevh1DRt7iiT0SPcTWFCYfM7joZz6PoOkbz+qh1+ry/kLl7sR4tDwCFdQlHz6hkMT1Mzbmd8Wrq2zth1FbrErsNH7gNc8KEI+F2FFowXhNw9qEho2OxKcAlA//eZBAfKpFiwQ/yvodfUXhqLlru2PlMQ53lfQtPnUihWMdx+0Wl0uXbbcld0P74/eB02bz5BQaH3Qfmq5eyhKhHLv7318d1xBAfIZFAlP0Kjl3tvXp30HFhSqWLRTP0NB/bqfFFQrDpqgbYP0GLHcr3v67QoraOp8BodBE3S4uyGs0+SdUNjhe8/x6qXNp0IUUbyb+I+XJPN26H56H1iifMoHEcZPUHPSJznj4f30O7Bk+RSPIY6HoO9PgfcuHip3uZd/DmH7oCnzKRICrQ8a2BYdLXexU8DHACtownzKREATtDvlg8edPukIat9hBU2XT6EAeII2Zk3qsG/mfPIR1v8EFrRJk0+p/SEFTTDqDBwfYQuaehSP2zZ5CHpN8iMv/PG75Xg10+RTcG9VvL5JCryx4VC5w/bAOVzg801SgnzK7axMJt/FZ+Nnht/FY+fWcxQf+fYwgRwC90Hj51Nmzx64Pqh9mJTLDbbvT6vbHEqLxDmOK2j8fIrsOIIm6LDY1dpD+ZrZYhnrXf8jeRFpg2AFjZ9Pif1moAk6LHa19SOv/ol9Mme8TB8JVtDo+RTYbQGaoA5nvMm6eVckoUJ9eFhBY+czfK8b0AR17DNd216/REKxx5hf0eqDSuUzeKfI6I3iq8uzQEJz81NvFC+Tz/CdIqM4D/r+9JfghGbnp+KHLpHP4H2iozlR//m23my5hRP0E7YP6k54PkN3uQtYH7S6hN54416u5PUTVdCY+QzcYwUsQavtvvoX1pbEcilXtH0HFTRmPsN2WAVKUDsnsjkjsh3lwGpssv1PTEFj5nO5o2eBd4AS1M4qCyz7v1+u8PgIU9CI+QzZfJNCBc1v/G4pT1BdlARtB5zbN+HulZurn0qCBuczZOuk6AhaXfr1rOvLysLWu4K61gsNFUHD8+m/cWJUBJ093W+t/79TrnwKc+6DhufTe1sHwPqguzd+NYun+63lfrtchQYeVdAo+fTd1AkoQd0IPeM1OqCYgrohegUVr2CGgk635nj1mVQGSDkLGphPvw2dyVHQselanYHeCKczgM9a0KB8em7oTJaCBoTLdoLJkqj2zrcvqtZCAThBM/cTXND8kosmaO5+YguaYXLhBJUtZiLvPqhMsTp1K6oPqncBpaBaVStJUMUGnoJq1awgQTU7oMULmmnbhCSo6gCpdEFzbZuABM1+AN8BKmi2uUUSVLaERFBQWXAEzTaFSzAFzTe5MIJqN/BF90FVK1VGH1S9A1qyoLp1KkJQ/QFSwYJm3TZhCBphAE9BtShA0BgTTOUKmnfnCUNQ2dhJgRM08+QiCHqOGfoeCioLgKCn8hNO0NyTG1nQO4tdRfLznH3Q3cXDsu/dJ7+Cxrp+nlPQvWJj1ObsgsrGXaVIQaNU5tyCRvs8KagW5xY0GiUKeobefTGCxgJI0FPkmIIKQ0FloaDC4Ah6jhQXI2hxfdCTDD8pqDAogsarBwUVoTBBI1aDgopAQbWgoCKUJWjMWlDQrIAQ9ETZpaDCIAh6puRSUGEABD1VbosRtJw+aOwasA8qAgXVgoKKUIygJ8ssBRUmtaDxy89SUOGn8wqQt6DO+UxwfuQoqPDTeXNC5cCYT8ENG/Gn82aFxoExn5IbNtJP580LjQNjPiU3bDDP+Jz7oIj5nMizDyr2dF4pchYUMZ8TOQoq+HReKbIWFDCfE1kKGjvcPnkLilqsgYKKQEG1yFvQiqNOUZjP4A23o+ytxpY9cQ+M+Ty+YZJwOJTXxOtSjKDsg2qRZR+UN4vIgpfPiRwFBby5IWtBAfM5kaGgiF/N5SwoYj4nMhTU5eaG2PwWq6ADeco5nxPKmXVNkvAVNKQUt6rIhRKslB/++byDe0UV3NDY0meH/ZsbQkopTlD/fN6Bghp2b24IKaU8Qb3zeQcKGgIFVYeChkBB1aGgIVBQdShoCBRUHQoaAgVVh4KGQEHVoaCEJICCEmgoKIGGghJoKCiBhoISaCgogYaCEmgoKIGGghJoKCiBhoISaCgogUZNUPtzm8fG/CLs8u1HM39xjPe//pSI163i8SxaMwTGw3I6iGv366e9Ld+fbH72Q1Zt4a/7W9qP0CvfaoK+/97XoG6rYv43vTjGx0v3m/HQeJ9v7aaVybtYzRCYDsvlIOru53l7W9btRh8vLiErs4ExdHvL/iP0yreaoMNSBPbH39fH6cXBOP3KRaHx3p/MmW7W4ZSqGQTjYbkcRNt2tO7tbWnfdwn5+fbYOGSw/wj98q0maNWXP2ZwMuQI9eXZCiUTz5y3QjVDoj0sl4OoHv7ZCrq35djC7IYcBd3ccvgI/fKtJuj1b7ZvZA+3reH44mgku4tMvGu7uVzNYLg6HUS7iemD7m1Zf//fyzJBqxGHJn4/5E/ffGsJ+vFiejvX576v0f47vjgaqjsSmXhmBQ/BmqFgDmv/IEzLagTd27IyDbK5ODrkpR/t7G3ZfYR++dadZmorJiSoSLz6MvZ7RGoGQj2MkbYPwqz/5CTot/4Ctx/SNEjvT/tnB6ygbW9DqokXiDdfAUmkZhjYw9o9iG4Dlybedg7nCVoNOfYq82viLW1Vwocic0FD4lXzFbpEagZBf1i7B1H16x6+7m1ZD9N6uyHHS6FTSKxBkq1EPZur8J7MmR1dSLxhKTnBmiEwHJbbQVwdppnssqW1wzTT11SuUANOM3Xlt0OR8OnwfhQfGM90laRrBsB0WE4HcXWZqK8Gi3dDDn3QvS1rwIn65jp8C1YN32tVfl8o9k18YLy+hTM7iNUMgNlhuRyE/apzb8t6+PZ0N+TVbcv+I/TJN28WIdBQUAINBSXQUFACDQUl0FBQAg0FJdBQUAINBSXQUFACDQUl0FBQAg0FJdBQUAINBSXQUFACDQUl0FBQAg0FJdBQUAINBSXQUFACDQUl0FBQAg0FJdBQUAINBSXQ5CDodVx+aMn99afq1whVgsEutrSBXauumT+vxplxX8e/D9i162XIQlC74tUXHe8Kupe8k+Es6PS8Gnd8c1mmoB8vt6c/BT0gqM8qvRTUjUHQV5ux7h+zgN+/+rUU7Yuqa8HMQ9L2PrMzMQk6HH+3pmx3texa9KVkwzlt0tQtQdkvRfn+9Kd5sof5s3lmx7+fpn2rWc+g38383a77+Dy+P5eyTEHN441GQc3KqbXplo4vTA/ArKVa6hW0P/7+0UUPv+7n42qvoJ3G5vkxZjFfu2WndPtut0R3+049iNjHme82xDTX4/n7A8UJahdp7R7QZwW114nrsDh6+8J2AOrvPwsVdDx+I037H/fzMTxGYlj2/+PvP6x2nWL9P6/Wt+rhV7vvGGexm41pdly8P1CcoP0TUB9HQcclpacXXdvVpqxQQRfHv5aP8TE8/cMz+z+aVv3ptRn/GbsJJtNDnPluNubn2/hMm/79gTIFNc3TIGg1eDm+qIdnWJQq6HD8ptVu/3gvH7PH8HRzTraD+f2/T7eC/t4/vMMIOsad7WZjdtMqy/fH6EUKWk2Crl1Bm2JH8dOMhnmS4Wszz0c1jGaWPcWhh/S+KeiXmZKuP/U6PL7hy/tV/5g6KTIS9Go6Rc+zRqgaH9DT58xQqKDTYX+8/KPrht7mo7rcJGY40euvTfxz06f7ToPU/7Fr4O+k2xhrnzMjQz6CmjyarLTNzGv/FNPbUfw0WiqGxSjeHL8ZUz7O/nuaB53lZXgYjB3mDLNTk6D9M2KHUbyNO+02/n1RbjOWc9MlDSILQaevOttsXv68nQf9/h9zITANmfn/a1nzoJf5fKTt8IzP2LnMLqWz59U0tus4Prpm3tZbQf/o5kOnedBhSNXv1v696412fc/+/bFZr297pGHkIOgu2T5mExPJC2AwmQva5bKwVl0dCipI/WWOg4RCQQlxhYISaCgogYaCEmgoKIGGghJoKCiBhoISaCgogYaCEmgoKIGGghJoKCiBhoISaCgogYaCEmgoKIGGghJoKCiBhoISaCgogeb/r+rh+4OxVp0AAAAASUVORK5CYII=" /><!-- --></p>
 <div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(figure)</span></code></pre></div>
 </div>
-<div id="examples-for-other-types-of-trials-1" class="section level3">
-<h3>2.4 Examples for other types of trials</h3>
-<p>Please see examples in corresponding functions by uncommenting below lines.</p>
+<div id="examples-for-other-types-of-trials" class="section level3">
+<h3>Examples for other types of trials</h3>
+<p>Please see examples in corresponding functions by uncommenting below
+lines.</p>
 <div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ?power.1</span></span>
 <span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="co"># ?power.3</span></span>
 <span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a><span class="co"># ?power.4</span></span>
@@ -369,11 +760,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 </div>
 <div id="function-re" class="section level2">
-<h2>3. Function <em>re</em></h2>
-<p>Calculate the relative efficiency (RE) of two designs, this function uses the returns from <em>od</em> function</p>
-<div id="examples-1" class="section level3">
-<h3>3.1 Examples</h3>
-<p>Based on above examples in <em>od</em> functions, calculate the relative efficiency</p>
+<h2>Function <em>re</em></h2>
+<p>Calculate the relative efficiency (RE) of two designs, this function
+uses the returns from <em>od</em> function</p>
+<p>Based on above examples in <em>od</em> functions, calculate the
+relative efficiency</p>
 <div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co"># relative efficiency (RE) of a constrained design comparing with the optimal design</span></span>
 <span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>myre <span class="ot">&lt;-</span> <span class="fu">re</span>(<span class="at">od =</span> myod1, <span class="at">subod=</span> myod2)</span></code></pre></div>
 <pre><code>## The relative efficiency (RE) of the two two-level CRTs is 0.8790305.</code></pre>
@@ -385,10 +776,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="co"># relative efficiency (RE) of a constrained design comparing with the unconstrained optimal one</span></span>
 <span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>myre <span class="ot">&lt;-</span> <span class="fu">re</span>(<span class="at">od =</span> myod1, <span class="at">subod=</span> myod4)</span></code></pre></div>
 <pre><code>## The relative efficiency (RE) of the two two-level CRTs is 0.8266527.</code></pre>
-</div>
-<div id="examples-for-other-types-of-trials-2" class="section level3">
-<h3>3.2 Examples for other types of trials</h3>
-<p>For additional examples, please see example sections in corresponding <em>od</em> functions by uncommenting below lines.</p>
+<p>For additional examples, please see example sections in corresponding
+<em>od</em> functions by uncommenting below lines.</p>
 <div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ?od.1</span></span>
 <span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a><span class="co"># ?od.2</span></span>
 <span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a><span class="co"># ?od.3</span></span>
@@ -397,6 +786,20 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a><span class="co"># ?od.3m</span></span>
 <span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a><span class="co"># ?od.4m</span></span></code></pre></div>
 </div>
+</div>
+<div id="examples-for-mediation-effects" class="section level1">
+<h1>5. Examples for Mediation Effects</h1>
+<p>Below is a simple example to calculate optimal sample allocation and
+perform statistical power analyses.</p>
+<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Optimal sample allocation and statistical power for randomized controlled trials</span></span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>myod <span class="ot">&lt;-</span> <span class="fu">od.1.111</span>(<span class="at">a =</span> .<span class="dv">3</span>, <span class="at">b =</span> .<span class="dv">5</span>, <span class="at">c =</span> <span class="dv">10</span>, <span class="at">ct =</span> <span class="dv">100</span>, <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>mypower <span class="ot">&lt;-</span> <span class="fu">power.1.111</span>(<span class="at">expr =</span> myod, <span class="at">power =</span> .<span class="dv">8</span>)</span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a><span class="co"># mypower</span></span>
+<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-6"><a href="#cb41-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Conventional power analyses</span></span>
+<span id="cb41-7"><a href="#cb41-7" aria-hidden="true" tabindex="-1"></a>mypower <span class="ot">&lt;-</span> <span class="fu">power.1.111</span>(<span class="at">cost.model =</span> <span class="cn">FALSE</span>, <span class="at">a =</span> .<span class="dv">3</span>, <span class="at">b =</span> .<span class="dv">5</span>,</span>
+<span id="cb41-8"><a href="#cb41-8" aria-hidden="true" tabindex="-1"></a>                        <span class="at">power =</span> .<span class="dv">8</span>, <span class="at">p =</span>.<span class="dv">5</span>)</span>
+<span id="cb41-9"><a href="#cb41-9" aria-hidden="true" tabindex="-1"></a><span class="co"># mypower</span></span></code></pre></div>
 </div>
 
 

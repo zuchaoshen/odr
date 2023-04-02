@@ -172,6 +172,6 @@ The optimal design of three-level
 
 }
 \references{
-Shen, Z., & Kelcey, B. (in press). Optimal sampling ratios in three-level
+Shen, Z., & Kelcey, B. (2022). Optimal sampling ratios in three-level
   multisite experiments. Journal of Research on Educational Effectiveness.
 }

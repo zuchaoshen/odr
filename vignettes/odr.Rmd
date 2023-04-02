@@ -1,6 +1,6 @@
 ---
 title: "Package 'odr'"
-author: "Zuchao Shen, Benjamin Kelcey, Walter Leite"
+author: "Zuchao Shen & Benjamin Kelcey"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
@@ -11,39 +11,101 @@ vignette: >
 The costs of sampling each additional unit in multilevel experimental studies
 vary across levels of hierarchy and treatment conditions due to the 
 hierarchical sampling and the delivery of treatment. 
-This package is a tool to optimize the 
-designs of multilevel experimental studies such that the variances of 
-treatment effects are minimized under a fixed budget and cost structure, or
-the budget is minimized to achieve same level design precision or statistical power.
-The optimal sample allocation or optimal design parameters include 
+This package is a tool to identify the optimal sample allocation in experimental studies such that statistical power is maximized under a fixed budget. The current version covers designs detecting main and mediation effects.
+
+# 1. Optimal Design Parameters
+Optimal design parameters in an optimal sample allocation include 
 
 - the optimal sample sizes at each of the levels except the top level because the top-level
-sample size will be determined by total budget or power once all other parameters are decided
-- proportion of units to be assigned to the treatment condition 
-at the level of randomization
+sample size will be determined by total budget or power once all other parameters are decided, and
+- the proportion of units to be assigned to the treatment condition 
+at the level of randomization.
 
-This package includes three categorical of functions and they are
+Researchers can fix one or more of the optimal design parameters for constrained optimal sample allocation and solve for the remainder of optimal design parameters.
 
-- *od* function: This function calculates optimal sample allocation parameters with and without 
-constraint(s). For each type of multilevel experimental studies, there is an additional number (and/or
-additional letter) to be added to the general function name. For example, the function for 
-two-level cluster randomized trials is *od.2*,
-the function for two-level multisite randomized trials is *od.2m*, 
-the function for single-level experiments assessing mediation effects is *od.1.m*.
 
-- *power* function: This function performs power analyses with and without accommodating cost structures of sampling.
+# 2. Designs Detecting Main Effects
+
+
+## Designs and Functions
+
+```{r, echo=FALSE}
+df = data.frame(
+  Design = c("Simple Experiments", "2-Level CRTs", "2-Level MRTs",
+             "3-Level CRTs", "3-Level MRTs",
+             "4-Level CRTs", "4-Level MRTs"),
+  OD_Function = c("od.1", "od.2", "od.2m",
+                  "od.3", "od.3m",
+                  "od.4", "od.4m"),
+  Power_Function = c("power.1", "power.2", "power.2m",
+                     "power.3", "power.3m",
+                     "power.4", "power.4m"),
+  RE_Function = c("re", "re", "re",
+                     "re", "re",
+                     "re", "re")
+  
+)
+names(df) <- c("Design", "OD Function", "Power Function", "RE Function")
+library(knitr)
+kable(df,
+      caption = "Functions for Designs Detecting Main Effects")
+```
+
+## Rules for Function Names
+
+For experiments detecting main effects, this package includes three categorical of functions and they are *od*, *power*, and *re*. For *od* and *power* functions, if a function name follows .# (e.g., od.2), this function is for #-level designs with treatment assignment at the top level (# in 1, 2, 3, 4). If a function name follows .#m (e.g., od.2m), this function is for #-level multisite-randomized trials.
+
+## Functions
+
+### *od* function
+
+This function calculates optimal sample allocation parameters with and without 
+constraint(s). For each type of multilevel experimental studies, there is an additional number (and one additional letter m) to be added to the general function name. For example, the function for two-level cluster randomized trials is *od.2*,
+the function for two-level multisite randomized trials is *od.2m*.
+
+### *power* function
+
+This function performs power analyses with and without accommodating cost structures of sampling.
 For power analysis accommodating cost structures, depending on which one parameter is left, the function calculates required budget (and sample size), statistical power, and minimum detectable effect size. For conventional power analysis without accommodating cost structures of sampling,
 this function calculates required sample size, statistical power, and minimum detectable effect size. 
-For each type of multilevel experimental studies, there is an additional number (and/or
-additional letter) to be added to the general function name. For example, the function for 
+For each type of experiments, there is an additional number (and
+an additional letter m) to be added to the general function name. For example, the function for 
 two-level cluster randomized trials is *power.2*,
-the function for two-level multisite randomized trials is *power.2m*,
-the function for single-level experiments assessing mediation effects is *power.1.m*.
+the function for two-level multisite randomized trials is *power.2m*.
 
-- *re* function: This function calculates relative efficiency values between two designs. An alternative name for this function is *rpe* that stands for "relative precision and efficiency".
+### *re* function
+
+This function calculates relative efficiency values between two designs. An alternative name for this function is *rpe* that stands for "relative precision and efficiency".
 
 
-## 1. Function *od* 
+# 3. Designs Detecting Mediation Effects
+
+
+
+## Designs and Functions
+
+```{r, echo=FALSE}
+df = data.frame(
+  Design = c("Simple Experiments", "2-Level CRTs", "2-Level MRTs"),
+  OD_Function = c("od.1.111", "od.2.221", "od.2m.111"),
+  Power_Function = c("power.1.111", "power.2.221", "power.2m.111")
+)
+names(df) <- c("Design", "OD Function", "Power Function")
+library(knitr)
+kable(df,
+      caption = "Functions for Designs Detecting Mediation Effects (In Preparation)")
+```
+
+
+## Rules for Function Names
+There are two categories of functions for designs detecting mediation effects. They are *od* and *power* functions. The function names follow additional rules as these functions will add additional numbers to represent the levels of the treatment assignment, the mediator and the outcome. For example, *od.2.221* is the *od* function for two-level cluster-randomized trials (.2) with the treatment assignment and the mediator at the level two, and the outcome at the level 1 (.221). 
+*od.2m.111* is the *od* function for two-level multisite-randomized trials (.2m) with the treatment assignment, the mediator, and the outcome at the level one (.111). 
+
+## Functions
+There are two categorical functions for designs detecting mediation effects and they are *od* and *power*.  *od* function can calculate optimal design parameters with and without a constraint(s). *power* function can perform power analysis. 
+
+# 4. Examples for Main Effects
+##  Function *od* 
 Given cost structure (i.e., the costs of sampling each unit at 
 different levels and treatment conditions), this function solves 
 the optimal sample allocation with and without constraints. 
@@ -60,7 +122,6 @@ we need the following information
 - c2t: the cost of sampling each additional level-two unit in the experimental condition
 - m: a total fixed budget used to plot the variance curves, default value is the cost of sampling 60 level-two units across treatment conditions.
 
-### 1.1 Examples
 ```{r}
 library(odr)
 ```
@@ -96,8 +157,7 @@ myod4 <- od.2(icc = 0.2, r12 = 0.5, r22 = 0.5, c1 = 1, c2 = 5, c1t = 1, c2t = 50
               plots = FALSE, n = 20, p = 0.5, varlim = c(0.005, 0.025))
 ```
 
-### 1.2 Examples for other types of trials
-Please see examples in corresponding functions by uncommenting below lines.
+Please see additional examples in corresponding functions by uncommenting below lines.
 ```{r}
 # ?od.1 
 # ?od.3
@@ -107,7 +167,7 @@ Please see examples in corresponding functions by uncommenting below lines.
 # ?od.4m
 ```
 
-## 2. Function *power*
+## Function *power*
 This function by default can perform power analyses accommodating cost structures 
 (i.e., cost.model = TRUE), one of 'power', 'm', and 'd' must be NULL. For example,
 if 'power' is NULL, the function calculates statistical power 
@@ -121,7 +181,7 @@ accommodating cost structures by specifying cost.model = FALSE, the conventional
 power analyses include statistical power calculation, minimum detectable effect size calculation, 
 and required sample size calculation.
 
-### 2.1 Examples of power analyses accommodating cost structures (cost.model = TRUE)
+###  Examples of power analyses accommodating cost structures (cost.model = TRUE)
 ###### Required budget for desired power
 - Required budget calculation
 ```{r}
@@ -206,7 +266,7 @@ plot(prange, MDES, type = "l", lty = 1, xlim = c(0, 1), ylim = c(0.3, 0.8),
  par(figure)
 ```
 
-### 2.2 Examples of conventional power analyses (cost.model = FALSE)
+### Examples of conventional power analyses (cost.model = FALSE)
 ```{r}
 # Required level-2 sample size calculation
 myJ <- power.2(cost.model = FALSE, expr = myod1, d = 0.3, q = 1, power = 0.8)
@@ -223,7 +283,7 @@ mypower1$out  # power = 0.80
 mymdes1 <- power.2(cost.model = FALSE, expr = myod1, J = 59, power = 0.8, q = 1)
 mymdes1$out  # d = 0.30
 ```
-### 2.3 Examples of conventional power curves
+###  Examples of conventional power curves
 ```{r fig.width = 7, fig.height = 3.5}
 figure <- par(mfrow = c (1, 2))
 pwr <- NULL
@@ -244,7 +304,7 @@ plot(Jrange, pwr, type = "l", lty = 1, xlim = c(4, 100), ylim = c(0, 1),
 par(figure)
 ```
 
-### 2.4 Examples for other types of trials
+###  Examples for other types of trials
 Please see examples in corresponding functions by uncommenting below lines.
 ```{r}
 # ?power.1
@@ -255,10 +315,9 @@ Please see examples in corresponding functions by uncommenting below lines.
 # ?power.4m
 ```
 
-## 3. Function *re* 
+##  Function *re* 
 Calculate the relative efficiency (RE) of two designs, this function uses the returns from *od* function
 
-### 3.1 Examples
 Based on above examples in *od* functions, calculate the relative efficiency
 ```{r}
 # relative efficiency (RE) of a constrained design comparing with the optimal design
@@ -273,7 +332,7 @@ myre <- re(od = myod1, subod= myod4)
 
 
 ```
-### 3.2 Examples for other types of trials
+
 For additional examples, please see example sections in corresponding *od* functions by uncommenting below lines.
 ```{r}
 # ?od.1
@@ -283,4 +342,19 @@ For additional examples, please see example sections in corresponding *od* funct
 # ?od.2m
 # ?od.3m
 # ?od.4m
+```
+
+# 5. Examples for Mediation Effects
+Below is a simple example to calculate optimal sample allocation and perform statistical power analyses.
+
+```{r}
+# Optimal sample allocation and statistical power for randomized controlled trials
+myod <- od.1.111(a = .3, b = .5, c = 10, ct = 100, verbose = FALSE)
+mypower <- power.1.111(expr = myod, power = .8)
+# mypower
+
+# Conventional power analyses
+mypower <- power.1.111(cost.model = FALSE, a = .3, b = .5,
+                        power = .8, p =.5)
+# mypower
 ```

@@ -55,12 +55,12 @@ od.1 <- function(p = NULL, r12 = NULL,
     stop("All of 'r12', 'c1', 'c1t' must be specified")
   NumberCheck <- function(x) {!is.null(x) && !is.numeric(x)}
   if (sum(sapply(list(r12), function(x) {
-    NumberCheck(x) || any(0 > x | x >= 1)
+    NumberCheck(x) || any(0 > x | x > 1)
   })) >= 1)
-    stop("'r12' must be numeric in [0, 1)")
+    stop("'r12' must be numeric in [0, 1]")
   if (sum(sapply(list(c1, c1t), function(x) {
-    NumberCheck(x) || x < 0})) >= 1)
-    stop("'c1', 'c1t' must be numeric in [0, inf)")
+    NumberCheck(x)})) >= 1)
+    stop("'c1', 'c1t' must be numeric")
   if (c1 == 0 && c1t == 0 && is.null(p))
     stop("when c1 and c1t are both zero, p must be constrained,
          please specify a value for p")

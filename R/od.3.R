@@ -95,7 +95,7 @@ od.3 <- function(n = NULL, J = NULL, p = NULL, icc2 = NULL, icc3 = NULL, r12 = N
     stop("'icc2', 'icc3', 'r12', 'r22', 'r32' must be numeric in [0, 1]")
   if (sum(sapply(list(c1, c2, c3, c1t, c2t, c3t), function(x) {
     NumberCheck(x) || x < 0})) >= 1)
-    stop("'c1', 'c2', 'c3', 'c1t', 'c2t', 'c3t' must be numeric in [0, inf)")
+    stop("'c1', 'c2', 'c3', 'c1t', 'c2t', 'c3t' must be numeric")
   if (!is.null(plot.by) && !is.list(plot.by))
     stop("'plot.by' must be in list format (e.g., plot.by = list(n = 'n'))")
     if (!is.numeric(iter) || iter < 2)

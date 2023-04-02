@@ -101,10 +101,10 @@ otherwise one-tailed tests; default value is TRUE.}
 
 \item{omega}{The standardized variance of site-specific treatment effect.}
 
-\item{dlim}{The range for searching the root of effect size (\code{d}) numerically,
+\item{dlim}{The range for solving the root of effect size (\code{d}) numerically,
 default value is c(0, 5).}
 
-\item{powerlim}{The range for searching the root of power (\code{power}) numerically,
+\item{powerlim}{The range for solving the root of power (\code{power}) numerically,
 default value is c(1e-10, 1 - 1e-10).}
 
 \item{Klim}{The range for searching the root of level-3 sample size (\code{K}) numerically,

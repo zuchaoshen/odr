@@ -69,10 +69,10 @@ otherwise one-tailed tests; default value is TRUE.}
 
 \item{c1t}{The cost of sampling one unit in treatment condition.}
 
-\item{dlim}{The range for searching the root of effect size (\code{d}) numerically,
+\item{dlim}{The range for solving the root of effect size (\code{d}) numerically,
 default value is c(0, 5).}
 
-\item{powerlim}{The range for searching the root of power (\code{power}) numerically,
+\item{powerlim}{The range for solving the root of power (\code{power}) numerically,
 default value is c(1e-10, 1 - 1e-10).}
 
 \item{nlim}{The range for searching the root of sample size (\code{n}) numerically,

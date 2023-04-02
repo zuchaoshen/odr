@@ -116,13 +116,13 @@ otherwise one-tailed tests; default value is TRUE.}
 
 \item{c4t}{The cost of sampling one level-4 unit in treatment condition.}
 
-\item{dlim}{The range for searching the root of effect size (\code{d}) numerically,
+\item{dlim}{The range for solving the root of effect size (\code{d}) numerically,
 default value is c(0, 5).}
 
-\item{powerlim}{The range for searching the root of power (\code{power}) numerically,
+\item{powerlim}{The range for solving the root of power (\code{power}) numerically,
 default value is c(1e-10, 1 - 1e-10).}
 
-\item{Llim}{The range for searching the root of level-4 sample size (\code{L}) numerically,
+\item{Llim}{The range for solving the root of level-4 sample size (\code{L}) numerically,
 default value is c(4, 1e+10).}
 
 \item{mlim}{The range for searching the root of budget (\code{m}) numerically,

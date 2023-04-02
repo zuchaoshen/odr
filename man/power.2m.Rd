@@ -65,7 +65,7 @@ otherwise one-tailed tests; default value is TRUE.}
 
 \item{n}{The level-1 sample size per level-2 unit.}
 
-\item{J}{The level-2 sample size per level-3 unit.}
+\item{J}{The number of sites.}
 
 \item{p}{The proportion of level-1 units to be assigned to treatment.}
 
@@ -86,10 +86,10 @@ each treatment condition.}
 
 \item{omega}{The standardized variance of site-specific treatment effect.}
 
-\item{dlim}{The range for searching the root of effect size (\code{d}) numerically,
+\item{dlim}{The range for solving the root of effect size (\code{d}) numerically,
 default value is c(0, 5).}
 
-\item{powerlim}{The range for searching the root of power (\code{power}) numerically,
+\item{powerlim}{The range for solving the root of power (\code{power}) numerically,
 default value is c(1e-10, 1 - 1e-10).}
 
 \item{Jlim}{The range for searching the root of level-2 sample size (\code{J}) numerically,

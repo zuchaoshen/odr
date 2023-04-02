@@ -51,11 +51,11 @@
 #' @param L The total level-4 sample size.
 #' @param p The proportion of level-4 clusters/units to be assigned to treatment.
 #' @param q The number of covariates at level 4.
-#' @param dlim The range for searching the root of effect size (\code{d}) numerically,
+#' @param dlim The range for solving the root of effect size (\code{d}) numerically,
 #'     default value is c(0, 5).
-#' @param powerlim The range for searching the root of power (\code{power}) numerically,
+#' @param powerlim The range for solving the root of power (\code{power}) numerically,
 #'     default value is c(1e-10, 1 - 1e-10).
-#' @param Llim The range for searching the root of level-4 sample size (\code{L}) numerically,
+#' @param Llim The range for solving the root of level-4 sample size (\code{L}) numerically,
 #'     default value is c(4, 1e+10).
 #' @param mlim The range for searching the root of budget (\code{m}) numerically,
 #'     default value is the costs sampling \code{Llim} level-4 units across treatment conditions
