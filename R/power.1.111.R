@@ -25,11 +25,16 @@
 #'     \code{p} in a list format (e.g., constraint = list(p = 0.5))
 #'     will overwrite that
 #'     from \code{expr}; default value is NULL.
-#' @param mlim The range for searching the root of budget (\code{m}) numerically,
+#' @param mlim The range for identifying the root of budget (\code{m}) numerically,
 #'     default value is the costs sampling \code{nlim} units.
-#'
-#' @return Required budget (or required sample size) or statistical power
-#'     depending on the specification of parameters.
+#' @param alim The range for identifying the root of a path
+#'     effect (\code{a}) numerically. Default value is c(0, 4).
+#' @param blim The range for identifying the root of b path within-treatment
+#'     correlation between the mediator and outcome (\code{b}) numerically.
+#'     Default value is (.01, .99), if (\code{b}) is negative, please re-code
+#'     the outcome or mediator to make it positive.
+#' @return Required budget (or required sample size), statistical power,
+#'     (\code{a}) , or (\code{b})  depending on the specification of parameters.
 #'     The function also returns the function name, design type,
 #'     and parameters used in the calculation.
 #'
@@ -46,6 +51,10 @@
 #' mypower <- power.1.111(cost.model = FALSE, a = .3, b = .5,
 #'                        power = .8, p =.5)
 #' #mypower
+#' mypower <- power.1.111(cost.model = FALSE, n = 350, b = .5,
+#'                        power = .8, p =.5)
+#' #mypower
+#'
 
 power.1.111 <- function(cost.model = TRUE, expr = NULL,
                         constraint = NULL,
@@ -55,36 +64,24 @@ power.1.111 <- function(cost.model = TRUE, expr = NULL,
                         n = NULL, p = NULL,
                         c = NULL, ct = NULL,
                         r.yx = 0, r.mx = 0, r.mw = 0,
-                        q.a = 1, q.b = 1, max.iter = 300,
+                        q.a = 0, q.b = 0, max.iter = 300,
+                        alim = c(0, 4), blim = c(.01, .99),
                         powerlim = NULL, nlim = c(6, 1e7), mlim = NULL
                         ) {
   funName <- "power.1.111"
   designType <- "1-1-1 mediation in single-level RCTs"
-  if (cost.model) {
-    if (sum(sapply(list(m, power), is.null)) != 1)
-      stop("exactly one of 'm' and 'power' must be NULL
-           when cost.model is TRUE")
-    if (!is.null(n))
-      stop("'n' must be NULL when cost.model is TRUE")
-  } else {
-    if (sum(sapply(list(n, power), is.null)) != 1)
-      stop("exactly one of 'n' and 'power' must be NULL
-           when cost.model is FALSE")
-    if (!is.null(m))
-      stop("'m' must be NULL when cost.model is FALSE")
-  }
   if (!is.null(expr)) {
     if (expr$funName != "od.1.111") {
       stop("'expr' can only be NULL or
             the return from the function of 'od.1.111'")
     } else {
-      if (sum(sapply(list(a, b, c, ct, n, p),
+      if (sum(sapply(list(c, ct, n, p),
                      function(x) {!is.null(x)})) >= 1)
         stop("parameters of 'a', 'b', 'c', 'ct',
             'n', and 'p'
              have been specified in expr of 'od.1.111'")
-      a <- expr$par$a
-      b <- expr$par$b
+      if (is.null(a)){a <- expr$par$a}
+      if (is.null(b)){b <- expr$par$b}
       c <- expr$par$c
       ct <- expr$par$ct
       r.yx <- expr$par$r.yx
@@ -108,6 +105,20 @@ power.1.111 <- function(cost.model = TRUE, expr = NULL,
     if (!is.null(constraint))
       stop("'constraint' must be NULL when 'expr' is NULL")
   }
+  if (cost.model) {
+    if (sum(sapply(list(m, a, b, power), is.null)) != 1)
+      stop("exactly one of 'm', 'a', 'b' and 'power' must be NULL
+           when cost.model is TRUE")
+    if (!is.null(n))
+      stop("'n' must be NULL when cost.model is TRUE")
+  } else {
+    if (sum(sapply(list(n, a, b, power), is.null)) != 1)
+      stop("exactly one of 'n', 'a', 'b', and 'power' must be NULL
+           when cost.model is FALSE")
+    if (!is.null(m))
+      stop("'m' must be NULL when cost.model is FALSE")
+  }
+
   NumberCheck <- function(x) {!is.null(x) && !is.numeric(x)}
   if (!is.null(constraint) && !is.list(constraint))
     stop("'constraint' must be in list format
@@ -266,6 +277,12 @@ power.1.111 <- function(cost.model = TRUE, expr = NULL,
 
     if (is.null(power)) {
       out <- list(power = eval(pwr))
+    } else if (is.null(a)) {
+      out <- list(a = stats::uniroot(
+        function(a) eval(pwr) - power, alim)$root)
+    }  else if (is.null(b)) {
+      out <- list(b = stats::uniroot(
+        function(b) eval(pwr) - power, blim)$root)
     } else if (is.null(m) & is.null(n)) {
       if (cost.model) {
         out <- list(m = stats::uniroot(

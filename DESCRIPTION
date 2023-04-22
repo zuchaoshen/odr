@@ -1,9 +1,9 @@
 Package: odr
 Type: Package
-Title: Optimal Design and Statistical Power for Multilevel Experiments
+Title: Optimal Design and Statistical Power for Experimental Studies
     Investigating Main, Mediation, and Moderation Effects
-Version: 1.4.1
-Date: 2023-4-2
+Version: 1.4.2
+Date: 2023-4-22
 Authors@R: c(person(given = "Zuchao", 
                     family = "Shen", 
                     email = "zuchao.shen@gmail.com", 
@@ -12,12 +12,13 @@ Authors@R: c(person(given = "Zuchao",
             person(given = "Benjamin",
                    family = "Kelcey",
                    role = "aut"))
-Description: Calculate the optimal sample allocation that 
+Description: Calculate the optimal sample size allocation that 
     produces the highest statistical power for experimental 
-    studies under a budget constraint,
+    studies under a budget constraint, and
     perform power analyses with and without accommodating 
-    cost structures of sampling, and calculate
-    the relative efficiency between two sample allocations. 
+    cost structures of sampling. The designs cover single-level 
+    and multilevel experiments detecting main, mediation, 
+    and moderation effects (and some combinations). 
     The references for the proposed methods include: 
     (1) Shen, Z., & Kelcey, B. (2020). 
     Optimal sample allocation under unequal costs in 

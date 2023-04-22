@@ -8,20 +8,25 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
-The costs of sampling each additional unit in multilevel experimental studies
-vary across levels of hierarchy and treatment conditions due to the 
-hierarchical sampling and the delivery of treatment. 
-This package is a tool to identify the optimal sample allocation in experimental studies such that statistical power is maximized under a fixed budget. The current version covers designs detecting main and mediation effects.
+The costs of sampling each additional unit in (multilevel) experimental studies
+vary across treatment conditions (and levels of hierarchy). 
+This package is a tool to identify the optimal sample allocation in experimental
+studies such that statistical power is maximized under a fixed budget. 
+The designs covers experiments  detecting main, mediation, and moderation
+effects (and some of the combinations).
 
 # 1. Optimal Design Parameters
 Optimal design parameters in an optimal sample allocation include 
 
-- the optimal sample sizes at each of the levels except the top level because the top-level
-sample size will be determined by total budget or power once all other parameters are decided, and
-- the proportion of units to be assigned to the treatment condition 
+- the optimal sample sizes at each of the levels except the top level because 
+the top-level sample size will be determined by total budget or power once all
+other parameters are decided, and
+- the proportion of units assigned to the treatment condition 
 at the level of randomization.
 
-Researchers can fix one or more of the optimal design parameters for constrained optimal sample allocation and solve for the remainder of optimal design parameters.
+Researchers can fix one or more of the optimal design parameters for 
+constrained optimal sample allocation and solve for the remainder 
+of optimal design parameters.
 
 
 # 2. Designs Detecting Main Effects

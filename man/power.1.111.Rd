@@ -23,9 +23,11 @@ power.1.111(
   r.yx = 0,
   r.mx = 0,
   r.mw = 0,
-  q.a = 1,
-  q.b = 1,
+  q.a = 0,
+  q.b = 0,
   max.iter = 300,
+  alim = c(0, 4),
+  blim = c(0.01, 0.99),
   powerlim = NULL,
   nlim = c(6, 1e+07),
   mlim = NULL
@@ -88,13 +90,21 @@ covariate(s) in the outcome model.}
 covariate(s) in the mediator model.}
 
 \item{q.a}{The number of covariates at the mediator model
-(except the treatment indicator), the default value is one.}
+(except the treatment indicator), the default value is zero.}
 
 \item{q.b}{The number of covariates in the outcome model (except the treatment
-indicator and the mediator), the default value is one.}
+indicator and the mediator), the default value is zero.}
 
 \item{max.iter}{Maximal number of function evaluations when used as
 the stopping criterion. Default is 200.}
+
+\item{alim}{The range for identifying the root of a path
+effect (\code{a}) numerically. Default value is c(0, 4).}
+
+\item{blim}{The range for identifying the root of b path within-treatment
+correlation between the mediator and outcome (\code{b}) numerically.
+Default value is (.01, .99), if (\code{b}) is negative, please re-code
+the outcome or mediator to make it positive.}
 
 \item{powerlim}{The range for solving the root of power (\code{power}) numerically,
 default value is c(1e-10, 1 - 1e-10).}
@@ -102,12 +112,12 @@ default value is c(1e-10, 1 - 1e-10).}
 \item{nlim}{The interval/range used to numerically solve for n,
 the default values are c(6, 1e7).}
 
-\item{mlim}{The range for searching the root of budget (\code{m}) numerically,
+\item{mlim}{The range for identifying the root of budget (\code{m}) numerically,
 default value is the costs sampling \code{nlim} units.}
 }
 \value{
-Required budget (or required sample size) or statistical power
-    depending on the specification of parameters.
+Required budget (or required sample size), statistical power,
+    (\code{a}) , or (\code{b})  depending on the specification of parameters.
     The function also returns the function name, design type,
     and parameters used in the calculation.
 }
@@ -130,4 +140,8 @@ mypower <- power.1.111(expr = myod, power = .8)
 mypower <- power.1.111(cost.model = FALSE, a = .3, b = .5,
                        power = .8, p =.5)
 #mypower
+mypower <- power.1.111(cost.model = FALSE, n = 350, b = .5,
+                       power = .8, p =.5)
+#mypower
+
 }

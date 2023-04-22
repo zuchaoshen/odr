@@ -205,14 +205,3 @@ myre <- re(od = myod1, subod= myod4)
 # ?od.3m
 # ?od.4m
 
-## -----------------------------------------------------------------------------
-# Optimal sample allocation and statistical power for randomized controlled trials
-myod <- od.1.111(a = .3, b = .5, c = 10, ct = 100, verbose = FALSE)
-mypower <- power.1.111(expr = myod, power = .8)
-# mypower
-
-# Conventional power analyses
-mypower <- power.1.111(cost.model = FALSE, a = .3, b = .5,
-                        power = .8, p =.5)
-# mypower
-
