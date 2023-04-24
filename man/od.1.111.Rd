@@ -131,7 +131,7 @@ Unconstrained or constrained optimal sample allocation \code{p}).
 \description{
 The optimal design of single-level RCTs
     probing mediation effects is to identify the optimal sample
-    allocation that use the minimum bueget to achieve a fixed level of
+    allocation that use the minimum budget to achieve a fixed level of
     statistical power. The optimal design parameter is the proportion of
     individuals/units to be assigned to the experimental condition.
     This function identifies the optimal \code{p}.

@@ -3,7 +3,7 @@ Type: Package
 Title: Optimal Design and Statistical Power for Experimental Studies
     Investigating Main, Mediation, and Moderation Effects
 Version: 1.4.2
-Date: 2023-4-22
+Date: 2023-4-24
 Authors@R: c(person(given = "Zuchao", 
                     family = "Shen", 
                     email = "zuchao.shen@gmail.com", 
@@ -25,11 +25,11 @@ Description: Calculate the optimal sample size allocation that
     cluster-randomized trials.
     Journal of Educational and Behavioral Statistics, 45(4): 446-474.
         <doi:10.3102/1076998620912418>.
-    (2) Shen, Z., & Kelcey, B. (2022). Optimal sample allocation for
+    (2) Shen, Z., & Kelcey, B. (2022b). Optimal sample allocation for
     three-level multisite cluster-randomized trials. 
     Journal of Research on Educational Effectiveness, 15 (1), 130-150.
     <doi:10.1080/19345747.2021.1953200>.
-    (3) Shen, Z., & Kelcey, B. (2022). Optimal sample allocation in
+    (3) Shen, Z., & Kelcey, B. (2022a). Optimal sample allocation in
     multisite randomized trials. The Journal of Experimental Education.
     <doi:10.1080/00220973.2020.1830361>.
     (4) Champely, S. (2020). pwr: Basic functions for power analysis 

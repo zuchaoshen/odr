@@ -12,7 +12,7 @@
 
 <meta name="author" content="Zuchao Shen &amp; Benjamin Kelcey" />
 
-<meta name="date" content="2023-04-02" />
+<meta name="date" content="2023-04-24" />
 
 <title>Package ‘odr’</title>
 
@@ -340,16 +340,17 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <h1 class="title toc-ignore">Package ‘odr’</h1>
 <h4 class="author">Zuchao Shen &amp; Benjamin Kelcey</h4>
-<h4 class="date">2023-04-02</h4>
+<h4 class="date">2023-04-24</h4>
 
 
 
-<p>The costs of sampling each additional unit in multilevel experimental
-studies vary across levels of hierarchy and treatment conditions due to
-the hierarchical sampling and the delivery of treatment. This package is
-a tool to identify the optimal sample allocation in experimental studies
-such that statistical power is maximized under a fixed budget. The
-current version covers designs detecting main and mediation effects.</p>
+<p>The costs of sampling each additional unit in (multilevel)
+experimental studies vary across treatment conditions (and levels of
+hierarchy). This package is a tool to identify the optimal sample
+allocation in experimental studies such that statistical power is
+maximized under a fixed budget. The designs covers experiments detecting
+main, mediation, and moderation effects (and some of the
+combinations).</p>
 <div id="optimal-design-parameters" class="section level1">
 <h1>1. Optimal Design Parameters</h1>
 <p>Optimal design parameters in an optimal sample allocation include</p>
@@ -357,8 +358,8 @@ current version covers designs detecting main and mediation effects.</p>
 <li>the optimal sample sizes at each of the levels except the top level
 because the top-level sample size will be determined by total budget or
 power once all other parameters are decided, and</li>
-<li>the proportion of units to be assigned to the treatment condition at
-the level of randomization.</li>
+<li>the proportion of units assigned to the treatment condition at the
+level of randomization.</li>
 </ul>
 <p>Researchers can fix one or more of the optimal design parameters for
 constrained optimal sample allocation and solve for the remainder of

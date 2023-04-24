@@ -15,6 +15,12 @@ knitr::opts_chunk$set(
 ```
 
 
+
+# Updates (version 1.4.2)
+## New features
+Updated the package description/title and updated arguments and solutions for the function of power.1.111.
+
+
 # Updates (version 1.4.1)
 ## New features
 Added functions od.1.111 and power.1.111, for optimal design and statistical power of single-level randomized controlled trials probing mediation effects under the Sobel test and the joint significance test.
