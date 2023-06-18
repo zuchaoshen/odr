@@ -112,14 +112,14 @@ od.2m <- function(n = NULL, p = NULL, icc = NULL,
               r12 = r12, r22m = r22m,
               c1 = c1, c2 = c2, c1t = c1t, omega = omega,
               n = n, p = p, iter = iter)
-  if (is.null(n)) {
+  if (is.null(par$n)) {
     n.expr <- quote({
       sqrt(((1 - icc) * (1 - r12)) /
         (p * (1 - p) * omega * (1 - r22m)) *
         c2 / ((1 - p) * c1 + p * c1t))
     })
   } else {
-    n.expr <- ({n})
+    n.expr <- ({par$n})
   }
   limFun <- function(x, y) {
     if (!is.null(x) && length(x) == 2 && is.numeric(x)) {x} else {y}
@@ -127,35 +127,33 @@ od.2m <- function(n = NULL, p = NULL, icc = NULL,
   nlim <- limFun(x = nlim, y = c(2, 50))
   plim <- limFun(x = plim, y = c(0, 1))
   varlim <- limFun(x = varlim, y = c(0, 0.05))
-  if (is.null(p)) {
+  if (is.null(par$p)) {
     p.expr <- quote({
      (c1t - c1) * omega * (1 - r22m) * n^2 * p^2 * (1 - p)^2 +
         (1 - icc) * (1 - r12) * n * p^2 -
         (1 - 2 * p) * (1 - icc) * (1 - r12) * (n * c1 + c2)
     })
   }
-  if (!is.null(n)) {
+  if (!is.null(par$n)) {
     if (!is.numeric(n) || n <= 0)
       stop("constrained 'n' must be numeric with n > 0")
   } else {
     n <- sample(2:50, 1)
   }
-  if (!is.null(p)) {
-    if (!is.numeric(p) || any(p <= 0 | p >= 1))
+  if (!is.null(par$p)) {
+    if (!is.numeric(par$p) || any(par$p <= 0 | par$p >= 1))
       stop("constrained 'p' must be numeric in (0, 1)")
-    p.constr <- p
   } else {
-    p.constr <- NULL
     p <- stats::runif(1, min = 0, max = 1)
   }
   nn <- pp <- NULL
   for (i in 1:iter) {
-    if (is.null(p.constr)) {
+    if (is.null(par$p)) {
       pp[i] <- stats::uniroot(function(p)
         eval(p.expr), plim)$root
       p <- pp[i]
     } else {
-      pp[i] <- p
+      pp[i] <- par$p
     }
     nn[i] <- eval(n.expr); n <- nn[i]
   }
