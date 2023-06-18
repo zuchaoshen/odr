@@ -119,7 +119,8 @@ od.1.111 <- function(a = NULL, b = NULL,
 
   if (is.null(par$p)){
       n.of.opt.pars <- 1
-      if (verbose) {cat('The ACO algorithm started initilization..', ".\n", sep = "")}
+      if (verbose) {cat('The ACO algorithm started initilization..',
+                        ".\n", sep = "")}
       e.abs <- e # absolute error
       e.rel <- e # relative error
       last.impr <- max.iter
@@ -212,13 +213,14 @@ od.1.111 <- function(a = NULL, b = NULL,
       n.iter <- n.of.archive
 
       if (verbose)
-      {cat('The ACO algorithm finished initilization of ', n.of.archive, ' analyses',".\n", sep = "")}
+      {cat('The ACO algorithm finished initilization of ',
+           n.of.archive, ' analyses',".\n", sep = "")}
 
-      while (TRUE) { # the algorithm will stop if one of the stop criteria is met
+      while (TRUE) { # the algorithm will stop if one of the criteria is met
         dist.mean <- p.X
-        # the algorithm will stop if it converges (no more change in sensitivity parameter values)
         if (sum(apply(dist.mean, 2, stats::sd)) == 0) {
-          return(list(archive = pp, archive.design.pars = p.X, n.iter = n.iter, par = par, funName = funName,
+          return(list(archive = pp, archive.design.pars = p.X,
+                      n.iter = n.iter, par = par, funName = funName,
                       designType = designType,
                       out = list(m = 1/max.y, p = max.X, n = par$n)))
         }
@@ -226,9 +228,10 @@ od.1.111 <- function(a = NULL, b = NULL,
         dim(dist.mean) <- c(length(pp$v), n.of.opt.pars)
         o.X <- vector()
         o.X <- gen.design.pars(dist.mean, dist.rank, n.of.ants, nl, q, n.of.archive, xi)
-        # the algorithm will stop if it converges (no more available random samples)
+        # the algorithm will stop if it converges
         if (length(o.X) == 0) {
-          return(list(archive = pp, archive.design.pars = p.X, n.iter = n.iter, par = par, funName = funName,
+          return(list(archive = pp, archive.design.pars = p.X,
+                      n.iter = n.iter, par = par, funName = funName,
                       designType = designType,
                       out = list(m = 1/max.y, p = max.X, n = par$n)))
         }
@@ -245,11 +248,13 @@ od.1.111 <- function(a = NULL, b = NULL,
           p.X <- rbind(p.X, X)
           dim(X) <- c(length(X)/n.of.opt.pars, n.of.opt.pars)
 
-          for (j in 1:dim(X)[1]) { # redo power analysis with n.of.ants times for those reasonable
+          for (j in 1:dim(X)[1]) {
+            # redo power analysis with n.of.ants times for those reasonable
 
             n.iter <- n.iter + 1
             p <- X[j, 1]
-            if (verbose) {cat('Number of tried evaluations is ', n.iter, ".\n", sep = "")}
+            if (verbose) {cat('Number of tried evaluations is ',
+                              n.iter, ".\n", sep = "")}
             n <- stats::uniroot(function(n) eval(pwr) - power, nlim)$root
             m <- p*n*ct + (1-p)*n*c
             y <- c(y, 1/m)
@@ -258,7 +263,7 @@ od.1.111 <- function(a = NULL, b = NULL,
         }
 
         # recalculate the rank
-        pp$gr <- rank(-pp$v, ties.method = "random") # calculate the rank of the solutions
+        pp$gr <- rank(-pp$v, ties.method = "random")
         idx.final <- pp$gr <= n.of.archive
         pp <- pp[idx.final,]
         p.X <- p.X[idx.final,]
@@ -270,12 +275,12 @@ od.1.111 <- function(a = NULL, b = NULL,
         if (max(y, na.rm = TRUE) > max.y) {
           max.y <- max(y, na.rm = TRUE)
           max.X <- p.X[which.max(y), ]
-          # colnames(max.X) <- c(phan.names, "eval")
           last.impr <- eval}
 
         if ((abs(max.y - max.value) < abs(e.rel * max.value + e.abs)) |
             (max.y > max.value)) {
-          return(list(archive = pp, archive.design.pars = p.X, n.iter = n.iter, par = par, funName = funName,
+          return(list(archive = pp, archive.design.pars = p.X,
+                      n.iter = n.iter, par = par, funName = funName,
                       designType = designType,
                       out = list(m = 1/max.y, p = max.X, n = par$n)))
         }
@@ -283,7 +288,8 @@ od.1.111 <- function(a = NULL, b = NULL,
         # check if the maximum allowed number of objective function
         # evaluations has not been exceeded
         if (n.iter >= max.iter) {
-          return(list(archive = pp, archive.design.pars = p.X, n.iter = n.iter, par = par, funName = funName,
+          return(list(archive = pp, archive.design.pars = p.X,
+                      n.iter = n.iter, par = par, funName = funName,
                       designType = designType,
                       out = list(m = 1/max.y, p = max.X, n = par$n)))
         }

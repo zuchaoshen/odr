@@ -1,4 +1,4 @@
-#' Budget and/or sample size, power, MDES calculation for CRTs probing
+#' Budget and/or sample size, power calculation for CRTs probing
 #'     mediation effects with cluster-level mediators
 #' @description This function can calculate required budget for desired power and
 #'     power under a fixed budget
@@ -7,7 +7,8 @@
 #'     (e.g., required sample size and power calculation).
 #' @inheritParams power.2
 #' @inheritParams od.2.221
-#' @param expr returned object from function \code{\link{od.2.221}}; default value is NULL;
+#' @param expr returned object from function \code{\link{od.2.221}};
+#'     default value is NULL;
 #'     if \code{expr} is specified, parameter values of \code{a}, \code{b},
 #'     \code{c1}, \code{c1t}, and \code{p}
 #'     used or solved in function \code{\link{od.2.221}} will
@@ -19,7 +20,8 @@
 #'     \code{p} and/or \code{n} in a list format to overwrite that/those
 #'     from \code{expr}; default value is NULL.
 #' @param mlim the range for searching the root of budget (\code{m}) numerically,
-#'     default value is the costs sampling \code{nlim} units across treatment conditions
+#'     default value is the costs sampling \code{nlim}
+#'     units across treatment conditions
 #'     or c(4 * ncost, 10e10 * ncost) with ncost = ((1 - p) * c1 + p * c1t)
 #'
 #' @return Required budget (or required sample size), statistical power, or MDES
@@ -34,15 +36,15 @@
 power.2.221 <- function(cost.model = TRUE, expr = NULL, constraint = NULL,
                         sig.level = 0.05, two.tailed = TRUE,
                         a = NULL, b = NULL,
-                        power = NULL, m = NULL, test = "joint",
+                        test = "joint",
                         n = NULL, p = NULL,
+                        power= NULL, J = NULL, m = NULL,
                         c1 = NULL, c1t = NULL,
                         c2 = NULL, c2t = NULL,
-                        r12 = 0, r22 = 0, r2m = 0,
-                        icc = NULL, J = NULL, q = 0,
+                        r2m = r2m, r.yx = 0, r.mw = 0, r.yw = 0,
+                        icc = NULL,  q = 0,
                         q.a = 0, q.b = 0,
-                        powerlim = NULL, Jlim = NULL, mlim = NULL,
-                        rounded = TRUE) {
+                        powerlim = NULL, Jlim = NULL, mlim = NULL) {
   funName <- "power.2.221"
   designType <- "2-2-1 mediation in two-level CRTs"
   if (cost.model == TRUE) {
@@ -74,13 +76,18 @@ power.2.221 <- function(cost.model = TRUE, expr = NULL, constraint = NULL,
       c2 <- expr$par$c2
       c2t <- expr$par$c2t
       icc <- expr$par$icc
-      r12 <- expr$par$r12
-      r22 <- expr$par$r22
       r2m <- expr$par$r2m
+      r.yx <- expr$par$r.yx
+      r.yw <- expr$par$r.yw
+      r.mw <- expr$par$r.mw
+      q.a <- expr$par$q.a
+      q.b <- expr$par$q.b
       if(!is.null(test)){
         if (test != expr$par$test)
-        {cat('Tests are different in power and the od function ', '(', test, ' and ', expr$par$test,
-            '). \n', 'The power analysis is for the ', test, ' test.', sep = "")}
+        {cat('Tests are different in power and the od function ',
+             '(', test, ' and ', expr$par$test,
+            '). \n', 'The power analysis is for the ', test,
+            ' test.', sep = "")}
       } else {
         test <- expr$par$test
       }
@@ -129,166 +136,109 @@ power.2.221 <- function(cost.model = TRUE, expr = NULL, constraint = NULL,
               sig.level = sig.level,
               two.tailed = two.tailed,
               a = a, b = b,
-              r12 = r12, r22 = r22, r2m = r2m,
+              r2m = r2m, r.yx = r.yx, r.yw = r.yw, r.mw = r.mw,
               c1 = c1, c1t = c1t, c2 = c2, c2t = c2t,
               n = n, p = p, J = J, funName = funName,
-              q = q, m = m, power = power)
+              q.a = q.a, q.b = q.b, m = m, power = power)
   tside <- ifelse(two.tailed == TRUE, 2, 1)
   limFun <- function(x, y) {
     if (!is.null(x) && length(x) == 2 && is.numeric(x)) {x} else {y}
   }
   Jlim <- limFun(x = Jlim, y = c(6, 1e6))
   powerlim <- limFun(x = powerlim, y = c(5e-10, 1 - 5e-10))
-  mlim <- limFun(x = mlim, y = c(4 * ((1 - p) * (c1 * n + c2) + p * (c1t * n + c2t)),
-                                 1e10 * ((1 - p) * (c1 * n + c2) + p * (c1t * n + c2t))))
-  if (test == "sobel" | test == "Sobel" | test == "SOBEL"){
-    if (cost.model){
-      # when cost.model is true for the Sobel test
-      if (two.tailed) {
-        pwr.sobel <- quote({
-          1 - pnorm(qnorm(1 - sig.level / tside),
-                    a * b / sqrt(a^2 * (icc * (1 - r22) + (1 - icc) * (1 - r12)/n)/
-                                   (m * (1 - r2m) / ((1 - p) * (c1 * n + c2) + p * (c1t * n + c2t))) +
-                                   b^2 * (1 -r2m) / (p * (1 - p) *
-                                                       (m / ((1 - p) * (c1 * n + c2) + p * (c1t * n + c2t)))))) +
-            pnorm(qnorm(sig.level / tside),  a * b / sqrt(a^2 * (icc * (1 - r22) + (1 - icc) * (1 - r12)/n)/
-                                                            (m * (1 - r2m) / ((1 - p) * (c1 * n + c2) + p * (c1t * n + c2t))) +
-                                                            b^2 * (1 -r2m) / (p * (1 - p) * (m / ((1 - p) *
-                                                                                                    (c1 * n + c2) + p * (c1t * n + c2t))))))
-        })} else {
-          pwr.sobel <- quote({
-            1 - pnorm(qnorm(1 - sig.level / tside),
-                      a * b / sqrt(a^2 * (icc * (1 - r22) + (1 - icc) * (1 - r12)/n)/
-                                     (m * (1 - r2m) / ((1 - p) * (c1 * n + c2) + p * (c1t * n + c2t))) +
-                                     b^2 * (1 -r2m) / (p * (1 - p) *
-                                                         (m / ((1 - p) * (c1 * n + c2) + p * (c1t * n + c2t))))))
-          })}
-    } else {
-      # when cost.model is not true for the Sobel test
-      if (two.tailed) {
-        pwr.sobel <- quote({
-          1 - pnorm(qnorm(1 - sig.level / tside),
-                    a * b / sqrt(a^2 * (icc * (1 - r22) + (1 - icc) * (1 - r12)/n)/
-                                   (J* (1 - r2m)) +
-                                   b^2 * (1 -r2m) / (p * (1 - p) * J))) +
-            pnorm(qnorm(sig.level / tside),   a * b / sqrt(a^2 * (icc * (1 - r22) + (1 - icc) * (1 - r12)/n)/
-                                                             (J* (1 - r2m)) +
-                                                             b^2 * (1 -r2m) / (p * (1 - p) * J)))
-        })} else {
-          pwr.sobel <- quote({
-            1 - pnorm(qnorm(1 - sig.level / tside),
-                      a * b / sqrt(a^2 * (icc * (1 - r22) + (1 - icc) * (1 - r12)/n)/
-                                     (J* (1 - r2m)) +
-                                     b^2 * (1 -r2m) / (p * (1 - p) * J)))
-          })}
-    }
-
-    if (is.null(power)) {
-      sobel.out <- list(power = eval(pwr.sobel))
-    } else if (is.null(m) & is.null(J)) {
-      if(cost.model){
-        sobel.out <- list(m = stats::uniroot(function(m)
-          eval(pwr.sobel) - power, mlim)$root);
-        sobel.out <- c(sobel.out, list(J = sobel.out$m / (((1 - p) * (c1 * n + c2)
-                                                           + p * (c1t * n + c2t)))))
-      } else {
-        sobel.out <- list(J = stats::uniroot(function(J)
-          eval(pwr.sobel) - power, Jlim)$root)
-        }
-    }
-    power.out <- list(funName = funName,
-                      designType = designType,
-                      par = par, sobel.out = sobel.out)
-    return(power.out)
-  }
+  mlim <- limFun(x = mlim, y = c(4 * ((1 - p) * (c1 * n + c2) +
+                                        p * (c1t * n + c2t)),
+                                 1e10 * ((1 - p) * (c1 * n + c2) +
+                                           p * (c1t * n + c2t))))
 
   if (test == "joint" | test == "Joint" | test == "JOINT"){
     if (cost.model){
-      # when cost.model is true for the Joint test
+      # when cost.model is true
       if (two.tailed) {
-        pwr.joint <- quote({
+        pwr <- quote({
           J <- m / ((1 - p) * (c1 * n + c2) + p * (c1t * n + c2t));
-          lambda.a <- a * sqrt((p * (1 - p) *J)/(1 - r2m));
-          lambda.b <- b * sqrt(J * (1 - r2m) /
-                                 (icc *(1 - r22) + (1 - icc) * (1 - r12) / n));
-
-          (1 - pt(qt(1 - sig.level/tside, df = J- q.a - 2),
-                  df = J - q.a - 2, lambda.a) +
-             pt(qt(sig.level/tside, df = J - q.a - 2),
-                df = J - q.a - 2, lambda.a)) *
-            (1 - pt(qt(1 - sig.level/tside, df = J - q.b - 3),
-                    df = J - q.b - 3, lambda.b) +
-               pt(qt(sig.level/tside, df = J - q.b - 3),
-                  df = J - q.b - 3, lambda.b))
+          lambda.a <- a/sqrt((1-r2m)/(p*(1-p)*J));
+          lambda.B <- ((b-r.yw*r.mw)/(1-r.mw^2))/
+            sqrt((icc*(1-b^2-r.mw^2-r.yw^2+2*b*r.mw*r.yw)/
+                    (1-r.mw^2)+(1-icc)*(1-r.yx^2))/
+                   (J*(1-r.mw^2)));
+          (1 - pt(qt(1-sig.level/tside, df = J-q.a-2),
+                  df = J-q.a-2, lambda.a) +
+             pt(qt(sig.level/tside, df = J-q.a-2),
+                df = J-q.a-2, lambda.a)) *
+            (1 - pt(qt(1-sig.level/tside, df = J-q.b-3),
+                    df = J-q.b-3, lambda.B) +
+               pt(qt(sig.level/tside, df = J-q.b-3),
+                  df = J-q.b-3, lambda.B))
         })
       } else {
-        pwr.joint <- quote({
+        pwr <- quote({
           J <- m / ((1 - p) * (c1 * n + c2) + p * (c1t * n + c2t));
-          lambda.a <- a * sqrt((p * (1 - p) *J)/(1 - r2m));
-          lambda.b <- b * sqrt(J * (1 - r2m) /
-                                 (icc *(1 - r22) + (1 - icc) * (1 - r12) / n));
-
-          (1 - pt(qt(1 - sig.level/tside, df = J- q.a - 2),
-                  df = J - q.a - 2, lambda.a)) *
-            (1 - pt(qt(1 - sig.level/tside, df = J - q.b - 3),
-                    df = J - q.b - 3, lambda.b))
+          lambda.a <- a/sqrt((1-r2m)/(p*(1-p)*J));
+          lambda.B <- ((b-r.yw*r.mw)/(1-r.mw^2))/
+            sqrt((icc*(1-b^2-r.mw^2-r.yw^2+2*b*r.mw*r.yw)/
+                    (1-r.mw^2)+(1-icc)*(1-r.yx^2))/
+                   (J*(1-r.mw^2)));
+          (1 - pt(qt(1-sig.level/tside, df = J-q.a-2),
+                  df = J-q.a-2, lambda.a)) *
+            (1 - pt(qt(1-sig.level/tside, df = J-q.b-3),
+                    df = J-q.b-3, lambda.B))
         })
       }
     } else {
-      # when cost.model is not true for the Joint test
+      # when cost.model is not true
       if (two.tailed) {
-        pwr.joint <- quote({
-          lambda.a <- a * sqrt((p * (1 - p) *J)/(1 - r2m));
-          lambda.b <- b * sqrt(J * (1 - r2m) /
-                                 (icc *(1 - r22) + (1 - icc) * (1 - r12) / n));
-
-          (1 - pt(qt(1 - sig.level/tside, df = J- q.a - 2),
-                  df = J - q.a - 2, lambda.a) +
-             pt(qt(sig.level/tside, df = J - q.a - 2),
-                df = J - q.a - 2, lambda.a)) *
-            (1 - pt(qt(1 - sig.level/tside, df = J - q.b - 3),
-                    df = J - q.b - 3, lambda.b) +
-               pt(qt(sig.level/tside, df = J - q.b - 3),
-                  df = J - q.b - 3, lambda.b))
+        pwr <- quote({
+          lambda.a <- a/sqrt((1-r2m)/(p*(1-p)*J));
+          lambda.B <- ((b-r.yw*r.mw)/(1-r.mw^2))/
+            sqrt((icc*(1-b^2-r.mw^2-r.yw^2+2*b*r.mw*r.yw)/
+                    (1-r.mw^2)+(1-icc)*(1-r.yx^2))/
+                   (J*(1-r.mw^2)));
+            (1 - pt(qt(1-sig.level/tside, df = J-q.a-2),
+                  df = J-q.a-2, lambda.a) +
+             pt(qt(sig.level/tside, df = J-q.a-2),
+                df = J-q.a-2, lambda.a)) *
+            (1 - pt(qt(1-sig.level/tside, df = J-q.b-3),
+                    df = J-q.b-3, lambda.B) +
+               pt(qt(sig.level/tside, df = J-q.b-3),
+                  df = J-q.b-3, lambda.B))
         })
       } else {
-        pwr.joint <- quote({
-          lambda.a <- a * sqrt((p * (1 - p) *J)/(1 - r2m));
-          lambda.b <- b * sqrt(J * (1 - r2m) /
-                                 (icc *(1 - r22) + (1 - icc) * (1 - r12) / n));
-
-          (1 - pt(qt(1 - sig.level/tside, df = J- q.a - 2),
-                  df = J - q.a - 2, lambda.a)) *
-            (1 - pt(qt(1 - sig.level/tside, df = J - q.b - 3),
-                    df = J - q.b - 3, lambda.b))
+        pwr <- quote({
+          lambda.a <- a/sqrt((1-r2m)/(p*(1-p)*J));
+          lambda.B <- ((b-r.yw*r.mw)/(1-r.mw^2))/
+            sqrt((icc*(1-b^2-r.mw^2-r.yw^2+2*b*r.mw*r.yw)/
+                    (1-r.mw^2)+(1-icc)*(1-r.yx^2))/
+                   (J*(1-r.mw^2)));
+          (1 - pt(qt(1-sig.level/tside, df = J-q.a-2),
+                  df = J-q.a-2, lambda.a)) *
+            (1 - pt(qt(1-sig.level/tside, df = J-q.b-3),
+                    df = J-q.b-3, lambda.B))
         })
       }
     }
+    }
 
-
-    if (is.null(power)) {
-      joint.out <- list(power = eval(pwr.joint))
-    } else if (is.null(m) & is.null(J)) {
+    if (is.null(par$power)) {
+      out = list(power = eval(pwr))
+    } else if (is.null(par$m) & is.null(par$J)) {
       if(cost.model){
-        joint.out <- list(m = stats::uniroot(function(m)
-          eval(pwr.joint) - power, mlim)$root);
-        joint.out <- c(joint.out, list(J = joint.out$m / (((1 - p) * (c1 * n + c2)
-                                                           + p * (c1t * n + c2t)))))
+        out = list(
+        m = stats::uniroot(function(m)
+          eval(pwr) - power, mlim)$root)
+        out <- list(m = out$m, J = out$m / (((1 - p) * (c1 * n + c2)
+                                  + p * (c1t * n + c2t))))
       } else {
-        joint.out <- list(J = stats::uniroot(function(J)
-          eval(pwr.joint) - power, Jlim)$root);
+        out = list(J = stats::uniroot(function(J)
+          eval(pwr) - power, Jlim)$root)
       }
-
     }
-    power.out <- list(funName = funName,
-                      designType = designType,
-                      par = par, joint.out = joint.out)
-    return(power.out)
-  }
+      results <- list(funName = funName,
+               designType = designType,
+               par = par, test =test, out = out)
+    return(results)
 
 }
-
-
 
 
 
