@@ -293,7 +293,7 @@ power.1.111 <- function(cost.model = TRUE, expr = NULL,
                                                power, nlim)$root)
       }
     }
-    power.out <- list(funName = funName, designType = designType,
+   power.out <- list(funName = funName, designType = designType,
                       par = par, test=test, out = out)
     return(power.out)
   }

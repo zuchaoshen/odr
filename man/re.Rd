@@ -40,13 +40,13 @@ Calculate the relative efficiency (RE) between two designs, it returns
               n = 20, varlim = c(0.005, 0.025))
 # Relative efficiency (RE)
   myre <- re(od = myod1, subod= myod2)
-  myre$out # RE = 0.88
+  myre$re # RE = 0.88
 # Constrained optimal design with p = 0.5
   myod2 <- od.2(icc = 0.2, r12 = 0.5, r22 = 0.5, c1 = 1, c2 = 5, c1t = 1, c2t = 50,
              p = 0.5, varlim = c(0.005, 0.025))
 # Relative efficiency (RE)
   myre <- re(od = myod1, subod= myod2)
-  myre$out # RE = 0.90
+  myre$re # RE = 0.90
 
 # Unconstrained optimal design of 3-level CRT #----------
   myod1 <- od.3(icc2 = 0.2, icc3 = 0.1, r12 = 0.5, r22 = 0.5, r32 = 0.5,
@@ -58,7 +58,7 @@ Calculate the relative efficiency (RE) between two designs, it returns
              varlim = c(0, 0.025))
 # Relative efficiency (RE)
   myre <- re(od = myod1, subod= myod2)
-  myre$out # RE = 0.53
+  myre$re # RE = 0.53
 
 # Unconstrained optimal design of 4-level CRT #---------
   myod1 <- od.4(icc2 = 0.2, icc3 = 0.1, icc4 = 0.05, r12 = 0.5,
@@ -74,7 +74,7 @@ Calculate the relative efficiency (RE) between two designs, it returns
               varlim = c(0, 0.01))
 # Relative efficiency (RE)
   myre <- re(od = myod1, subod= myod2)
-  myre$out # RE = 0.78
+  myre$re # RE = 0.78
 
 }
 \references{

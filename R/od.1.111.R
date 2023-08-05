@@ -102,9 +102,9 @@ od.1.111 <- function(a = NULL, b = NULL,
          must be specified")
   NumberCheck <- function(x) {!is.null(x) & !is.numeric(x)}
   if (sum(sapply(list(r.yx, r.mx, r.mw), function(x) {
-    NumberCheck(x) | any(0 > x | x > 1)
+    NumberCheck(x) | any(-1 > x | x > 1)
   })) >= 1)
-    stop("'r.yx', 'r.mx', 'r.mw' must be numeric in [0, 1]")
+    stop("'r.yx', 'r.mx', 'r.mw' must be numeric in [-1, 1]")
   if (sum(sapply(list(c, ct), function(x) {
     NumberCheck(x) | x < 0})) >= 1)
     stop("'c', 'ct' must be numeric")
@@ -112,6 +112,7 @@ od.1.111 <- function(a = NULL, b = NULL,
     stop("when c and ct are both zero, p must be constrained,
          please specify a value  for p")
 
+  B <- (b-r.yx*r.mx)/(1-r.mx^2)
   labFun <- function(x, y) {
     if (!is.null(x) & length(x) == 1 & is.character(x)) {x} else {y}
   }
@@ -222,7 +223,8 @@ od.1.111 <- function(a = NULL, b = NULL,
           return(list(archive = pp, archive.design.pars = p.X,
                       n.iter = n.iter, par = par, funName = funName,
                       designType = designType,
-                      out = list(m = 1/max.y, p = max.X, n = par$n)))
+                      out = list(B = B, ab = a*b, aB = a*B,
+                                 m = 1/max.y, p = max.X, n = par$n)))
         }
         dist.rank <- pp$gr
         dim(dist.mean) <- c(length(pp$v), n.of.opt.pars)
@@ -232,7 +234,7 @@ od.1.111 <- function(a = NULL, b = NULL,
         if (length(o.X) == 0) {
           return(list(archive = pp, archive.design.pars = p.X,
                       n.iter = n.iter, par = par, funName = funName,
-                      designType = designType,
+                      designType = designType, B = B, ab = a*b, aB = a*B,
                       out = list(m = 1/max.y, p = max.X, n = par$n)))
         }
         #X <- o.X
@@ -282,7 +284,8 @@ od.1.111 <- function(a = NULL, b = NULL,
           return(list(archive = pp, archive.design.pars = p.X,
                       n.iter = n.iter, par = par, funName = funName,
                       designType = designType,
-                      out = list(m = 1/max.y, p = max.X, n = par$n)))
+                      out = list(B = B, ab = a*b, aB = a*B,
+                                 m = 1/max.y, p = max.X, n = par$n)))
         }
 
         # check if the maximum allowed number of objective function
@@ -291,7 +294,8 @@ od.1.111 <- function(a = NULL, b = NULL,
           return(list(archive = pp, archive.design.pars = p.X,
                       n.iter = n.iter, par = par, funName = funName,
                       designType = designType,
-                      out = list(m = 1/max.y, p = max.X, n = par$n)))
+                      out = list(B = B, ab = a*b, aB = a*B,
+                                 m = 1/max.y, p = max.X, n = par$n)))
         }
       }
     } else if (!is.null(par$p)) {
@@ -301,7 +305,7 @@ od.1.111 <- function(a = NULL, b = NULL,
           ".\n===============================\n", sep = "")
       return(list(par = par, funName = funName,
                   designType = designType, test = test,
-                  out = c(p = par$p, n = par$n)))
-    }
+                  out = c(B = B, ab = a*b, aB = a*B, p = par$p, n = par$n)))
+      }
 }
 

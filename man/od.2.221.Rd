@@ -8,6 +8,8 @@
 od.2.221(
   a = NULL,
   b = NULL,
+  n = NULL,
+  p = NULL,
   icc = NULL,
   c1 = NULL,
   c1t = NULL,
@@ -15,34 +17,23 @@ od.2.221(
   c2t = NULL,
   m = NULL,
   r2m = 0,
-  r12 = 0,
-  r22 = 0,
+  r.yx = 0,
+  r.mw = 0,
+  r.yw = 0,
   q.a = 0,
   q.b = 0,
   test = "joint",
-  n = NULL,
-  p = NULL,
-  iter = 100,
   tol = 1e-11,
-  power.joint = 0.8,
+  power = 0.8,
   d.p = c(0.1, 0.5),
-  d.n = c(1, 50),
+  d.n = c(2, 100),
   sig.level = 0.05,
   two.tailed = TRUE,
-  plots = TRUE,
-  plot.by = NULL,
-  n.rep = 1000,
-  nlim = c(0, 50),
-  plim = c(0, 1),
-  varlim = c(0, 0.05),
-  Jlim = c(4, 1e+05),
-  nlab = NULL,
-  plab = NULL,
-  varlab = NULL,
-  vartitle = NULL,
+  Jlim = c(max(q.a, q.b) + 4, 1e+06),
   verbose = TRUE,
+  nrange = c(1.5, 10000),
   max.value = Inf,
-  max.iter = 150,
+  max.iter = 300,
   e = 1e-10,
   n.of.ants = 10,
   n.of.archive = 50,
@@ -53,7 +44,12 @@ od.2.221(
 \arguments{
 \item{a}{The treatment effect on the mediator.}
 
-\item{b}{The within treatment correlation between the outcome and the mediator.}
+\item{b}{The within treatment correlation between the outcome and
+the mediator at the cluster level.}
+
+\item{n}{The level-1 sample size per level-2 unit.}
+
+\item{p}{The proportion of level-2 clusters/units to be assigned to treatment.}
 
 \item{icc}{The unconditional intraclass correlation coefficient (ICC) in population or in
 each treatment condition.}
@@ -68,73 +64,52 @@ each treatment condition.}
 
 \item{m}{Total budget.}
 
-\item{r2m}{The proportion of within treatment mediator variance explained by covariates.}
+\item{r2m}{The proportion of mediator variance explained by covariates in
+the mediator model.}
 
-\item{r12}{The proportion of within treatment individual-level outcome variance
-explained by covariates.}
+\item{r.yx}{The correlation between the outcome and the covariate at the
+individual level.}
 
-\item{r22}{The proportion of within treatment group-level outcome variance
-explained by covariates and the mediator.}
+\item{r.mw}{The correlation between the mediator and the covariate at the
+cluster level.}
 
-\item{q.a}{The  number of covariates in the outcome model (except the treatment indicator and the mediator).}
+\item{r.yw}{The correlation between the outcome and the covariate at the
+cluster level.}
 
-\item{q.b}{The number of covariates in the mediator model (except the treatment indicator).}
+\item{q.a}{The number of covariates in the mediator model
+(except the treatment indicator).}
 
-\item{test}{The type of test will be used to detect mediation effects. Default is
-the joint significance test (i.e., test = "joint").
-Other choices are the Sobel test and Monte Carlo confidence interval
-test by specifying the argument as test = "sobel" or test = "mcci".}
+\item{q.b}{The  number of covariates in the outcome model
+at the cluster level
+(except the treatment indicator and the mediator).}
 
-\item{n}{The level-1 sample size per level-2 unit.}
-
-\item{p}{The proportion of level-2 clusters/units to be assigned to treatment.}
-
-\item{iter}{number of iteration used for solving roots in Sobel test.}
+\item{test}{The type of test will be used to detect mediation effects.
+Default is the joint significance test (i.e., test = "joint").
+The other choice is the Sobel test
+by specifying the argument as test = "sobel".}
 
 \item{tol}{convergence tolerance.}
 
-\item{power.joint}{Statistical power specified for the joint significance test,
-default is .80.}
+\item{power}{Statistical power specified. The default value is .80.}
 
-\item{d.p}{The initial sampling domains for p. Default is c(0.03, 0.97).}
+\item{d.p}{The initial sampling domains for p. Default is c(0.1, 0.5).}
 
-\item{d.n}{The initial sampling domain for n. Default is c(0.5, 500).}
+\item{d.n}{The initial sampling domain for n. Default is c(2, 100).}
 
 \item{sig.level}{Significance level or type I error rate, default value is 0.05.}
 
-\item{two.tailed}{Logical; two-tailed tests if TRUE,
-otherwise one-tailed tests; default value is TRUE.}
+\item{two.tailed}{Two tailed test, the default value is TRUE.}
 
-\item{plots}{Logical, provide variance plots if TRUE, otherwise not; default value is TRUE.}
-
-\item{plot.by}{Plot the variance by \code{n} and/or \code{p}; default value is
-plot.by = list(n = "n", p = "p").}
-
-\item{n.rep}{Number of replications in MCCI power calculation.}
-
-\item{nlim}{The plot range for n, default value is c(2, 50).}
-
-\item{plim}{The plot range for p, default value is c(0, 1).}
-
-\item{varlim}{The plot range for variance, default value is c(0, 0.05).}
-
-\item{Jlim}{The range for J to search for a numerical solution. Default is c(4, 10e4).}
-
-\item{nlab}{The plot label for \code{n},
-default value is "Level-1 Sample Size: n".}
-
-\item{plab}{The plot label for p,
-default value is "Proportion Level-2 Units in Treatment: p".}
-
-\item{varlab}{The plot label for variance,
-default value is "Variance".}
-
-\item{vartitle}{The title of variance plot, default value is NULL.}
+\item{Jlim}{The range for J to solve for a numerical solution.
+Default is c(max(q.a, q.b)+4, 1e6).}
 
 \item{verbose}{Print out evaluation process if TRUE, default is TRUE.}
 
+\item{nrange}{The range of the individual-level sample size per cluster
+that used to exclude unreasonable values. Default value is c(1.5, 10000).}
+
 \item{max.value}{Maximal value of optimization when used as
-the stopping criterion. Default is infinite.}
+the stopping criterion. Default is -Inf.}
 
 \item{max.iter}{Maximal number of function evaluations when used as
 the stopping criterion.}
@@ -152,23 +127,23 @@ of power analysis for calculating required budget, default value is 10.}
 \item{xi}{Convergence pressure (0, Inf), suggested: (0, 1), default is 0.5.}
 }
 \value{
-Unconstrained or constrained optimal sample allocation (\code{n} and \code{p}).
-    The function also returns the variance of a mediation effect or statistical power,
+Unconstrained or constrained optimal sample allocation
+    (\code{n} and \code{p}).
+    The function also returns the variance of a mediation effect
+    or statistical power,
     function name, design type,
     and parameters used in the calculation.
 }
 \description{
 The optimal design of two-level
     cluster randomized trials (CRTs) probing mediation effects with
-    cluster-level mediators, for the
-    Sobel test, is to calculate
-    the optimal sample allocation that minimizes the variance of
-    a mediation effect under a fixed budget. For the joint significance test, it is to identify
+    cluster-level mediators is to to identify
     the optimal sample allocation that requires the minimum budget
     to achieve certain power level.
     The optimal design parameters include
     the level-1 sample size per level-2 unit (\code{n})
-    and the proportion of level-2 clusters/groups to be assigned to treatment (\code{p}).
+    and the proportion of level-2 clusters/groups to be assigned to
+    treatment (\code{p}).
     This function solves the optimal \code{n} and/or \code{p}
     with and without a constraint.
 }

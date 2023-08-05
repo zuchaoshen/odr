@@ -2,7 +2,7 @@
 % Please edit documentation in R/power.2.221.R
 \name{power.2.221}
 \alias{power.2.221}
-\title{Budget and/or sample size, power, MDES calculation for CRTs probing
+\title{Budget and/or sample size, power calculation for CRTs probing
     mediation effects with cluster-level mediators}
 \usage{
 power.2.221(
@@ -13,27 +13,27 @@ power.2.221(
   two.tailed = TRUE,
   a = NULL,
   b = NULL,
-  power = NULL,
-  m = NULL,
   test = "joint",
   n = NULL,
   p = NULL,
+  power = NULL,
+  J = NULL,
+  m = NULL,
   c1 = NULL,
   c1t = NULL,
   c2 = NULL,
   c2t = NULL,
-  r12 = 0,
-  r22 = 0,
-  r2m = 0,
+  r2m = r2m,
+  r.yx = 0,
+  r.mw = 0,
+  r.yw = 0,
   icc = NULL,
-  J = NULL,
   q = 0,
   q.a = 0,
   q.b = 0,
   powerlim = NULL,
   Jlim = NULL,
-  mlim = NULL,
-  rounded = TRUE
+  mlim = NULL
 )
 }
 \arguments{
@@ -42,7 +42,8 @@ power.2.221(
 if TRUE, otherwise conventional power analyses
 (e.g., required sample size, power, or MDES calculation); default value is TRUE.}
 
-\item{expr}{returned object from function \code{\link{od.2.221}}; default value is NULL;
+\item{expr}{returned object from function \code{\link{od.2.221}};
+default value is NULL;
 if \code{expr} is specified, parameter values of \code{a}, \code{b},
 \code{c1}, \code{c1t}, and \code{p}
 used or solved in function \code{\link{od.2.221}} will
@@ -62,20 +63,23 @@ otherwise one-tailed tests; default value is TRUE.}
 
 \item{a}{The treatment effect on the mediator.}
 
-\item{b}{The within treatment correlation between the outcome and the mediator.}
+\item{b}{The within treatment correlation between the outcome and
+the mediator at the cluster level.}
 
-\item{power}{Statistical power.}
-
-\item{m}{Total budget.}
-
-\item{test}{The type of test will be used to detect mediation effects. Default is
-the joint significance test (i.e., test = "joint").
-Other choices are the Sobel test and Monte Carlo confidence interval
-test by specifying the argument as test = "sobel" or test = "mcci".}
+\item{test}{The type of test will be used to detect mediation effects.
+Default is the joint significance test (i.e., test = "joint").
+The other choice is the Sobel test
+by specifying the argument as test = "sobel".}
 
 \item{n}{The level-1 sample size per level-2 unit.}
 
 \item{p}{The proportion of level-2 clusters/units to be assigned to treatment.}
+
+\item{power}{Statistical power.}
+
+\item{J}{The total level-2 sample size.}
+
+\item{m}{Total budget.}
 
 \item{c1}{The cost of sampling one level-1 unit in control condition.}
 
@@ -85,22 +89,29 @@ test by specifying the argument as test = "sobel" or test = "mcci".}
 
 \item{c2t}{The cost of sampling one level-2 unit in treatment condition.}
 
-\item{r12}{The proportion of level-1 variance explained by covariates.}
+\item{r2m}{The proportion of mediator variance explained by covariates in
+the mediator model.}
 
-\item{r22}{The proportion of level-2 variance explained by covariates.}
+\item{r.yx}{The correlation between the outcome and the covariate at the
+individual level.}
 
-\item{r2m}{The proportion of within treatment mediator variance explained by covariates.}
+\item{r.mw}{The correlation between the mediator and the covariate at the
+cluster level.}
+
+\item{r.yw}{The correlation between the outcome and the covariate at the
+cluster level.}
 
 \item{icc}{The unconditional intraclass correlation coefficient (ICC) in population or in
 each treatment condition.}
 
-\item{J}{The total level-2 sample size.}
-
 \item{q}{The number of level-2 covariates.}
 
-\item{q.a}{The  number of covariates in the outcome model (except the treatment indicator and the mediator).}
+\item{q.a}{The number of covariates in the mediator model
+(except the treatment indicator).}
 
-\item{q.b}{The number of covariates in the mediator model (except the treatment indicator).}
+\item{q.b}{The  number of covariates in the outcome model
+at the cluster level
+(except the treatment indicator and the mediator).}
 
 \item{powerlim}{The range for solving the root of power (\code{power}) numerically,
 default value is c(1e-10, 1 - 1e-10).}
@@ -109,12 +120,9 @@ default value is c(1e-10, 1 - 1e-10).}
 default is c(4, 10e10).}
 
 \item{mlim}{the range for searching the root of budget (\code{m}) numerically,
-default value is the costs sampling \code{nlim} units across treatment conditions
+default value is the costs sampling \code{nlim}
+units across treatment conditions
 or c(4 * ncost, 10e10 * ncost) with ncost = ((1 - p) * c1 + p * c1t)}
-
-\item{rounded}{Logical; round \code{n} and \code{p} that are from functions \code{od.2}
-to integer and two decimal places, respectively if TRUE,
-otherwise no rounding; default value is TRUE.}
 }
 \value{
 Required budget (or required sample size), statistical power, or MDES

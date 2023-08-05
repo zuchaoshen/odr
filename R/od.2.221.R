@@ -30,7 +30,7 @@
 #'     cluster level.
 #' @param r.mw The correlation between the mediator and the covariate at the
 #'     cluster level.
-#' @param r2m The proportion of mediator variance explained by covaraites in
+#' @param r2m The proportion of mediator variance explained by covariates in
 #'     the mediator model.
 #' @param test The type of test will be used to detect mediation effects.
 #'     Default is the joint significance test (i.e., test = "joint").
@@ -54,7 +54,7 @@
 #' @param Jlim The range for J to solve for a numerical solution.
 #'     Default is c(max(q.a, q.b)+4, 1e6).
 #' @param nrange The range of the individual-level sample size per cluster
-#'     that used to exclude unreasonable values. Default value is c(1.5, 10000).     
+#'     that used to exclude unreasonable values. Default value is c(1.5, 10000).
 #' @param n.of.ants Number of ants used in each iteration after the initialization
 #'     of power analysis for calculating required budget, default value is 10.
 #' @param tol convergence tolerance.

@@ -43,13 +43,13 @@
 #'               n = 20, varlim = c(0.005, 0.025))
 #' # Relative precision and efficiency (RPE)
 #'   myrpe <- rpe(od = myod1, subod= myod2)
-#'   myrpe$out # RPE = 0.88
+#'   myrpe$rpe # RPE = 0.88
 #' # Constrained optimal design with p = 0.5
 #'   myod2 <- od.2(icc = 0.2, r12 = 0.5, r22 = 0.5, c1 = 1, c2 = 5, c1t = 1, c2t = 50,
 #'              p = 0.5, varlim = c(0.005, 0.025))
 #' # Relative precision and efficiency (RPE)
-#'   mypre <- rpe(od = myod1, subod= myod2)
-#'   mypre$out # RPE = 0.90
+#'   myrpe <- rpe(od = myod1, subod= myod2)
+#'   myrpe$rpe # RPE = 0.90
 #'
 #' # Unconstrained optimal design of 3-level CRT #----------
 #'   myod1 <- od.3(icc2 = 0.2, icc3 = 0.1, r12 = 0.5, r22 = 0.5, r32 = 0.5,
@@ -61,7 +61,7 @@
 #'              varlim = c(0, 0.025))
 #' # Relative precision and efficiency (RPE)
 #'   myrpe <- rpe(od = myod1, subod= myod2)
-#'   myrpe$out # RPE = 0.53
+#'   myrpe$rpe # RPE = 0.53
 #'
 #' # Unconstrained optimal design of 4-level CRT #---------
 #'   myod1 <- od.4(icc2 = 0.2, icc3 = 0.1, icc4 = 0.05, r12 = 0.5,
@@ -77,7 +77,7 @@
 #'               varlim = c(0, 0.01))
 #' # Relative precision and efficiency (RPE)
 #'   myrpe <- rpe(od = myod1, subod= myod2)
-#'   myrpe$out # RPE = 0.78
+#'   myrpe$rpe # RPE = 0.78
 #'
 rpe <- function(od, subod, rounded = TRUE, verbose = TRUE) {
   funName <- "re"
