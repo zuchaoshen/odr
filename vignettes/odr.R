@@ -43,8 +43,9 @@ myod1 <- od.2(icc = 0.2, r12 = 0.5, r22 = 0.5, c1 = 1, c2 = 5, c1t = 1, c2t = 50
 
 ## ----fig.width = 5, fig.height = 5--------------------------------------------
  # constrained optimal design with n = 20
-myod2 <- od.2(icc = 0.2, r12 = 0.5, r22 = 0.5, c1 = 1, c2 = 5, c1t = 1, c2t = 50,
-              plot.by = list(p = "p"), n = 20, varlim = c(0.005, 0.030))
+myod2 <- od.2(icc = 0.2, r12 = 0.5, r22 = 0.5, c1 = 1, c2 = 5, c1t = 1, 
+              c2t = 50, plot.by = list(p = "p"), n = 20, 
+              varlim = c(0.005, 0.030))
  # myod2$out # output
  # myod2$par # parameters used in the calculation.
 
@@ -207,12 +208,12 @@ myre <- re(od = myod1, subod= myod4)
 
 ## -----------------------------------------------------------------------------
 # Optimal sample allocation and statistical power for randomized controlled trials
-myod <- od.1.111(a = .3, b = .5, c = 10, ct = 100, verbose = FALSE)
+myod <- od.1.111(a = .3, b = .5, c1 = 10, c1t = 100, verbose = FALSE)
 mypower <- power.1.111(expr = myod, power = .8)
 # mypower
 
 # Conventional power analyses
-mypower <- power.1.111(cost.model = FALSE, a = .3, b = .5,
+mypower <- power.1.111(cost.model = FALSE, a = .3, b = .5, test = "joint",
                         power = .8, p =.5)
 # mypower
 

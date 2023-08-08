@@ -15,11 +15,11 @@ power.1.111(
   b = NULL,
   power = NULL,
   m = NULL,
-  test = "joint",
+  test = NULL,
   n = NULL,
   p = NULL,
-  c = NULL,
-  ct = NULL,
+  c1 = NULL,
+  c1t = NULL,
   r.yx = 0,
   r.mx = 0,
   r.mw = 0,
@@ -67,18 +67,18 @@ the mediator.}
 \item{m}{Total budget.}
 
 \item{test}{The type of test will be used to detect mediation effects.
-The default is the joint significance test (i.e., test = "joint",
-"Joint","JOINT"). Another choice is the Sobel test by
-specifying the argument as test = "sobel", "Sobel", or "SOBEL".}
+The default is the NULL or the one used in the expr
+Choices are the joint significance test (i.e., test = "joint",
+"Joint","JOINT") or the Sobel test (test = "sobel", "Sobel", or "SOBEL").}
 
 \item{n}{Total number of individuals in the experimental study, the default
 value is NULL.}
 
 \item{p}{The proportion of level-4 clusters/units to be assigned to treatment.}
 
-\item{c}{The cost of sampling an individual in the control group.}
+\item{c1}{The cost of sampling an individual in the control group.}
 
-\item{ct}{The cost of sampling an individual in the treated group.}
+\item{c1t}{The cost of sampling an individual in the treated group.}
 
 \item{r.yx}{The within-treatment correlation between the outcome and the
 covariate(s) in the outcome model.}
@@ -131,16 +131,16 @@ This function can calculate required budget for desired power and
 }
 \examples{
 # Optimal design and power analyses accommodating costs and budget
-myod <- od.1.111(a = .3, b = .5, c = 10, ct = 100)
+myod <- od.1.111(a = .3, b = .5, c1 = 10, c1t = 100)
 # myod
 mypower <- power.1.111(expr = myod, power = .8)
 #mypower
 
 # Conventional power analyses
-mypower <- power.1.111(cost.model = FALSE, a = .3, b = .5,
+mypower <- power.1.111(cost.model = FALSE, a = .3, b = .5, test = "joint",
                        power = .8, p =.5)
 #mypower
-mypower <- power.1.111(cost.model = FALSE, n = 350, b = .5,
+mypower <- power.1.111(cost.model = FALSE, n = 350, b = .5, test = "joint",
                        power = .8, p =.5)
 #mypower
 

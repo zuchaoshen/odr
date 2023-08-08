@@ -14,8 +14,8 @@
 #' @param a The treatment effect on the mediator.
 #' @param b The within-treatment correlation between the outcome and
 #'     the mediator.
-#' @param c The cost of sampling an individual in the control group.
-#' @param ct The cost of sampling an individual in the treated group.
+#' @param c1 The cost of sampling an individual in the control group.
+#' @param c1t The cost of sampling an individual in the treated group.
 #' @param n Total number of individuals in the experimental study, the default
 #'     value is NULL.
 #' @param nlim The interval/range used to numerically solve for n,
@@ -60,11 +60,11 @@
 #'
 #' @export od.1.111
 #' @examples
-#' myod <- od.1.111(a = .3, b = .5, c = 10, ct = 100)
+#' myod <- od.1.111(a = .3, b = .5, c1 = 10, c1t = 100)
 #' myod
 
 od.1.111 <- function(a = NULL, b = NULL,
-                     c = NULL, ct = NULL, m = NULL,
+                     c1 = NULL, c1t = NULL, m = NULL,
                      r.yx = 0, r.mx = 0, r.mw = 0,
                      q.a = 0, q.b = 0,
                      test = "joint",
@@ -85,7 +85,7 @@ od.1.111 <- function(a = NULL, b = NULL,
   designType <- "1-1-1 mediation in single-level RCTs"
   par <- list(a = a, b = b,
               r.yx = r.yx, r.mx = r.mx, r.mw = r.mw,
-              c = c, ct =ct,
+              c1 = c1, c1t =c1t,
               n = n, p = p, m = m,
               q.a = q.a, q.b = q.b,
               sig.level = sig.level, two.tailed = two.tailed,
@@ -96,20 +96,20 @@ od.1.111 <- function(a = NULL, b = NULL,
               xi = xi
   )
 
-  if (sum(sapply(list(r.yx, r.mx, r.mw, c, ct),
+  if (sum(sapply(list(r.yx, r.mx, r.mw, c1, c1t),
                  function(x) is.null(x))) >= 1)
-    stop("All of 'r.yx', 'r.mx', 'r.mw', 'c', and 'ct'
+    stop("All of 'r.yx', 'r.mx', 'r.mw', 'c1', and 'c1t'
          must be specified")
   NumberCheck <- function(x) {!is.null(x) & !is.numeric(x)}
   if (sum(sapply(list(r.yx, r.mx, r.mw), function(x) {
     NumberCheck(x) | any(-1 > x | x > 1)
   })) >= 1)
     stop("'r.yx', 'r.mx', 'r.mw' must be numeric in [-1, 1]")
-  if (sum(sapply(list(c, ct), function(x) {
+  if (sum(sapply(list(c1, c1t), function(x) {
     NumberCheck(x) | x < 0})) >= 1)
-    stop("'c', 'ct' must be numeric")
-  if (c == 0 & ct == 0 & is.null(par$p))
-    stop("when c and ct are both zero, p must be constrained,
+    stop("'c1', 'c1t' must be numeric")
+  if (c1 == 0 & c1t == 0 & is.null(par$p))
+    stop("when c1 and c1t are both zero, p must be constrained,
          please specify a value  for p")
 
   B <- (b-r.yx*r.mx)/(1-r.mx^2)
@@ -197,7 +197,7 @@ od.1.111 <- function(a = NULL, b = NULL,
         X <- rbind(X, p)
         p.X <- rbind(p.X, p)
         n <- stats::uniroot(function(n) eval(pwr) - power, nlim)$root
-        m <- p*n*ct + (1-p)*n*c
+        m <- p*n*c1t + (1-p)*n*c1
         y <- c(y, 1/m)
         budget <- c(budget, m)
       }
@@ -258,7 +258,7 @@ od.1.111 <- function(a = NULL, b = NULL,
             if (verbose) {cat('Number of tried evaluations is ',
                               n.iter, ".\n", sep = "")}
             n <- stats::uniroot(function(n) eval(pwr) - power, nlim)$root
-            m <- p*n*ct + (1-p)*n*c
+            m <- p*n*c1t + (1-p)*n*c1
             y <- c(y, 1/m)
             pp <- rbind(pp, data.frame(v = 1/m, sd = 0, gr = 0, m = m))
           }
@@ -305,7 +305,7 @@ od.1.111 <- function(a = NULL, b = NULL,
           ".\n===============================\n", sep = "")
       return(list(par = par, funName = funName,
                   designType = designType, test = test,
-                  out = c(B = B, ab = a*b, aB = a*B, p = par$p, n = par$n)))
+                  out = list(B = B, ab = a*b, aB = a*B, p = par$p, n = par$n)))
       }
 }
 

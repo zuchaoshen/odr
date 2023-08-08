@@ -33,6 +33,10 @@
 #'     correlation between the mediator and outcome (\code{b}) numerically.
 #'     Default value is (.01, .99), if (\code{b}) is negative, please re-code
 #'     the outcome or mediator to make it positive.
+#' @param test The type of test will be used to detect mediation effects.
+#'     The default is the NULL or the one used in the expr
+#'     Choices are the joint significance test (i.e., test = "joint",
+#'     "Joint","JOINT") or the Sobel test (test = "sobel", "Sobel", or "SOBEL").
 #' @return Required budget (or required sample size), statistical power,
 #'     (\code{a}) , or (\code{b})  depending on the specification of parameters.
 #'     The function also returns the function name, design type,
@@ -42,16 +46,16 @@
 #'
 #' @examples
 #' # Optimal design and power analyses accommodating costs and budget
-#' myod <- od.1.111(a = .3, b = .5, c = 10, ct = 100)
+#' myod <- od.1.111(a = .3, b = .5, c1 = 10, c1t = 100)
 #' # myod
 #' mypower <- power.1.111(expr = myod, power = .8)
 #' #mypower
 #'
 #' # Conventional power analyses
-#' mypower <- power.1.111(cost.model = FALSE, a = .3, b = .5,
+#' mypower <- power.1.111(cost.model = FALSE, a = .3, b = .5, test = "joint",
 #'                        power = .8, p =.5)
 #' #mypower
-#' mypower <- power.1.111(cost.model = FALSE, n = 350, b = .5,
+#' mypower <- power.1.111(cost.model = FALSE, n = 350, b = .5, test = "joint",
 #'                        power = .8, p =.5)
 #' #mypower
 #'
@@ -60,9 +64,9 @@ power.1.111 <- function(cost.model = TRUE, expr = NULL,
                         constraint = NULL,
                         sig.level = 0.05, two.tailed = TRUE,
                         a = NULL, b = NULL,
-                        power = NULL, m = NULL, test = "joint",
+                        power = NULL, m = NULL, test = NULL,
                         n = NULL, p = NULL,
-                        c = NULL, ct = NULL,
+                        c1 = NULL, c1t = NULL,
                         r.yx = 0, r.mx = 0, r.mw = 0,
                         q.a = 0, q.b = 0, max.iter = 300,
                         alim = c(0, 4), blim = c(.01, .99),
@@ -75,21 +79,20 @@ power.1.111 <- function(cost.model = TRUE, expr = NULL,
       stop("'expr' can only be NULL or
             the return from the function of 'od.1.111'")
     } else {
-      if (sum(sapply(list(c, ct, n, p),
+      if (sum(sapply(list(a, b, c1, c1t, n, p),
                      function(x) {!is.null(x)})) >= 1)
-        stop("parameters of 'a', 'b', 'c', 'ct',
+        stop("parameters of 'a', 'b', 'c1', 'c1t',
             'n', and 'p'
              have been specified in expr of 'od.1.111'")
       if (is.null(a)){a <- expr$par$a}
       if (is.null(b)){b <- expr$par$b}
-      c <- expr$par$c
-      ct <- expr$par$ct
+      c1 <- expr$par$c1
+      c1t <- expr$par$c1t
       r.yx <- expr$par$r.yx
       r.mx <- expr$par$r.mx
       r.mw <- expr$par$r.mw
       q.a <- expr$par$q.a
       q.b <- expr$par$q.b
-
       if(is.null(test)){
         test <- expr$par$test
       } else {
@@ -139,9 +142,9 @@ power.1.111 <- function(cost.model = TRUE, expr = NULL,
     NumberCheck(x) || any(-1 > x | x > 1)
   })) >= 1) stop("'b' must be numeric in [-1, 1]")
   if (cost.model == TRUE){
-    if (sum(sapply(list(c, ct), function(x) {
+    if (sum(sapply(list(c1, c1t), function(x) {
       NumberCheck(x) || x < 0})) >= 1)
-      stop("'c', 'ct' must be numeric")
+      stop("'c1', 'c1t' must be numeric")
     if (NumberCheck(m))
       stop("'m' must be numeric in [0, Inf)")
   }
@@ -152,7 +155,7 @@ power.1.111 <- function(cost.model = TRUE, expr = NULL,
               two.tailed = two.tailed,
               a = a, b = b,
               r.yx = r.yx, r.mx = r.mx, r.mw = r.mw,
-              c = c, ct = ct,
+              c1 = c1, c1t = c1t,
               n = n, p = p, funName = funName,
               q.a = q.a, q.b = q.b, m = m, power = power)
   tside <- ifelse(two.tailed == TRUE, 2, 1)
@@ -161,8 +164,8 @@ power.1.111 <- function(cost.model = TRUE, expr = NULL,
   }
   nlim <- limFun(x = nlim, y = c(5, 1e6))
   powerlim <- limFun(x = powerlim, y = c(5e-10, 1 - 5e-10))
-  mlim <- limFun(x = mlim, y = c(5 * ((1 - p) * c + p * ct),
-                                 1e6 * ((1 - p) * c + p * ct)))
+  mlim <- limFun(x = mlim, y = c(5 * ((1 - p) * c1 + p * c1t),
+                                 1e6 * ((1 - p) * c1 + p * c1t)))
 
 
     if (cost.model){
@@ -170,7 +173,7 @@ power.1.111 <- function(cost.model = TRUE, expr = NULL,
         if (two.tailed) {
           pwr <- quote({
             B <- (b-r.yx*r.mx)/(1-r.mx^2);
-            n <- m/(p*ct + (1-p)*c);
+            n <- m/(p*c1t + (1-p)*c1);
             se.a <- sqrt((1-r.mw^2)/(p*(1-p)*n));
             se.B <- sqrt((1-b^2-r.mx^2-r.yx^2+2*b*r.mx*r.yx)/
                            (n*(1-r.mx^2)*(1-r.mx^2)));
@@ -186,7 +189,7 @@ power.1.111 <- function(cost.model = TRUE, expr = NULL,
         } else {
           pwr <- quote({
             B <- (b-r.yx*r.mx)/(1-r.mx^2);
-            n <- m/(p*ct + (1-p)*c);
+            n <- m/(p*c1t + (1-p)*c1);
             se.a <- sqrt((1-r.mw^2)/(p*(1-p)*n));
             se.B <- sqrt((1-b^2-r.mx^2-r.yx^2+2*b*r.mx*r.yx)/
                            (n*(1-r.mx^2)*(1-r.mx^2)));
@@ -201,7 +204,7 @@ power.1.111 <- function(cost.model = TRUE, expr = NULL,
         if (two.tailed) {
           pwr <- quote({
             B <- (b-r.yx*r.mx)/(1-r.mx^2);
-            n <- m/(p*ct + (1-p)*c);
+            n <- m/(p*c1t + (1-p)*c1);
             se.a <- sqrt((1-r.mw^2)/(p*(1-p)*n));
             se.B <- sqrt((1-b^2-r.mx^2-r.yx^2+2*b*r.mx*r.yx)/
                            (n*(1-r.mx^2)*(1-r.mx^2)));
@@ -212,7 +215,7 @@ power.1.111 <- function(cost.model = TRUE, expr = NULL,
         } else {
           pwr <- quote({
             B <- (b-r.yx*r.mx)/(1-r.mx^2);
-            n <- m/(p*ct + (1-p)*c);
+            n <- m/(p*c1t + (1-p)*c1);
             se.a <- sqrt((1-r.mw^2)/(p*(1-p)*n));
             se.B <- sqrt((1-b^2-r.mx^2-r.yx^2+2*b*r.mx*r.yx)/
                            (n*(1-r.mx^2)*(1-r.mx^2)));
@@ -287,7 +290,7 @@ power.1.111 <- function(cost.model = TRUE, expr = NULL,
       if (cost.model) {
         out <- list(m = stats::uniroot(
           function(m) eval(pwr) - power, mlim)$root)
-        out <- c(out, list(n = out$m/((1 - p) *c  + p * ct)))
+        out <- c(out, list(n = out$m/((1 - p) *c1  + p * c1t)))
       } else {
         out <- list(n = stats::uniroot(function(n) eval(pwr) -
                                                power, nlim)$root)

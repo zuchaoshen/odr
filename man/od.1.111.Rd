@@ -8,8 +8,8 @@
 od.1.111(
   a = NULL,
   b = NULL,
-  c = NULL,
-  ct = NULL,
+  c1 = NULL,
+  c1t = NULL,
   m = NULL,
   r.yx = 0,
   r.mx = 0,
@@ -46,9 +46,9 @@ od.1.111(
 \item{b}{The within-treatment correlation between the outcome and
 the mediator.}
 
-\item{c}{The cost of sampling an individual in the control group.}
+\item{c1}{The cost of sampling an individual in the control group.}
 
-\item{ct}{The cost of sampling an individual in the treated group.}
+\item{c1t}{The cost of sampling an individual in the treated group.}
 
 \item{m}{Total budget.}
 
@@ -137,6 +137,6 @@ The optimal design of single-level RCTs
     This function identifies the optimal \code{p}.
 }
 \examples{
-myod <- od.1.111(a = .3, b = .5, c = 10, ct = 100)
+myod <- od.1.111(a = .3, b = .5, c1 = 10, c1t = 100)
 myod
 }
