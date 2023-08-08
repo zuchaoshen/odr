@@ -16,7 +16,8 @@ knitr::opts_chunk$set(
 
 # Updates (version 1.4.4)
 ## New features
-Fixed bugs to allow correlations to be in range of [-1, 1]
+Fixed bugs to allow extreme correlations to be in range of [-1, 1] and other
+bugs in function arguments.
 
 
 # Updates (version 1.4.2)
