@@ -5,7 +5,7 @@ optimization algorithm to identify optimal sample allocations for od.2m and
 od.3m functions. We also added functions to identify sample allocations for 
 experiments investigating mediation and moderation effects.
 
-Across operational systems we tested, there are two notes that 
+Across operational systems we tested, there is one note that 
 can be ignored (detailed below).
 
 Please help process this package at your convenience! Thanks a lot! 
@@ -29,7 +29,3 @@ There are no issues on reverse dependencies.
 Maintainer: 'Zuchao Shen <zuchao.shen@gmail.com>'
 
 Response: This email is correct.
-
-
-Response: This may be associated with the R-hub testing environments (Fedora Linux, R-devel, clang, gfortran; Ubuntu Linux 20.04.1 LTS, R-release, GCC).
- 
