@@ -6,3 +6,5 @@
 ^NEWS\.Rmd$
 ^CRAN-RELEASE$
 ^CRAN-SUBMISSION$
+^doc$
+^Meta$
