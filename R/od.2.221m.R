@@ -1,11 +1,11 @@
 #' Optimal sample allocation calculation for two-level CRTs probing
-#'     mediation effects with cluster-level mediators
+#'     moderation effects with cluster-level moderators
 #'
 #' @description The optimal design of two-level
-#'     cluster randomized trials (CRTs) probing mediation effects with
-#'     cluster-level mediators is to to identify
+#'     cluster randomized trials (CRTs) probing moderation effects with
+#'     cluster-level moderators is to to identify
 #'     the optimal sample allocation that requires the minimum budget
-#'     to achieve certain power level.
+#'     to achieve a certain power level.
 #'     The optimal design parameters include
 #'     the level-1 sample size per level-2 unit (\code{n})
 #'     and the proportion of level-2 clusters/groups to be assigned to
@@ -13,34 +13,22 @@
 #'     This function solves the optimal \code{n} and/or \code{p}
 #'     with and without a constraint.
 #'
-#' @inheritParams power.2.221
-#' @inheritParams od.2
-#' @inheritParams od.1.111
 #' @inheritParams power.2
-#' @param a The treatment effect on the mediator.
-#' @param b The within treatment correlation between the outcome and
-#'     the mediator at the cluster level.
-#' @param q.a The number of covariates in the mediator model
-#'     (except the treatment indicator).
-#' @param q.b The  number of covariates in the outcome model
-#'     at the cluster level
-#'     (except the treatment indicator and the mediator).
+#' @param d The standardized main or average treatment effect.
+#' @param gamma The standardized moderated treatment effect
+#'     (i.e., regression coefficient of the interaction
+#'     term of moderator and treatment).
+#' @param Q The proportion of binary moderator that coded as 1.
+#' @param q.mod The number of cluster-level covariates in the model
+#'     (except the treatment indicator, moderator, and the interaction term).
 #' @param q.main The  number of covariates in the outcome model testing main effects
-#' @param r.yx The correlation between the outcome and the covariate at the
-#'     individual level.
-#' @param r.yw The correlation between the outcome and the covariate at the
-#'     cluster level.
-#' @param r.mw The correlation between the mediator and the covariate at the
-#'     cluster level.
-#' @param r2m The proportion of mediator variance explained by covariates in
-#'     the mediator model.
-#' @param test The type of test will be used to detect mediation effects.
-#'     Default is the joint significance test (i.e., test = "joint").
-#'     The other choice is the Sobel test
-#'     by specifying the argument as test = "sobel".
+#' @param r12m The proportion of outcome variance at the individual level
+#'     explained by covariates in the model with the moderator.
+#' @param r22m The proportion of outcome variance at the cluster level
+#'     explained by covariates in the model with the moderator.
 #' @param two.tailed Two tailed test, the default value is TRUE.
 #' @param sig.level Significance level or type I error rate, default value is 0.05.
-#' @param power.med Statistical power specified for mediation.
+#' @param power.mod Statistical power specified for moderation.
 #'     The default value is .80.
 #' @param power.main Statistical power specified for the total/main effect.
 #'     The default value is .80.
@@ -48,7 +36,7 @@
 #'     the stopping criterion, default is 1e-10.
 #' @param max.value Maximal value of optimization when used as
 #'     the stopping criterion. Default is -Inf.
-#' @param d.p The initial sampling domains for p. Default is c(0.1, 0.5).
+#' @param d.p The initial sampling domains for p. Default is c(0.5, 0.9).
 #' @param d.n The initial sampling domain for n. Default is c(2, 100).
 #' @param max.iter Maximal number of function evaluations when used as
 #'     the stopping criterion.
@@ -57,7 +45,7 @@
 #' @param xi  Convergence pressure (0, Inf), suggested: (0, 1), default is 0.5.
 #' @param verbose Print out evaluation process if TRUE, default is TRUE.
 #' @param Jlim The range for J to solve for a numerical solution.
-#'     Default is c(max(q.a, q.b)+4, 1e6).
+#'     Default is c(max(q.mod, q.main)+7, 1e6).
 #' @param nrange The range of the individual-level sample size per cluster
 #'     that used to exclude unreasonable values. Default value is c(1.5, 10000).
 #' @param n.of.ants Number of ants used in each iteration after the initialization
@@ -68,25 +56,22 @@
 #' @return
 #'     Unconstrained or constrained optimal sample allocation
 #'     (\code{n} and \code{p}).
-#'     The function also returns the variance of a mediation effect
-#'     or statistical power,
+#'     The function also returns
 #'     function name, design type,
 #'     and parameters used in the calculation.
 #'
-#' @export od.2.221
+#' @export od.2.221m
 #'
 
-
-od.2.221 <- function(a = NULL, b = NULL, d = NULL, n = NULL,
+od.2.221m <- function(d = NULL, gamma = NULL, n = NULL, Q = NULL,
                      p = NULL, icc = NULL,
                      c1 = NULL, c1t = NULL, c2 = NULL, c2t = NULL,
                      r12 = NULL, r22 = NULL,
+                     r12m = NULL, r22m = NULL,
                      m = NULL,
-                     r2m = 0, r.yx = 0, r.mw = 0, r.yw = 0,
-                     q.main = 0, q.a = 0, q.b = 0,
-                     test = "joint",
-                     tol = 1e-11, power.med = 0.80, power.main = 0.80,
-                     d.p = c(0.1, 0.5), d.n = c(2, 100),
+                     q.main = 0, q.mod = 0,
+                     tol = 1e-11, power.mod = 0.80, power.main = 0.80,
+                     d.p = c(0.5, 0.9), d.n = c(2, 1000),
                      sig.level = 0.05, two.tailed = TRUE,
                      Jlim = NULL,
                      verbose = TRUE, nrange = c(1.5, 10000),
@@ -94,31 +79,28 @@ od.2.221 <- function(a = NULL, b = NULL, d = NULL, n = NULL,
                      n.of.ants = 10, n.of.archive = 50, q = 0.0001,
                      xi = 0.5
                  ) {
-  funName <- "od.2.221"
-  designType <- "2-2-1 mediation in 2-level CRTs"
-  par <- list(a = a, b = b, n = n, p = p, icc = icc,
+  funName <- "od.2.m221"
+  designType <- "2-2-1 moderation in 2-level CRTs"
+  if(is.null(r12m)) {r12m = r12}
+  if(is.null(r22m)) {r22m = r22}
+  par <- list(d = d, gamma = gamma, n = n, p = p, icc = icc,
               r12 = r12, r22 = r22,
-              r2m = r2m, r.yx = r.yx, r.yw = r.yw, r.mw = r.mw,
+              r12m = r12m, r22m = r22m,
               c1 = c1, c2 = c2, c1t =c1t, c2t = c2t,
-              m = m, q.a = q.a, q.b = q.b, q.main =q.main,
+              m = m, q.mod = q.mod, q.main = q.main,
               sig.level = sig.level, two.tailed = two.tailed,
-              test = test,
               max.iter = max.iter,
               n.of.ants = n.of.ants, n.of.archive = n.of.archive,
               q = q,
               xi = xi
               )
-  if (sum(sapply(list(a, b, icc, r.yx, r.yw, r.mw, c1, c2, c1t, c2t),
+  if (sum(sapply(list(d, gamma, icc, c1, c2, c1t, c2t),
                  function(x) is.null(x))) >= 1)
-    stop("All of 'a', 'b', 'icc', 'r.yx', 'r.yw', 'r.mw', 'c1', 'c2',
+    stop("All of 'd', 'gamma', 'icc', 'c1', 'c2',
          'c1t', 'c2t' must be specified")
   NumberCheck <- function(x) {!is.null(x) & !is.numeric(x)}
   if (NumberCheck(icc) | any(0 > icc | icc > 1))
     stop("'icc' must be numeric in [0, 1]")
-  if (sum(sapply(list(r.yx, r.yw, r.mw), function(x) {
-    NumberCheck(x) | any(-1 > x | x > 1)
-  })) >= 1)
-    stop("'r.yx', 'r.yw', 'r.mw' must be numeric in [-1, 1]")
   if (sum(sapply(list(c1, c2, c1t, c2t), function(x) {
     NumberCheck(x) | x < 0})) >= 1)
     stop("'c1', 'c2', 'c1t', 'c2t' must be numeric in [0, inf)")
@@ -134,24 +116,17 @@ od.2.221 <- function(a = NULL, b = NULL, d = NULL, n = NULL,
   plotbyFun <- function(x, y) {
     if (!is.null(x) & is.list(x)) {x} else {y}
   }
-  if(is.null(Jlim)){Jlim <- c(max(q.a, q.b)+4, 1e6)}
+  if(is.null(Jlim)){Jlim <- c(max(q.mod, q.main) + 7, 1e6)}
   tside <- ifelse(two.tailed == TRUE, 2, 1)
-  if (test == "joint" | test == "Joint" | test == "JOINT") {
-    if (two.tailed) {
-      pwr.med <- quote({
-        lambda.a <- a/sqrt((1-r2m)/(p*(1-p)*J));
-        lambda.B <- ((b-r.yw*r.mw)/(1-r.mw^2))/
-          sqrt((icc*(1-b^2-r.mw^2-r.yw^2+2*b*r.mw*r.yw)/
-                  (1-r.mw^2)+(1-icc)*(1-r.yx^2))/
-                 (J*(1-r.mw^2)));
-        (1 - pt(qt(1-sig.level/tside, df = J-q.a-2),
-                df = J-q.a-2, lambda.a) +
-           pt(qt(sig.level/tside, df = J-q.a-2),
-              df = J-q.a-2, lambda.a)) *
-          (1 - pt(qt(1-sig.level/tside, df = J-q.b-3),
-                  df = J-q.b-3, lambda.B) +
-             pt(qt(sig.level/tside, df = J-q.b-3),
-                df = J-q.b-3, lambda.B))
+
+      if (two.tailed) {
+      pwr.mod <- quote({
+        lambda <- gamma/sqrt((icc*(1-r22m)+(1-icc)*(1-r12m))/
+                               (p*(1-p)*Q*(1-Q)*J));
+        1 - pt(qt(1 - sig.level/tside, df = J - q.mod - 4),
+               df = J - q.mod - 4, lambda) +
+          pt(qt(sig.level/tside, df = J - q.mod - 4),
+             df = J - q.mod - 4, lambda)
       })
       pwr.main <- quote({
         lambda <- d * sqrt(p * (1 - p) * J) /
@@ -162,16 +137,11 @@ od.2.221 <- function(a = NULL, b = NULL, d = NULL, n = NULL,
              df = J - q.main - 2, lambda)
       })
     } else {
-      pwr.med <- quote({
-        lambda.a <- a/sqrt((1-r2m)/(p*(1-p)*J));
-        lambda.B <- ((b-r.yw*r.mw)/(1-r.mw^2))/
-          sqrt((icc*(1-b^2-r.mw^2-r.yw^2+2*b*r.mw*r.yw)/
-                  (1-r.mw^2)+(1-icc)*(1-r.yx^2))/
-                 (J*(1-r.mw^2)));
-        (1 - pt(qt(1-sig.level/tside, df = J-q.a-2),
-                df = J-q.a-2, lambda.a)) *
-          (1 - pt(qt(1-sig.level/tside, df = J-q.b-3),
-                  df = J-q.b-3, lambda.B))
+      pwr.mod <- quote({
+        lambda <- gamma/sqrt((icc*(1-r22m)+(1-icc)*(1-r12m))/
+                               (p*(1-p)*Q*(1-Q)*J));
+        1 - pt(qt(1 - sig.level/tside, df = J - q.mod - 4),
+               df = J - q.mod - 4, lambda)
       })
       pwr.main <- quote({
         lambda <- d * sqrt(p * (1 - p) * J) /
@@ -181,7 +151,7 @@ od.2.221 <- function(a = NULL, b = NULL, d = NULL, n = NULL,
       })
     }
 
-    par <- c(par, pwr.main = pwr.main, pwr.med = pwr.med)
+    par <- c(par, pwr.main = pwr.main, pwr.mod = pwr.mod)
     if(!is.null(par$n)){d.n[1] = par$n; nrange[1] = par$n}
     if(!is.null(par$p)){d.p[1] = par$p; prange[1] = par$p}
 
@@ -215,11 +185,11 @@ od.2.221 <- function(a = NULL, b = NULL, d = NULL, n = NULL,
         for (p in p.initial){
           X <- rbind(X, c(p, n))
           p.X <- rbind(p.X, c(p, n))
-          J.med <- stats::uniroot(function(J) eval(pwr.med) -
-                                    power.med, Jlim)$root
+          J.mod <- stats::uniroot(function(J) eval(pwr.mod) -
+                                    power.mod, Jlim)$root
           J.main <- stats::uniroot(function(J) eval(pwr.main) -
                                      power.main, Jlim)$root
-          J <- max(J.med, J.main)
+          J <- max(J.mod, J.main)
           m <- p * J * (c1t * n + c2t) + (1 - p) * J *(c1*n + c2)
           y <- c(y, 1/m)
           budget <- c(budget, m)
@@ -277,11 +247,11 @@ od.2.221 <- function(a = NULL, b = NULL, d = NULL, n = NULL,
             n <- X[j, 2]
             if (verbose) {cat('Number of tried evaluations is ', n.iter,
                               ".\n", sep = "")}
-            J.med <- stats::uniroot(function(J) eval(pwr.med) -
-                                      power.med, Jlim)$root
+            J.mod <- stats::uniroot(function(J) eval(pwr.mod) -
+                                      power.mod, Jlim)$root
             J.main <- stats::uniroot(function(J) eval(pwr.main) -
                                        power.main, Jlim)$root
-            J <- max(J.med, J.main)
+            J <- max(J.mod, J.main)
             m <- p * J * (c1t * n + c2t) + (1 - p) * J *(c1*n + c2)
             y <- c(y, 1/m)
             pp <- rbind(pp, data.frame(v = 1/m, sd = 0, gr = 0, m = m))
@@ -349,11 +319,11 @@ od.2.221 <- function(a = NULL, b = NULL, d = NULL, n = NULL,
       for (p in p.initial){
         X <- rbind(X, p)
         p.X <- rbind(p.X, p)
-        J.med <- stats::uniroot(function(J) eval(pwr.med) -
-                                  power.med, Jlim)$root
+        J.mod <- stats::uniroot(function(J) eval(pwr.mod) -
+                                  power.mod, Jlim)$root
         J.main <- stats::uniroot(function(J) eval(pwr.main) -
                                    power.main, Jlim)$root
-        J <- max(J.med, J.main)
+        J <- max(J.mod, J.main)
         m <- p * J * (c1t * n + c2t) + (1 - p) * J *(c1*n + c2)
         y <- c(y, 1/m)
         budget <- c(budget, m)
@@ -410,11 +380,11 @@ od.2.221 <- function(a = NULL, b = NULL, d = NULL, n = NULL,
             p <- X[j, 1]
             if (verbose) {cat('Number of tried evaluations is ', n.iter,
                               ".\n", sep = "")}
-            J.med <- stats::uniroot(function(J) eval(pwr.med) -
-                                      power.med, Jlim)$root
+            J.mod <- stats::uniroot(function(J) eval(pwr.mod) -
+                                      power.mod, Jlim)$root
             J.main <- stats::uniroot(function(J) eval(pwr.main) -
                                        power.main, Jlim)$root
-            J <- max(J.med, J.main)
+            J <- max(J.mod, J.main)
             m <- p * J * (c1t * n + c2t) + (1 - p) * J *(c1*n + c2)
             y <- c(y, 1/m)
             pp <- rbind(pp, data.frame(v = 1/m, sd = 0, gr = 0, m = m))
@@ -482,11 +452,11 @@ od.2.221 <- function(a = NULL, b = NULL, d = NULL, n = NULL,
       for (n in n.initial){
         X <- rbind(X, n)
         p.X <- rbind(p.X, n)
-        J.med <- stats::uniroot(function(J) eval(pwr.med) -
-                                  power.med, Jlim)$root
+        J.mod <- stats::uniroot(function(J) eval(pwr.mod) -
+                                  power.mod, Jlim)$root
         J.main <- stats::uniroot(function(J) eval(pwr.main) -
                                    power.main, Jlim)$root
-        J <- max(J.med, J.main)
+        J <- max(J.mod, J.main)
         m <- p * J * (c1t * n + c2t) + (1 - p) * J *(c1*n + c2)
         y <- c(y, 1/m)
         budget <- c(budget, m)
@@ -542,11 +512,11 @@ od.2.221 <- function(a = NULL, b = NULL, d = NULL, n = NULL,
             n <- X[j, 1]
             if (verbose) {cat('Number of tried evaluations is ',
                               n.iter, ".\n", sep = "")}
-            J.med <- stats::uniroot(function(J) eval(pwr.med) -
-                                      power.med, Jlim)$root
+            J.mod <- stats::uniroot(function(J) eval(pwr.mod) -
+                                      power.mod, Jlim)$root
             J.main <- stats::uniroot(function(J) eval(pwr.main) -
                                        power.main, Jlim)$root
-            J <- max(J.med, J.main)
+            J <- max(J.mod, J.main)
             m <- p * J * (c1t * n + c2t) + (1 - p) * J *(c1*n + c2)
             y <- c(y, 1/m)
             pp <- rbind(pp, data.frame(v = 1/m, sd = 0, gr = 0, m = m))
@@ -596,6 +566,6 @@ od.2.221 <- function(a = NULL, b = NULL, d = NULL, n = NULL,
                   designType = designType,
                   out = c(p = par$p, n = par$n)))
     }
-  }
+
 }
 

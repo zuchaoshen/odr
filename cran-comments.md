@@ -1,9 +1,9 @@
 ## Resubmission
 
-This is for updating the package. In this version, we fixed a bug that caused
-error when users specify extreme values. The new version allows
-the correlation between the covariate and the mediator/outcome to be from
--1 to 1.
+This is for updating the package. In this version, we added the ant colony 
+optimization algorithm to identify optimal sample allocations for od.2m and 
+od.3m functions. We also added functions to identify sample allocations for 
+expeirments investigating mediation and moderation effects.
 
 Across operational systems we tested, there are two notes that 
 can be ignored (detailed below).

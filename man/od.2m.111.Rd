@@ -65,7 +65,7 @@ each treatment condition.}
 
 \item{c1t}{The cost of sampling one level-1 unit in treatment condition.}
 
-\item{c2}{The cost of sampling one level-2 unit.}
+\item{c2}{The cost of sampling one level-2 unit (site).}
 
 \item{m}{Total budget.}
 

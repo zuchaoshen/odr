@@ -18,7 +18,15 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 <!-- badges: end -->
 
-The goal of *odr* is to help design efficient and well-powered multilevel experiments detecting main, moderation, and mediation effects. We achieve this goal through three sets of functions. The *od* functions calculate the optimal sample size allocation by leveraging sampling cost information and other design parameters across levels and treatment conditions. The *re* function compares the relative efficiency across sample allocations (mainly for main effects). The *power* functions perform power analysis with and without accommodating costs and budget.
+The goal of *odr* is to help design efficient and well-powered multilevel
+experiments detecting main, moderation, and mediation effects. 
+We achieve this goal through three sets of functions. 
+The *od* functions identify the optimal sample size allocations by 
+leveraging sampling cost information and other design parameters. 
+The *re* function compares the relative efficiency across sample 
+allocations (mainly for main effects). 
+The *power* functions perform power analysis with and 
+without accommodating costs and budget.
 
 ## Installation
 
@@ -31,7 +39,8 @@ install.packages("odr")
 ## Example
 
 This is a basic example that shows how to identify optimal sample allocation
-for two-level cluster-randomized trials detecting main effects.
+for two-level cluster-randomized trials detecting main effects and then to 
+perform power analysis at the optimal allocation.
 
 ```{r example}
 library(odr)
@@ -46,8 +55,11 @@ myod2 <- od.2(icc = 0.2, r12 = 0.5, r22 = 0.5, c1 = 1, c2 = 5, c1t = 1, c2t = 50
  # relative efficiency
 myre <- re(od = myod1, subod = myod2) # Functions rpe and re are same
 
-# required budget calculation
+# required budget calculation at the unconstrained allocation
 mym <- power.2(expr = myod1, d = 0.3, q = 1, power = 0.8)
+
+# required budget calculation at the constrained allocation
+mym <- power.2(expr = myod2, d = 0.3, q = 1, power = 0.8)
 
 # See https://cran.r-project.org/web/packages/odr/vignettes/odr.html for more examples
 ```

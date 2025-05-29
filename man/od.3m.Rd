@@ -30,10 +30,29 @@ od.3m(
   Jlab = NULL,
   plab = NULL,
   varlab = NULL,
+  Klim = c(6, 1e+10),
+  q = 1,
+  d = 0.1,
   vartitle = NULL,
   verbose = TRUE,
   iter = 100,
-  tol = 1e-10
+  tol = 1e-10,
+  power = 0.8,
+  ACO = TRUE,
+  d.p = c(0.5, 0.9),
+  d.n = c(2, 1000),
+  d.J = c(2, 1000),
+  sig.level = 0.05,
+  two.tailed = TRUE,
+  nrange = c(2, 10000),
+  Jrange = c(2, 10000),
+  max.value = Inf,
+  max.iter = 300,
+  e = 1e-10,
+  n.of.ants = 10,
+  n.of.archive = 50,
+  q.aco = 1e-04,
+  xi = 0.5
 )
 }
 \arguments{
@@ -41,7 +60,8 @@ od.3m(
 
 \item{J}{The level-2 sample size per level-3 unit.}
 
-\item{p}{The proportion of level-4 clusters/units to be assigned to treatment.}
+\item{p}{The proportion of level-2 units within each level-3 site
+to be assigned to treatment.}
 
 \item{icc2}{The unconditional intraclass correlation coefficient (ICC) at level 2.}
 
@@ -55,9 +75,9 @@ od.3m(
 
 \item{c1}{The cost of sampling one level-1 unit in control condition.}
 
-\item{c2}{The cost of sampling one level-2 unit in control condition.}
+\item{c2}{The cost of sampling one level-2 unit (site).}
 
-\item{c3}{The cost of sampling one level-3 unit in control condition.}
+\item{c3}{The cost of sampling one level-3 unit (site).}
 
 \item{c1t}{The cost of sampling one level-1 unit in treatment condition.}
 
@@ -75,7 +95,8 @@ default value is plot.by = list(n = "n", J = "J", p = "p").}
 
 \item{nlim}{The plot range for n, default value is c(2, 50).}
 
-\item{Jlim}{The plot range for J, default value is c(2, 50).}
+\item{Jlim}{The range for solving the root of level-2 sample size
+(\code{J}) numerically, default value is c(6, 1e+10).}
 
 \item{plim}{The plot range for p, default value is c(0, 1).}
 
@@ -93,14 +114,63 @@ default value is "Proportion Level-2 Units in Treatment: p".}
 \item{varlab}{The plot label for variance,
 default value is "Variance".}
 
+\item{Klim}{The plot range for K, default value is c(2, 50).}
+
+\item{q}{The number of covariates at level 2. Default is 1.}
+
+\item{d}{Standardized effect size, default is 0.1.}
+
 \item{vartitle}{The title of variance plot, default value is NULL.}
 
 \item{verbose}{Logical; print the values of \code{n}, \code{J},
-and \code{p} if TRUE, otherwise not; default value is TRUE.}
+and \code{p} if TRUE, otherwise not; default value is TRUE.#'}
 
 \item{iter}{Number of iterations; default value is 100.}
 
 \item{tol}{Tolerance for convergence; default value is 1e-10.}
+
+\item{power}{Statistical power.}
+
+\item{ACO}{Logic. If TRUE, the function will use the ant colony
+optimization (ACO) algorithm to identify optimal allocations. If FALSE,
+the function will use the first-order derivative method to identify
+optimal allocations. Default is TRUE.}
+
+\item{d.p}{The initial sampling domains for p. Default is c(0.1, 0.5).}
+
+\item{d.n}{The initial sampling domain for n. Default is c(2, 1000).}
+
+\item{d.J}{The initial sampling domain for J. Default is c(2, 1000).}
+
+\item{sig.level}{Significance level or type I error rate, default value is 0.05.}
+
+\item{two.tailed}{Logical; two-tailed tests if TRUE,
+otherwise one-tailed tests; default value is TRUE.}
+
+\item{nrange}{The range of the level-1 sample size per level-2 unit
+that used to exclude unreasonable values. Default value is c(2, 10000).}
+
+\item{Jrange}{The range of the level-2 sample size per level-3 unit
+that used to exclude unreasonable values. Default value is
+c(2, 10000).}
+
+\item{max.value}{Maximal value of optimization when used as
+the stopping criterion. Default is -Inf.}
+
+\item{max.iter}{Maximal number of function evaluations when used as
+the stopping criterion.}
+
+\item{e}{Maximum error value used when solution quality used as
+the stopping criterion, default is 1e-10.}
+
+\item{n.of.ants}{Number of ants used in each iteration after the initialization
+of power analysis for calculating required budget, default value is 10.}
+
+\item{n.of.archive}{Size of the solution archive, default is 100.}
+
+\item{q.aco}{Locality of the ACO search (0,1), default is 0.0001.}
+
+\item{xi}{Convergence pressure (0, Inf), suggested: (0, 1), default is 0.5.}
 }
 \value{
 Unconstrained or constrained optimal sample allocation
@@ -110,11 +180,13 @@ Unconstrained or constrained optimal sample allocation
     and parameters used in the calculation.
 }
 \description{
-The optimal design of three-level
-    multisite randomized trials (MRTs) is to calculate
-    the optimal sample allocation that minimizes the variance of
-    treatment effect under fixed budget, which is approximately the optimal
-    sample allocation that maximizes statistical power under a fixed budget.
+The optimal design of two-level
+    multisite randomized trials (MRTs) detecting main effects is to calculate
+    the optimal sample allocation that minimize the budget to achieve a
+    fixed statistical power (e.g., 80%) using the ant colony optimization (ACO)
+    algorithm. Alternatively, the function can calculate the optimal allocation
+    that minimizes the variance of a treatment effect under a fixed budget,
+    which is less precise than the ACO algorithm.
     The optimal design parameters include
     the level-1 sample size per level-2 unit (\code{n}),
     the level-2 sample size per level-3 unit (\code{J}),
@@ -173,5 +245,7 @@ The optimal design of three-level
 }
 \references{
 Shen, Z., & Kelcey, B. (2022). Optimal sampling ratios in three-level
-  multisite experiments. Journal of Research on Educational Effectiveness.
+  multisite experiments. Journal of Research on Educational Effectiveness,
+  15(1), 130-150.
+  <https://doi.org/10.1080/19345747.2021.1953200>
 }

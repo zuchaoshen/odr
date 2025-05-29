@@ -106,7 +106,7 @@ otherwise one-tailed tests; default value is TRUE.}
 
 \item{c3}{The cost of sampling one level-3 unit in control condition.}
 
-\item{c4}{The cost of sampling one level-4 unit.}
+\item{c4}{The cost of sampling one level-4 unit (cite.}
 
 \item{c1t}{The cost of sampling one level-1 unit in treatment condition.}
 

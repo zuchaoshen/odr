@@ -38,16 +38,17 @@ power.2m(
 if TRUE, otherwise conventional power analyses
 (e.g., required sample size, power, or MDES calculation); default value is TRUE.}
 
-\item{expr}{Returned objects from function \code{\link{od.2m}}; default is NULL;
-if \code{expr} is specified, parameter values of \code{icc},
-\code{r12}, \code{r22m},
-\code{c1}, \code{c2},
-\code{c1t}, \code{p}, and \code{n}
-used or solved in function \code{\link{od.2m}} will
-be passed to current function;
-only the values of \code{p} and \code{n} that specified or solved in
-function \code{\link{od.2m}} can be overwritten
-if \code{constraint} is specified.}
+\item{expr}{Returned objects from function \code{\link{od.2m}} or
+\code{\link{od.2m.111m}}; default is NULL;
+    if \code{expr} is specified, parameter values of \code{icc},
+    \code{r12}, \code{r22m},
+    \code{c1}, \code{c2},
+    \code{c1t}, \code{p}, and \code{n}
+    used or solved in function \code{\link{od.2m}} will
+    be passed to current function;
+    only the values of \code{p} and \code{n} that specified or solved in
+    function \code{\link{od.2m}} can be overwritten
+    if \code{constraint} is specified.}
 
 \item{constraint}{Specify the constrained values of \code{p} and/or \code{n}
 in list format to overwrite those from \code{expr}; default value is NULL.}
@@ -74,13 +75,14 @@ each treatment condition.}
 
 \item{r12}{The proportion of level-1 variance explained by covariates.}
 
-\item{r22m}{The proportion of variance of site-specific treatment effect explained by covariates.}
+\item{r22m}{The proportion of variance of site-specific treatment
+effect explained by covariates.}
 
 \item{q}{The number of covariates at level 2.}
 
 \item{c1}{The cost of sampling one level-1 unit in control condition.}
 
-\item{c2}{The cost of sampling one level-2 unit.}
+\item{c2}{The cost of sampling one level-2 unit (site).}
 
 \item{c1t}{The cost of sampling one level-1 unit in treatment condition.}
 
@@ -106,8 +108,8 @@ to two decimal places and integer, respectively if TRUE,
 otherwise no rounding; default value is TRUE.}
 }
 \value{
-Required budget (and/or required level-2 sample size), statistical power, or MDES
-    depending on the specification of parameters.
+Required budget (and/or required level-2 sample size), s
+    tatistical power, or MDES  depending on the specification of parameters.
     The function also returns the function name, design type,
     and parameters used in the calculation.
 }
@@ -123,62 +125,66 @@ This function can calculate required budget for desired power,
   myod1 <- od.2m(icc = 0.2, omega = 0.02, r12 = 0.5, r22m = 0.5,
               c1 = 1, c2 = 10, c1t = 10,
               varlim = c(0, 0.005))
-  myod1$out # n = 19.8, p = 0.37
+  myod1$out # n = 23.5, p = 0.24
 
 # ------- Power analyses by default considering costs and budget -------
 # Required budget and sample size
   mym.1 <- power.2m(expr = myod1, d = 0.2, q = 1, power = 0.8)
-  mym.1$out  # m = 2019, J = 20.9
+  mym.1$out  # m = 1882, J = 22.8
   # mym.1$par  # parameters and their values used for the function
 # Or, equivalently, specify every argument in the function
   mym.1 <- power.2m(d = 0.2, power = 0.8, q = 1,
                  icc = 0.2, omega = 0.02, r12 = 0.5, r22m = 0.5,
                  c1 = 1, c2 = 10, c1t = 10,
-                 n = 20, p = 0.37)
+                 n = 23.5, p = 0.24)
 # Required budget and sample size with constrained p
   mym.2 <- power.2m(expr = myod1, d = 0.2, q = 1, power = 0.8,
                  constraint = list(p = 0.5))
-  mym.2$out  # m = 2373, J = 19.8
+  mym.2$out  # m = 2424, J = 18
 # Required budget and sample size with constrained p and n
   mym.3 <- power.2m(expr = myod1, d = 0.2, q = 1, power = 0.8,
                  constraint = list(p = 0.5, n = 5))
   mym.3$out  # m = 2502, J = 66.7
 
 # Power calculation
-  mypower <- power.2m(expr = myod1, q = 1, d = 0.2, m = 2019)
+  mypower <- power.2m(expr = myod1, q = 1, d = 0.2, m = 1882)
   mypower$out  # power = 0.80
 # Power calculation under constrained p (p = 0.5)
-  mypower.1 <- power.2m(expr = myod1, q = 1, d = 0.2, m = 2019,
+  mypower.1 <- power.2m(expr = myod1, q = 1, d = 0.2, m = 1882,
                  constraint = list(p = 0.5))
-  mypower.1$out  # power = 0.72
+  mypower.1$out  # power = 0.68
 
 # MDES calculation
-  mymdes <- power.2m(expr = myod1, q = 1, power = 0.80, m = 2019)
+  mymdes <- power.2m(expr = myod1, q = 1, power = 0.80, m = 1882)
   mymdes$out  # d = 0.20
 
 
 # ------- Conventional power analyses with cost.model = FALSE-------
 # Required sample size
-  myJ <- power.2m(cost.model = FALSE, expr = myod1, d = 0.2, q = 1, power = 0.8)
-  myJ$out  # J = 6.3
+  myJ <- power.2m(cost.model = FALSE, expr = myod1, d = 0.2,
+  q = 1, power = 0.8)
+  myJ$out  # J = 22.8
   # myL$par  # parameters and their values used for the function
 # Or, equivalently, specify every argument in the function
   myJ <- power.2m(cost.model = FALSE, d = 0.2, power = 0.8, q = 1,
                  icc = 0.2, omega = 0.02, r12 = 0.5, r22m = 0.5,
                  c1 = 1, c2 = 10, c1t = 10,
-                 n = 20, p = 0.37)
+                 n = 23.5, p = 0.24)
 
 # Power calculation
-  mypower1 <- power.2m(cost.model = FALSE, expr = myod1, J = 6.3, d = 0.2, q = 1)
+  mypower1 <- power.2m(cost.model = FALSE, expr = myod1, J = 22.8,
+  d = 0.2, q = 1)
   mypower1$out  # power = 0.80
 
 # MDES calculation
-  mymdes1 <- power.2m(cost.model = FALSE, expr = myod1, J = 6.3, power = 0.8, q = 1)
+  mymdes1 <- power.2m(cost.model = FALSE, expr = myod1, J = 22.8,
+  power = 0.8, q = 1)
   mymdes1$out  # d = 0.20
 
 }
 \references{
-Shen, Z., & Kelcey, B. (in press). Optimal sample
-   allocation in multisite randomized trials. The Journal of Experimental Education.
-   <https://doi.org/10.1080/00220973.2020.1830361>
+Shen, Z., & Kelcey, B. (2022). Optimal sample
+   allocation in multisite randomized trials.
+   The Journal of Experimental Education, 90(3), 693-711.
+   <https://doi.org/10.1080/00220973.2020.1830361
 }

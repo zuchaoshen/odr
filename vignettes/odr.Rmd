@@ -351,7 +351,7 @@ For additional examples, please see example sections in corresponding *od* funct
 ```
 
 # 5. Examples for Mediation Effects
-Below is a simple example to calculate optimal sample allocation and perform statistical power analyses.
+Below is a simple example to identify an optimal sample allocation and perform statistical power analyses for a mediation effect.
 
 ```{r}
 # Optimal sample allocation and statistical power for randomized controlled trials

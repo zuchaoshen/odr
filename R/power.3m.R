@@ -25,7 +25,7 @@
 #'     in list format to overwrite
 #'     those from \code{expr}; default value is NULL.
 #' @param r32m The proportion of variance of site-specific treatment effect explained by covariates.
-#' @param c3 The cost of sampling one level-3 unit.
+#' @param c3 The cost of sampling one level-3 unit (site).
 #' @param p The proportion of level-2 units to be assigned to treatment.
 #' @param q The number of covariates at level 3.
 #' @param mlim The range for searching the root of budget (\code{m}) numerically,
@@ -42,8 +42,10 @@
 #' @export power.3m
 #'
 #' @references
-#'   Shen, Z., & Kelcey, B. (in press). Optimal sampling ratios in three-level
-#'   multisite experiments. Journal of Research on Educational Effectiveness.
+#'   Shen, Z., & Kelcey, B. (2022). Optimal sampling ratios in three-level
+#'   multisite experiments. Journal of Research on Educational Effectiveness,
+#'   15(1), 130-150.
+#'   <https://doi.org/10.1080/19345747.2021.1953200>
 #'
 #' @examples
 #' # Unconstrained optimal design #---------

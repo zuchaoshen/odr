@@ -1,10 +1,12 @@
 #' Optimal sample allocation calculation for three-level MRTs detecting main effects
 #'
-#' @description The optimal design of three-level
-#'     multisite randomized trials (MRTs) is to calculate
-#'     the optimal sample allocation that minimizes the variance of
-#'     treatment effect under fixed budget, which is approximately the optimal
-#'     sample allocation that maximizes statistical power under a fixed budget.
+#' @description The optimal design of two-level
+#'     multisite randomized trials (MRTs) detecting main effects is to calculate
+#'     the optimal sample allocation that minimize the budget to achieve a
+#'     fixed statistical power (e.g., 80%) using the ant colony optimization (ACO)
+#'     algorithm. Alternatively, the function can calculate the optimal allocation
+#'     that minimizes the variance of a treatment effect under a fixed budget,
+#'     which is less precise than the ACO algorithm.
 #'     The optimal design parameters include
 #'     the level-1 sample size per level-2 unit (\code{n}),
 #'     the level-2 sample size per level-3 unit (\code{J}),
@@ -12,17 +14,32 @@
 #'     This function solves the optimal \code{n}, \code{J} and/or \code{p}
 #'     with and without constraints.
 #'
+#' @inheritParams od.2m
 #' @inheritParams od.4
 #' @inheritParams power.3m
 #' @inheritParams power.4m
+#' @inheritParams od.2.221
+#' @param p The proportion of level-2 units within each level-3 site
+#'     to be assigned to treatment.
 #' @param m Total budget, default is the total costs of sampling 60
 #'     level-3 units.
+#' @param c3 The cost of sampling one level-3 unit (site).
+#' @param Jrange The range of the level-2 sample size per level-3 unit
+#'     that used to exclude unreasonable values. Default value is
+#'     c(2, 10000).
 #' @param plot.by Plot the variance by \code{n}, \code{J} and/or \code{p};
 #'     default value is plot.by = list(n = "n", J = "J", p = "p").
 #' @param plab The plot label for \code{p},
 #'     default value is "Proportion Level-2 Units in Treatment: p".
+#' @param q The number of covariates at level 2. Default is 1.
+#' @param d.n The initial sampling domain for n. Default is c(2, 1000).
+#' @param d.J The initial sampling domain for J. Default is c(2, 1000).
+#' @param ACO Logic. If TRUE, the function will use the ant colony
+#'     optimization (ACO) algorithm to identify optimal allocations. If FALSE,
+#'     the function will use the first-order derivative method to identify
+#'     optimal allocations. Default is TRUE.
 #' @param verbose Logical; print the values of \code{n}, \code{J},
-#'    and \code{p} if TRUE, otherwise not; default value is TRUE.
+#'    and \code{p} if TRUE, otherwise not; default value is TRUE.#'
 #' @return
 #'     Unconstrained or constrained optimal sample allocation
 #'     (\code{n}, \code{J}, and \code{p}).
@@ -34,7 +51,9 @@
 #'
 #' @references
 #'   Shen, Z., & Kelcey, B. (2022). Optimal sampling ratios in three-level
-#'   multisite experiments. Journal of Research on Educational Effectiveness.
+#'   multisite experiments. Journal of Research on Educational Effectiveness,
+#'   15(1), 130-150.
+#'   <https://doi.org/10.1080/19345747.2021.1953200>
 #'
 #' @examples
 #' # Unconstrained optimal design #---------
@@ -91,7 +110,15 @@ od.3m <- function(n = NULL, J = NULL, p = NULL, icc2 = NULL, icc3 = NULL,
                  m = NULL, plots = TRUE, plot.by = NULL,
                  nlim = NULL, Jlim = NULL, plim = NULL, varlim = NULL,
                  nlab = NULL, Jlab = NULL, plab = NULL, varlab = NULL,
-                 vartitle = NULL,verbose = TRUE, iter = 100, tol = 1e-10) {
+                 Klim = c(6, 1e10), q = 1, d = 0.1,
+                 vartitle = NULL,verbose = TRUE, iter = 100, tol = 1e-10,
+                 power = 0.8, ACO = TRUE,
+                 d.p = c(0.5, 0.9), d.n = c(2, 1000), d.J = c(2, 1000),
+                 sig.level = 0.05, two.tailed = TRUE,
+                 nrange = c(2, 10000), Jrange = c(2, 10000),
+                 max.value = Inf, max.iter = 300,  e = 1e-10,
+                 n.of.ants = 10, n.of.archive = 50, q.aco = 0.0001,
+                 xi = 0.5) {
   funName <- "od.3m"
   designType <- "three-level MRTs"
   NumberCheck <- function(x) {!is.null(x) && !is.numeric(x)}
@@ -114,7 +141,1179 @@ od.3m <- function(n = NULL, J = NULL, p = NULL, icc2 = NULL, icc3 = NULL,
   par <- list(icc2 = icc2, icc3 = icc3, r12 = r12, r22 = r22, r32m = r32m,
               c1 = c1, c2 = c2, c3 = c3,
               c1t =c1t, c2t = c2t,  omega = omega,
-              n = n, J = J, p = p, iter = iter)
+              n = n, J = J, p = p, iter = iter,
+              tol = 1e-10,
+              power = 0.8, ACO = TRUE,
+              d.p = c(0.5, 0.9), d.n = c(2, 1000), d.J = c(2, 1000),
+              sig.level = 0.05, two.tailed = TRUE,
+              nrange = c(2, 10000), Jrange = c(2, 10000),
+              max.value = Inf, max.iter = 300,  e = 1e-10,
+              n.of.ants = 10, n.of.archive = 50, q.aco = 0.0001,
+              xi = 0.5)
+  if(ACO){ # if ACO == TRUE
+    tside <- ifelse(two.tailed == TRUE, 2, 1)
+    if (two.tailed == TRUE) {
+      pwr.expr <- quote({
+        lambda <- d * sqrt((p * (1 - p) * n * J * K) /
+                             (p * (1 - p) * n * J * omega * (1 - r32m) +
+                                n * icc2 * (1 - r22)  +
+                                (1 - icc2 - icc3) * (1 - r12)));
+        1 - pt(qt(1 - sig.level / tside, df = (K - q - 1) ),
+               df = (K - q - 1) , lambda) +
+          pt(qt(sig.level / tside, df = (K - q - 1)),
+             df = (K - q - 1), lambda)
+      })
+    } else {
+      pwr.expr <- quote({
+        lambda <- d * sqrt((p * (1 - p) * n * J * K) /
+                             (p * (1 - p) * n * J * omega * (1 - r32m) +
+                                n * icc2 * (1 - r22)  +
+                                (1 - icc2 - icc3) * (1 - r12)));
+        1 - pt(qt(1 - sig.level / tside, df = (K - q - 1)),
+               df = (K - q - 1), lambda)
+      })
+    }
+      if (is.null(par$p) & is.null(par$n) & is.null(J)){#Unconstrained
+        n.of.opt.pars <- 3
+        if (verbose) {cat('The ACO algorithm started initilization..',
+                          ".\n", sep = "")}
+        e.abs <- e # absolute error
+        e.rel <- e # relative error
+        # initiate parameters
+        eval <- 0
+        last.impr <- max.iter
+        design.pars <- data.frame()
+        outcome <- vector()
+        max.X <- rep(NA, n.of.opt.pars)
+        max.y <- -Inf
+        p.X <- vector()
+        pp <- data.frame(v = numeric(), sd = numeric(), gr = numeric());
+        outcome <- NULL
+        n.of.initial <- round(n.of.archive^(1/3), 0)
+        n.initial <- seq(from = d.n[1], to = d.n[2], length = n.of.initial)
+        p.initial <- seq(from = d.p[1], to = d.p[2], length = n.of.initial)
+        J.initial <- seq(from = d.J[1], to = d.J[2], length = n.of.initial)
+        n.of.archive <- n.of.initial^3
+        nl <- matrix(NA, n.of.archive, n.of.archive-1)
+        X <- NULL
+        p.X <- NULL
+        y <- NULL
+        budget <- NULL
+        for (n in n.initial){
+          for (p in p.initial){
+            for (J in J.initial){
+              X <- rbind(X, c(p, n, J))
+              p.X <- rbind(p.X, c(p, n, J))
+              K <- stats::uniroot(function(K)
+                eval(pwr.expr) - power, Klim)$root
+              m = K*((1 - p) * (c1 * n * J + c2 * J) +
+                       p * (c1t * n * J + c2t * J) + c3)
+              y <- c(y, 1/m)
+              budget <- c(budget, m)
+            }
+          }
+        }
+        pp <- rbind(pp, data.frame(v = y, sd = 0, gr = 0, m = budget))
+        pp$gr <- rank(-pp$v, ties.method = "random")
+
+        for (i in 1:n.of.archive){
+          nl[i,] <- (1:n.of.archive)[1:n.of.archive!=i]
+        }
+        n.iter <- n.of.archive
+
+        if (verbose)
+        {cat('The ACO algorithm finished initilization of ', n.of.archive,
+             ' analyses',".\n", sep = "")}
+
+        while (TRUE) { # the algorithm will stop if one of the criteria is met
+          dist.mean <- p.X
+          # the algorithm will stop if it converges
+          if (sum(apply(dist.mean, 2, stats::sd)) <= e) {
+            m = 1/max.y; p = max.X[1]; n = max.X[2]; J = max.X[3];
+            K = m /((1 - p) * (c1 * n * J + c2 * J) +
+                        p * (c1t * n * J + c2t * J) + c3);
+            colnames(p.X) <- c("p", "n", "J");
+            return(list(archive = pp, archive.design.pars = p.X,
+                        n.iter = n.iter, par = par, funName = funName,
+                        designType = designType,
+                        out = list(m = m, p = p, n = n,
+                                   J = J, K = K)))
+          }
+          dist.rank <- pp$gr
+          dim(dist.mean) <- c(length(pp$v), n.of.opt.pars)
+          o.X <- vector()
+          o.X <- gen.design.pars(dist.mean, dist.rank, n.of.ants,
+                                 nl, q.aco, n.of.archive, xi)
+          if (length(o.X) == 0) {
+            m = 1/max.y; p = max.X[1]; n = max.X[2]; J = max.X[3];
+            K = m /((1 - p) * (c1 * n * J + c2 * J) +
+                      p * (c1t * n * J + c2t * J) + c3);
+            colnames(p.X) <- c("p", "n", "J");
+            return(list(archive = pp, archive.design.pars = p.X,
+                        n.iter = n.iter, par = par, funName = funName,
+                        designType = designType,
+                        out = list(m = m, p = p, n = n,
+                                   J = J, K = K)))
+          }
+          X <- NULL
+          for (i in 1:n.of.ants){ # exclude unreasonable values
+            if (sum((0.001 < o.X[i, 1] & o.X[i, 1] < 0.999),
+                    (nrange[1] < o.X[i, 2]  && o.X[i, 2] < nrange[2]),
+                    (Jrange[1] < o.X[i, 3]  && o.X[i, 3] < Jrange[2])) == n.of.opt.pars) {
+              X <- rbind(X, o.X[i,])
+            }
+          }
+          if(length(X)>0) {
+            p.X <- rbind(p.X, X)
+            dim(X) <- c(length(X)/n.of.opt.pars, n.of.opt.pars)
+
+            for (j in 1:dim(X)[1]) {
+              # redo power analysis with n.of.ants times for those reasonable
+              n.iter <- n.iter + 1
+              p <- X[j, 1]
+              n <- X[j, 2]
+              J <- X[j, 3]
+              if (verbose) {
+                if(n.iter==n.of.archive+1){
+                  cat('The number of iterations is ', n.iter, sep = "")
+                }else if((n.iter>n.of.archive+1)&(n.iter < max.iter)){
+                  if (n.iter %in% c(seq(100, max.iter, by=100), max.iter)){
+                    cat(n.iter,
+                        " ", sep = "")
+                  }else{
+                    cat(".", sep = "")
+                  }
+                }
+              }
+              K <- stats::uniroot(function(K)
+                eval(pwr.expr) - power, Klim)$root
+              m = K*((1 - p) * (c1 * n * J + c2 * J) +
+                       p * (c1t * n * J + c2t * J) + c3)
+              y <- c(y, 1/m)
+              budget <- c(budget, m)
+              pp <- rbind(pp, data.frame(v = 1/m, sd = 0, gr = 0, m = m))
+            }
+          }
+
+          # recalculate the rank
+          pp$gr <- rank(-pp$v, ties.method = "random")
+          idx.final <- pp$gr <= n.of.archive
+          pp <- pp[idx.final,]
+          p.X <- p.X[idx.final,]
+          y <- y[idx.final]
+          dim(p.X) <- c(length(p.X)/n.of.opt.pars, n.of.opt.pars)
+          for (i in 1:n.of.archive)
+          {nl[i,] <- (1:n.of.archive)[1:n.of.archive!=i]}
+
+          # check if the required accuracy have been obtained
+          if (max(y, na.rm = TRUE) > max.y) {
+            max.y <- max(y, na.rm = TRUE)
+            max.X <- p.X[which.max(y), ]
+            last.impr <- eval}
+
+          if ((abs(max.y - max.value) < abs(e.rel * max.value + e.abs)) |
+              (max.y > max.value)) {
+            m = 1/max.y; p = max.X[1]; n = max.X[2]; J = max.X[3];
+            K = m /((1 - p) * (c1 * n * J + c2 * J) +
+                      p * (c1t * n * J + c2t * J) + c3);
+            colnames(p.X) <- c("p", "n", "J");
+            return(list(archive = pp, archive.design.pars = p.X,
+                        archive.design.pars = p.X,
+                        n.iter = n.iter, par = par, funName = funName,
+                        designType = designType,
+                        out = list(m = m, p = p, n = n,
+                                   J = J, K = K)))
+          }
+
+          # check if the maximum allowed number of objective function
+          # evaluations has not been exceeded
+          if (n.iter >= max.iter) {
+            m = 1/max.y; p = max.X[1]; n = max.X[2]; J = max.X[3];
+            K = m /((1 - p) * (c1 * n * J + c2 * J) +
+                      p * (c1t * n * J + c2t * J) + c3);
+            colnames(p.X) <- c("p", "n", "J");
+            return(list(archive = pp, archive.design.pars = p.X,
+                        n.iter = n.iter, par = par, funName = funName,
+                        designType = designType,
+                        out = list(m = m, p = p, n = n,
+                                   J = J, K = K)))
+          }
+        }
+      } else if (!is.null(par$p) & is.null(par$n) & is.null(J)){#Constrained p
+        n.of.opt.pars <- 2
+        if (verbose) {cat('The ACO algorithm started initilization..',
+                          ".\n", sep = "")}
+        e.abs <- e # absolute error
+        e.rel <- e # relative error
+        # initiate parameters
+        eval <- 0
+        last.impr <- max.iter
+        design.pars <- data.frame()
+        outcome <- vector()
+        max.X <- rep(NA, n.of.opt.pars)
+        max.y <- -Inf
+        p.X <- vector()
+        pp <- data.frame(v = numeric(), sd = numeric(), gr = numeric());
+        outcome <- NULL
+        n.of.initial <- round(n.of.archive^(1/2), 0)
+        n.initial <- seq(from = d.n[1], to = d.n[2], length = n.of.initial)
+        J.initial <- seq(from = d.J[1], to = d.J[2], length = n.of.initial)
+        n.of.archive <- n.of.initial^2
+        nl <- matrix(NA, n.of.archive, n.of.archive-1)
+        X <- NULL
+        p.X <- NULL
+        y <- NULL
+        budget <- NULL
+        for (n in n.initial){
+          for (J in J.initial){
+            X <- rbind(X, c(n, J))
+            p.X <- rbind(p.X, c(n, J))
+            K <- stats::uniroot(function(K)
+              eval(pwr.expr) - power, Klim)$root
+            m = K*((1 - p) * (c1 * n * J + c2 * J) +
+                     p * (c1t * n * J + c2t * J) + c3)
+            y <- c(y, 1/m)
+            budget <- c(budget, m)
+          }
+        }
+        pp <- rbind(pp, data.frame(v = y, sd = 0, gr = 0, m = budget))
+        pp$gr <- rank(-pp$v, ties.method = "random")
+
+        for (i in 1:n.of.archive){
+          nl[i,] <- (1:n.of.archive)[1:n.of.archive!=i]
+        }
+        n.iter <- n.of.archive
+
+        if (verbose)
+        {cat('The ACO algorithm finished initilization of ', n.of.archive,
+             ' analyses',".\n", sep = "")}
+
+        while (TRUE) { # the algorithm will stop if one of the criteria is met
+          dist.mean <- p.X
+          # the algorithm will stop if it converges
+          if (sum(apply(dist.mean, 2, stats::sd)) <= e) {
+            m = 1/max.y; p = par$p; n = max.X[1]; J = max.X[2];
+            K = m /((1 - p) * (c1 * n * J + c2 * J) +
+                      p * (c1t * n * J + c2t * J) + c3);
+            colnames(p.X) <- c("n", "J");
+            return(list(archive = pp, archive.design.pars = p.X,
+                        n.iter = n.iter, par = par, funName = funName,
+                        designType = designType,
+                        out = list(m = m, p = p, n = n,
+                                   J = J, K = K)))
+          }
+          dist.rank <- pp$gr
+          dim(dist.mean) <- c(length(pp$v), n.of.opt.pars)
+          o.X <- vector()
+          o.X <- gen.design.pars(dist.mean, dist.rank, n.of.ants,
+                                 nl, q.aco, n.of.archive, xi)
+          if (length(o.X) == 0) {
+            m = 1/max.y; p = par$p; n = max.X[1]; J = max.X[2];
+            K = m /((1 - p) * (c1 * n * J + c2 * J) +
+                      p * (c1t * n * J + c2t * J) + c3);
+            colnames(p.X) <- c("n", "J");
+            return(list(archive = pp, archive.design.pars = p.X,
+                        n.iter = n.iter, par = par, funName = funName,
+                        designType = designType,
+                        out = list(m = m, p = p, n = n,
+                                   J = J, K = K)))
+          }
+          X <- NULL
+          for (i in 1:n.of.ants){ # exclude unreasonable values
+            if (sum((nrange[1] < o.X[i, 1]  && o.X[i, 1] < nrange[2]),
+                    (Jrange[1] < o.X[i, 2]  && o.X[i, 2] < Jrange[2])) == n.of.opt.pars) {
+              X <- rbind(X, o.X[i,])
+            }
+          }
+          if(length(X)>0) {
+            p.X <- rbind(p.X, X)
+            dim(X) <- c(length(X)/n.of.opt.pars, n.of.opt.pars)
+
+            for (j in 1:dim(X)[1]) {
+              # redo power analysis with n.of.ants times for those reasonable
+              n.iter <- n.iter + 1
+              n <- X[j, 1]
+              J <- X[j, 2]
+              if (verbose) {
+                if(n.iter==n.of.archive+1){
+                  cat('The number of iterations is ', n.iter, sep = "")
+                }else if((n.iter>n.of.archive+1)&(n.iter < max.iter)){
+                  if (n.iter %in% c(seq(100, max.iter, by=100), max.iter)){
+                    cat(n.iter,
+                        " ", sep = "")
+                  }else{
+                    cat(".", sep = "")
+                  }
+                }
+              }
+              K <- stats::uniroot(function(K)
+                eval(pwr.expr) - power, Klim)$root
+              m = K*((1 - p) * (c1 * n * J + c2 * J) +
+                       p * (c1t * n * J + c2t * J) + c3)
+              y <- c(y, 1/m)
+              budget <- c(budget, m)
+              pp <- rbind(pp, data.frame(v = 1/m, sd = 0, gr = 0, m = m))
+            }
+          }
+
+          # recalculate the rank
+          pp$gr <- rank(-pp$v, ties.method = "random")
+          idx.final <- pp$gr <= n.of.archive
+          pp <- pp[idx.final,]
+          p.X <- p.X[idx.final,]
+          y <- y[idx.final]
+          dim(p.X) <- c(length(p.X)/n.of.opt.pars, n.of.opt.pars)
+          for (i in 1:n.of.archive)
+          {nl[i,] <- (1:n.of.archive)[1:n.of.archive!=i]}
+
+          # check if the required accuracy have been obtained
+          if (max(y, na.rm = TRUE) > max.y) {
+            max.y <- max(y, na.rm = TRUE)
+            max.X <- p.X[which.max(y), ]
+            last.impr <- eval}
+
+          if ((abs(max.y - max.value) < abs(e.rel * max.value + e.abs)) |
+              (max.y > max.value)) {
+            m = 1/max.y; p = par$p; n = max.X[1]; J = max.X[2];
+            K = m /((1 - p) * (c1 * n * J + c2 * J) +
+                      p * (c1t * n * J + c2t * J) + c3);
+            colnames(p.X) <- c("n", "J");
+            return(list(archive = pp, archive.design.pars = p.X,
+                        archive.design.pars = p.X,
+                        n.iter = n.iter, par = par, funName = funName,
+                        designType = designType,
+                        out = list(m = m, p = p, n = n,
+                                   J = J, K = K)))
+          }
+
+          # check if the maximum allowed number of objective function
+          # evaluations has not been exceeded
+          if (n.iter >= max.iter) {
+            m = 1/max.y; p = par$p; n = max.X[1]; J = max.X[2];
+            K = m /((1 - p) * (c1 * n * J + c2 * J) +
+                      p * (c1t * n * J + c2t * J) + c3);
+            colnames(p.X) <- c("n", "J");
+            return(list(archive = pp, archive.design.pars = p.X,
+                        n.iter = n.iter, par = par, funName = funName,
+                        designType = designType,
+                        out = list(m = m, p = p, n = n,
+                                   J = J, K = K)))
+          }
+        }
+      } else if (is.null(par$p) & !is.null(par$n) & is.null(J)){#Constrained n
+
+        n.of.opt.pars <- 2
+        if (verbose) {cat('The ACO algorithm started initilization..',
+                          ".\n", sep = "")}
+        e.abs <- e # absolute error
+        e.rel <- e # relative error
+        # initiate parameters
+        eval <- 0
+        last.impr <- max.iter
+        design.pars <- data.frame()
+        outcome <- vector()
+        max.X <- rep(NA, n.of.opt.pars)
+        max.y <- -Inf
+        p.X <- vector()
+        pp <- data.frame(v = numeric(), sd = numeric(), gr = numeric());
+        outcome <- NULL
+        n.of.initial <- round(n.of.archive^(1/2), 0)
+        p.initial <- seq(from = d.p[1], to = d.p[2], length = n.of.initial)
+        J.initial <- seq(from = d.J[1], to = d.J[2], length = n.of.initial)
+        n.of.archive <- n.of.initial^2
+        nl <- matrix(NA, n.of.archive, n.of.archive-1)
+        X <- NULL
+        p.X <- NULL
+        y <- NULL
+        budget <- NULL
+        for (p in p.initial){
+          for (J in J.initial){
+            X <- rbind(X, c(p, J))
+            p.X <- rbind(p.X, c(p, J))
+            K <- stats::uniroot(function(K)
+              eval(pwr.expr) - power, Klim)$root
+            m = K*((1 - p) * (c1 * n * J + c2 * J) +
+                     p * (c1t * n * J + c2t * J) + c3)
+            y <- c(y, 1/m)
+            budget <- c(budget, m)
+          }
+        }
+        pp <- rbind(pp, data.frame(v = y, sd = 0, gr = 0, m = budget))
+        pp$gr <- rank(-pp$v, ties.method = "random")
+
+        for (i in 1:n.of.archive){
+          nl[i,] <- (1:n.of.archive)[1:n.of.archive!=i]
+        }
+        n.iter <- n.of.archive
+
+        if (verbose)
+        {cat('The ACO algorithm finished initilization of ', n.of.archive,
+             ' analyses',".\n", sep = "")}
+
+        while (TRUE) { # the algorithm will stop if one of the criteria is met
+          dist.mean <- p.X
+          # the algorithm will stop if it converges
+          if (sum(apply(dist.mean, 2, stats::sd)) <= e) {
+            m = 1/max.y; p = max.X[1]; n = par$n; J = max.X[2];
+            K = m /((1 - p) * (c1 * n * J + c2 * J) +
+                      p * (c1t * n * J + c2t * J) + c3);
+            colnames(p.X) <- c("p", "J");
+            return(list(archive = pp, archive.design.pars = p.X,
+                        n.iter = n.iter, par = par, funName = funName,
+                        designType = designType,
+                        out = list(m = m, p = p, n = n,
+                                   J = J, K = K)))
+          }
+          dist.rank <- pp$gr
+          dim(dist.mean) <- c(length(pp$v), n.of.opt.pars)
+          o.X <- vector()
+          o.X <- gen.design.pars(dist.mean, dist.rank, n.of.ants,
+                                 nl, q.aco, n.of.archive, xi)
+          if (length(o.X) == 0) {
+            m = 1/max.y; p = max.X[1]; n = par$n; J = max.X[2];
+            K = m /((1 - p) * (c1 * n * J + c2 * J) +
+                      p * (c1t * n * J + c2t * J) + c3);
+            colnames(p.X) <- c("p", "J");
+            return(list(archive = pp, archive.design.pars = p.X,
+                        n.iter = n.iter, par = par, funName = funName,
+                        designType = designType,
+                        out = list(m = m, p = p, n = n,
+                                   J = J, K = K)))
+          }
+          X <- NULL
+          for (i in 1:n.of.ants){ # exclude unreasonable values
+            if (sum((0.001 < o.X[i, 1] & o.X[i, 1] < 0.999),
+                    (Jrange[1] < o.X[i, 2]  && o.X[i, 2] < Jrange[2])) == n.of.opt.pars) {
+              X <- rbind(X, o.X[i,])
+            }
+          }
+          if(length(X)>0) {
+            p.X <- rbind(p.X, X)
+            dim(X) <- c(length(X)/n.of.opt.pars, n.of.opt.pars)
+
+            for (j in 1:dim(X)[1]) {
+              # redo power analysis with n.of.ants times for those reasonable
+              n.iter <- n.iter + 1
+              p <- X[j, 1]
+              J <- X[j, 2]
+              if (verbose) {
+                if(n.iter==n.of.archive+1){
+                  cat('The number of iterations is ', n.iter, sep = "")
+                }else if((n.iter>n.of.archive+1)&(n.iter < max.iter)){
+                  if (n.iter %in% c(seq(100, max.iter, by=100), max.iter)){
+                    cat(n.iter,
+                        " ", sep = "")
+                  }else{
+                    cat(".", sep = "")
+                  }
+                }
+              }
+              K <- stats::uniroot(function(K)
+                eval(pwr.expr) - power, Klim)$root
+              m = K*((1 - p) * (c1 * n * J + c2 * J) +
+                       p * (c1t * n * J + c2t * J) + c3)
+              y <- c(y, 1/m)
+              budget <- c(budget, m)
+              pp <- rbind(pp, data.frame(v = 1/m, sd = 0, gr = 0, m = m))
+            }
+          }
+
+          # recalculate the rank
+          pp$gr <- rank(-pp$v, ties.method = "random")
+          idx.final <- pp$gr <= n.of.archive
+          pp <- pp[idx.final,]
+          p.X <- p.X[idx.final,]
+          y <- y[idx.final]
+          dim(p.X) <- c(length(p.X)/n.of.opt.pars, n.of.opt.pars)
+          for (i in 1:n.of.archive)
+          {nl[i,] <- (1:n.of.archive)[1:n.of.archive!=i]}
+
+          # check if the required accuracy have been obtained
+          if (max(y, na.rm = TRUE) > max.y) {
+            max.y <- max(y, na.rm = TRUE)
+            max.X <- p.X[which.max(y), ]
+            last.impr <- eval}
+
+          if ((abs(max.y - max.value) < abs(e.rel * max.value + e.abs)) |
+              (max.y > max.value)) {
+            m = 1/max.y; p = max.X[1]; n = par$n; J = max.X[2];
+            K = m /((1 - p) * (c1 * n * J + c2 * J) +
+                      p * (c1t * n * J + c2t * J) + c3);
+            colnames(p.X) <- c("p", "J");
+            return(list(archive = pp, archive.design.pars = p.X,
+                        archive.design.pars = p.X,
+                        n.iter = n.iter, par = par, funName = funName,
+                        designType = designType,
+                        out = list(m = m, p = p, n = n,
+                                   J = J, K = K)))
+          }
+
+          # check if the maximum allowed number of objective function
+          # evaluations has not been exceeded
+          if (n.iter >= max.iter) {
+            m = 1/max.y; p = max.X[1]; n = par$n; J = max.X[2];
+            K = m /((1 - p) * (c1 * n * J + c2 * J) +
+                      p * (c1t * n * J + c2t * J) + c3);
+            colnames(p.X) <- c("p", "J");
+            return(list(archive = pp, archive.design.pars = p.X,
+                        n.iter = n.iter, par = par, funName = funName,
+                        designType = designType,
+                        out = list(m = m, p = p, n = n,
+                                   J = J, K = K)))
+          }
+        }
+      } else if (is.null(par$p) & is.null(par$n) & !is.null(J)){
+        # Constrained J
+        n.of.opt.pars <- 2
+        if (verbose) {cat('The ACO algorithm started initilization..',
+                          ".\n", sep = "")}
+        e.abs <- e # absolute error
+        e.rel <- e # relative error
+        # initiate parameters
+        eval <- 0
+        last.impr <- max.iter
+        design.pars <- data.frame()
+        outcome <- vector()
+        max.X <- rep(NA, n.of.opt.pars)
+        max.y <- -Inf
+        p.X <- vector()
+        pp <- data.frame(v = numeric(), sd = numeric(), gr = numeric());
+        outcome <- NULL
+        n.of.initial <- round(n.of.archive^(1/2), 0)
+        n.initial <- seq(from = d.n[1], to = d.n[2], length = n.of.initial)
+        p.initial <- seq(from = d.p[1], to = d.p[2], length = n.of.initial)
+        n.of.archive <- n.of.initial^2
+        nl <- matrix(NA, n.of.archive, n.of.archive-1)
+        X <- NULL
+        p.X <- NULL
+        y <- NULL
+        budget <- NULL
+        for (n in n.initial){
+          for (p in p.initial){
+            X <- rbind(X, c(p, n))
+            p.X <- rbind(p.X, c(p, n))
+            K <- stats::uniroot(function(K)
+              eval(pwr.expr) - power, Klim)$root
+            m = K*((1 - p) * (c1 * n * J + c2 * J) +
+                     p * (c1t * n * J + c2t * J) + c3)
+            y <- c(y, 1/m)
+            budget <- c(budget, m)
+          }
+        }
+        pp <- rbind(pp, data.frame(v = y, sd = 0, gr = 0, m = budget))
+        pp$gr <- rank(-pp$v, ties.method = "random")
+
+        for (i in 1:n.of.archive){
+          nl[i,] <- (1:n.of.archive)[1:n.of.archive!=i]
+        }
+        n.iter <- n.of.archive
+
+        if (verbose)
+        {cat('The ACO algorithm finished initilization of ', n.of.archive,
+             ' analyses',".\n", sep = "")}
+
+        while (TRUE) { # the algorithm will stop if one of the criteria is met
+          dist.mean <- p.X
+          # the algorithm will stop if it converges
+          if (sum(apply(dist.mean, 2, stats::sd)) <= e) {
+            m = 1/max.y; p = max.X[1]; n = max.X[2]; J = par$J;
+            K = m /((1 - p) * (c1 * n * J + c2 * J) +
+                      p * (c1t * n * J + c2t * J) + c3);
+            colnames(p.X) <- c("p", "n");
+            return(list(archive = pp, archive.design.pars = p.X,
+                        n.iter = n.iter, par = par, funName = funName,
+                        designType = designType,
+                        out = list(m = m, p = p, n = n,
+                                   J = J, K = K)))
+          }
+          dist.rank <- pp$gr
+          dim(dist.mean) <- c(length(pp$v), n.of.opt.pars)
+          o.X <- vector()
+          o.X <- gen.design.pars(dist.mean, dist.rank, n.of.ants,
+                                 nl, q.aco, n.of.archive, xi)
+          if (length(o.X) == 0) {
+            m = 1/max.y; p = max.X[1]; n = max.X[2]; J = par$J;
+            K = m /((1 - p) * (c1 * n * J + c2 * J) +
+                      p * (c1t * n * J + c2t * J) + c3);
+            colnames(p.X) <- c("p", "n");
+            return(list(archive = pp, archive.design.pars = p.X,
+                        n.iter = n.iter, par = par, funName = funName,
+                        designType = designType,
+                        out = list(m = m, p = p, n = n,
+                                   J = J, K = K)))
+          }
+          X <- NULL
+          for (i in 1:n.of.ants){ # exclude unreasonable values
+            if (sum((0.001 < o.X[i, 1] & o.X[i, 1] < 0.999),
+                    (nrange[1] < o.X[i, 2]  && o.X[i, 2] < nrange[2])) == n.of.opt.pars) {
+              X <- rbind(X, o.X[i,])
+            }
+          }
+          if(length(X)>0) {
+            p.X <- rbind(p.X, X)
+            dim(X) <- c(length(X)/n.of.opt.pars, n.of.opt.pars)
+
+            for (j in 1:dim(X)[1]) {
+              # redo power analysis with n.of.ants times for those reasonable
+              n.iter <- n.iter + 1
+              p <- X[j, 1]
+              n <- X[j, 2]
+              if (verbose) {
+                if(n.iter==n.of.archive+1){
+                  cat('The number of iterations is ', n.iter, sep = "")
+                }else if((n.iter>n.of.archive+1)&(n.iter < max.iter)){
+                  if (n.iter %in% c(seq(100, max.iter, by=100), max.iter)){
+                    cat(n.iter,
+                        " ", sep = "")
+                  }else{
+                    cat(".", sep = "")
+                  }
+                }
+              }
+              K <- stats::uniroot(function(K)
+                eval(pwr.expr) - power, Klim)$root
+              m = K*((1 - p) * (c1 * n * J + c2 * J) +
+                       p * (c1t * n * J + c2t * J) + c3)
+              y <- c(y, 1/m)
+              budget <- c(budget, m)
+              pp <- rbind(pp, data.frame(v = 1/m, sd = 0, gr = 0, m = m))
+            }
+          }
+
+          # recalculate the rank
+          pp$gr <- rank(-pp$v, ties.method = "random")
+          idx.final <- pp$gr <= n.of.archive
+          pp <- pp[idx.final,]
+          p.X <- p.X[idx.final,]
+          y <- y[idx.final]
+          dim(p.X) <- c(length(p.X)/n.of.opt.pars, n.of.opt.pars)
+          for (i in 1:n.of.archive)
+          {nl[i,] <- (1:n.of.archive)[1:n.of.archive!=i]}
+
+          # check if the required accuracy have been obtained
+          if (max(y, na.rm = TRUE) > max.y) {
+            max.y <- max(y, na.rm = TRUE)
+            max.X <- p.X[which.max(y), ]
+            last.impr <- eval}
+
+          if ((abs(max.y - max.value) < abs(e.rel * max.value + e.abs)) |
+              (max.y > max.value)) {
+            m = 1/max.y; p = max.X[1]; n = max.X[2]; J = par$J;
+            K = m /((1 - p) * (c1 * n * J + c2 * J) +
+                      p * (c1t * n * J + c2t * J) + c3);
+            colnames(p.X) <- c("p", "n");
+            return(list(archive = pp, archive.design.pars = p.X,
+                        archive.design.pars = p.X,
+                        n.iter = n.iter, par = par, funName = funName,
+                        designType = designType,
+                        out = list(m = m, p = p, n = n,
+                                   J = J, K = K)))
+          }
+
+          # check if the maximum allowed number of objective function
+          # evaluations has not been exceeded
+          if (n.iter >= max.iter) {
+            m = 1/max.y; p = max.X[1]; n = max.X[2]; J = par$J;
+            K = m /((1 - p) * (c1 * n * J + c2 * J) +
+                      p * (c1t * n * J + c2t * J) + c3);
+            colnames(p.X) <- c("p", "n");
+            return(list(archive = pp, archive.design.pars = p.X,
+                        n.iter = n.iter, par = par, funName = funName,
+                        designType = designType,
+                        out = list(m = m, p = p, n = n,
+                                   J = J, K = K)))
+          }
+        }
+      } else if (!is.null(par$p) & !is.null(par$n) & is.null(J)){
+        # Contrained p and n
+
+        n.of.opt.pars <- 1
+        if (verbose) {cat('The ACO algorithm started initilization..',
+                          ".\n", sep = "")}
+        e.abs <- e # absolute error
+        e.rel <- e # relative error
+        # initiate parameters
+        eval <- 0
+        last.impr <- max.iter
+        design.pars <- data.frame()
+        outcome <- vector()
+        max.X <- rep(NA, n.of.opt.pars)
+        max.y <- -Inf
+        p.X <- vector()
+        pp <- data.frame(v = numeric(), sd = numeric(), gr = numeric());
+        outcome <- NULL
+        n.of.initial <- round(n.of.archive, 0)
+        J.initial <- seq(from = d.J[1], to = d.J[2], length = n.of.initial)
+        n.of.archive <- n.of.initial
+        nl <- matrix(NA, n.of.archive, n.of.archive-1)
+        X <- NULL
+        p.X <- NULL
+        y <- NULL
+        budget <- NULL
+        for (J in J.initial){
+          X <- rbind(X, J)
+          p.X <- rbind(p.X, J)
+          K <- stats::uniroot(function(K)
+            eval(pwr.expr) - power, Klim)$root
+          m = K*((1 - p) * (c1 * n * J + c2 * J) +
+                   p * (c1t * n * J + c2t * J) + c3)
+          y <- c(y, 1/m)
+          budget <- c(budget, m)
+        }
+        pp <- rbind(pp, data.frame(v = y, sd = 0, gr = 0, m = budget))
+        pp$gr <- rank(-pp$v, ties.method = "random")
+
+        for (i in 1:n.of.archive){
+          nl[i,] <- (1:n.of.archive)[1:n.of.archive!=i]
+        }
+        n.iter <- n.of.archive
+
+        if (verbose)
+        {cat('The ACO algorithm finished initilization of ', n.of.archive,
+             ' analyses',".\n", sep = "")}
+
+        while (TRUE) { # the algorithm will stop if one of the criteria is met
+          dist.mean <- p.X
+          # the algorithm will stop if it converges
+          if (sum(apply(dist.mean, 2, stats::sd)) <= e) {
+            m = 1/max.y; p = par$p; n = par$n; J = max.X;
+            K = m /((1 - p) * (c1 * n * J + c2 * J) +
+                      p * (c1t * n * J + c2t * J) + c3);
+            colnames(p.X) <- "J";
+            return(list(archive = pp, archive.design.pars = p.X,
+                        n.iter = n.iter, par = par, funName = funName,
+                        designType = designType,
+                        out = list(m = m, p = p, n = n,
+                                   J = J, K = K)))
+          }
+          dist.rank <- pp$gr
+          dim(dist.mean) <- c(length(pp$v), n.of.opt.pars)
+          o.X <- vector()
+          o.X <- gen.design.pars(dist.mean, dist.rank, n.of.ants,
+                                 nl, q.aco, n.of.archive, xi)
+          if (length(o.X) == 0) {
+            m = 1/max.y; p = par$p; n = par$n; J = max.X;
+            K = m /((1 - p) * (c1 * n * J + c2 * J) +
+                      p * (c1t * n * J + c2t * J) + c3);
+            colnames(p.X) <- "J";
+            return(list(archive = pp, archive.design.pars = p.X,
+                        n.iter = n.iter, par = par, funName = funName,
+                        designType = designType,
+                        out = list(m = m, p = p, n = n,
+                                   J = J, K = K)))
+          }
+          X <- NULL
+          for (i in 1:n.of.ants){ # exclude unreasonable values
+            if (sum(Jrange[1] < o.X[i]  && o.X[i] < Jrange[2]) == n.of.opt.pars) {
+              X <- rbind(X, o.X[i])
+            }
+          }
+          if(length(X)>0) {
+            p.X <- rbind(p.X, X)
+            dim(X) <- c(length(X)/n.of.opt.pars, n.of.opt.pars)
+
+            for (j in 1:dim(X)[1]) {
+              # redo power analysis with n.of.ants times for those reasonable
+              n.iter <- n.iter + 1
+              J <- X[j]
+              if (verbose) {
+                if(n.iter==n.of.archive+1){
+                  cat('The number of iterations is ', n.iter, sep = "")
+                }else if((n.iter>n.of.archive+1)&(n.iter < max.iter)){
+                  if (n.iter %in% c(seq(100, max.iter, by=100), max.iter)){
+                    cat(n.iter,
+                        " ", sep = "")
+                  }else{
+                    cat(".", sep = "")
+                  }
+                }
+              }
+              K <- stats::uniroot(function(K)
+                eval(pwr.expr) - power, Klim)$root
+              m = K*((1 - p) * (c1 * n * J + c2 * J) +
+                       p * (c1t * n * J + c2t * J) + c3)
+              y <- c(y, 1/m)
+              budget <- c(budget, m)
+              pp <- rbind(pp, data.frame(v = 1/m, sd = 0, gr = 0, m = m))
+            }
+          }
+
+          # recalculate the rank
+          pp$gr <- rank(-pp$v, ties.method = "random")
+          idx.final <- pp$gr <= n.of.archive
+          pp <- pp[idx.final,]
+          p.X <- p.X[idx.final,]
+          y <- y[idx.final]
+          dim(p.X) <- c(length(p.X)/n.of.opt.pars, n.of.opt.pars)
+          for (i in 1:n.of.archive)
+          {nl[i,] <- (1:n.of.archive)[1:n.of.archive!=i]}
+
+          # check if the required accuracy have been obtained
+          if (max(y, na.rm = TRUE) > max.y) {
+            max.y <- max(y, na.rm = TRUE)
+            max.X <- p.X[which.max(y), ]
+            last.impr <- eval}
+
+          if ((abs(max.y - max.value) < abs(e.rel * max.value + e.abs)) |
+              (max.y > max.value)) {
+            m = 1/max.y; p = par$p; n = par$n; J = max.X;
+            K = m /((1 - p) * (c1 * n * J + c2 * J) +
+                      p * (c1t * n * J + c2t * J) + c3);
+            colnames(p.X) <- "J";
+            return(list(archive = pp, archive.design.pars = p.X,
+                        archive.design.pars = p.X,
+                        n.iter = n.iter, par = par, funName = funName,
+                        designType = designType,
+                        out = list(m = m, p = p, n = n,
+                                   J = J, K = K)))
+          }
+
+          # check if the maximum allowed number of objective function
+          # evaluations has not been exceeded
+          if (n.iter >= max.iter) {
+            m = 1/max.y; p = par$p; n = par$n; J = max.X;
+            K = m /((1 - p) * (c1 * n * J + c2 * J) +
+                      p * (c1t * n * J + c2t * J) + c3);
+            colnames(p.X) <- "J";
+            return(list(archive = pp, archive.design.pars = p.X,
+                        n.iter = n.iter, par = par, funName = funName,
+                        designType = designType,
+                        out = list(m = m, p = p, n = n,
+                                   J = J, K = K)))
+          }
+        }
+      } else if (!is.null(par$p) & is.null(par$n) & !is.null(J)){
+        # Contrained p and J
+
+        n.of.opt.pars <- 1
+        if (verbose) {cat('The ACO algorithm started initilization..',
+                          ".\n", sep = "")}
+        e.abs <- e # absolute error
+        e.rel <- e # relative error
+        # initiate parameters
+        eval <- 0
+        last.impr <- max.iter
+        design.pars <- data.frame()
+        outcome <- vector()
+        max.X <- rep(NA, n.of.opt.pars)
+        max.y <- -Inf
+        p.X <- vector()
+        pp <- data.frame(v = numeric(), sd = numeric(), gr = numeric());
+        outcome <- NULL
+        n.of.initial <- round(n.of.archive, 0)
+        n.initial <- seq(from = d.n[1], to = d.n[2], length = n.of.initial)
+        n.of.archive <- n.of.initial
+        nl <- matrix(NA, n.of.archive, n.of.archive-1)
+        X <- NULL
+        p.X <- NULL
+        y <- NULL
+        budget <- NULL
+        for (n in n.initial){
+          X <- rbind(X, n)
+          p.X <- rbind(p.X, n)
+          K <- stats::uniroot(function(K)
+            eval(pwr.expr) - power, Klim)$root
+          m = K*((1 - p) * (c1 * n * J + c2 * J) +
+                   p * (c1t * n * J + c2t * J) + c3)
+          y <- c(y, 1/m)
+          budget <- c(budget, m)
+        }
+        pp <- rbind(pp, data.frame(v = y, sd = 0, gr = 0, m = budget))
+        pp$gr <- rank(-pp$v, ties.method = "random")
+
+        for (i in 1:n.of.archive){
+          nl[i,] <- (1:n.of.archive)[1:n.of.archive!=i]
+        }
+        n.iter <- n.of.archive
+
+        if (verbose)
+        {cat('The ACO algorithm finished initilization of ', n.of.archive,
+             ' analyses',".\n", sep = "")}
+
+        while (TRUE) { # the algorithm will stop if one of the criteria is met
+          dist.mean <- p.X
+          # the algorithm will stop if it converges
+          if (sum(apply(dist.mean, 2, stats::sd)) <= e) {
+            m = 1/max.y; p = par$p; n = max.X; J = par$J;
+            K = m /((1 - p) * (c1 * n * J + c2 * J) +
+                      p * (c1t * n * J + c2t * J) + c3);
+            colnames(p.X) <- "n";
+            return(list(archive = pp, archive.design.pars = p.X,
+                        n.iter = n.iter, par = par, funName = funName,
+                        designType = designType,
+                        out = list(m = m, p = p, n = n,
+                                   J = J, K = K)))
+          }
+          dist.rank <- pp$gr
+          dim(dist.mean) <- c(length(pp$v), n.of.opt.pars)
+          o.X <- vector()
+          o.X <- gen.design.pars(dist.mean, dist.rank, n.of.ants,
+                                 nl, q.aco, n.of.archive, xi)
+          if (length(o.X) == 0) {
+            m = 1/max.y; p = par$p; n = max.X; J = par$J;
+            K = m /((1 - p) * (c1 * n * J + c2 * J) +
+                      p * (c1t * n * J + c2t * J) + c3);
+            colnames(p.X) <- "n";
+            return(list(archive = pp, archive.design.pars = p.X,
+                        n.iter = n.iter, par = par, funName = funName,
+                        designType = designType,
+                        out = list(m = m, p = p, n = n,
+                                   J = J, K = K)))
+          }
+          X <- NULL
+          for (i in 1:n.of.ants){ # exclude unreasonable values
+            if (sum(nrange[1] < o.X[i]  && o.X[i] < nrange[2]) == n.of.opt.pars) {
+              X <- rbind(X, o.X[i])
+            }
+          }
+          if(length(X)>0) {
+            p.X <- rbind(p.X, X)
+            dim(X) <- c(length(X)/n.of.opt.pars, n.of.opt.pars)
+
+            for (j in 1:dim(X)[1]) {
+              # redo power analysis with n.of.ants times for those reasonable
+              n.iter <- n.iter + 1
+              n <- X[j]
+              if (verbose) {
+                if(n.iter==n.of.archive+1){
+                  cat('The number of iterations is ', n.iter, sep = "")
+                }else if((n.iter>n.of.archive+1)&(n.iter < max.iter)){
+                  if (n.iter %in% c(seq(100, max.iter, by=100), max.iter)){
+                    cat(n.iter,
+                        " ", sep = "")
+                  }else{
+                    cat(".", sep = "")
+                  }
+                }
+              }
+              K <- stats::uniroot(function(K)
+                eval(pwr.expr) - power, Klim)$root
+              m = K*((1 - p) * (c1 * n * J + c2 * J) +
+                       p * (c1t * n * J + c2t * J) + c3)
+              y <- c(y, 1/m)
+              budget <- c(budget, m)
+              pp <- rbind(pp, data.frame(v = 1/m, sd = 0, gr = 0, m = m))
+            }
+          }
+
+          # recalculate the rank
+          pp$gr <- rank(-pp$v, ties.method = "random")
+          idx.final <- pp$gr <= n.of.archive
+          pp <- pp[idx.final,]
+          p.X <- p.X[idx.final,]
+          y <- y[idx.final]
+          dim(p.X) <- c(length(p.X)/n.of.opt.pars, n.of.opt.pars)
+          for (i in 1:n.of.archive)
+          {nl[i,] <- (1:n.of.archive)[1:n.of.archive!=i]}
+
+          # check if the required accuracy have been obtained
+          if (max(y, na.rm = TRUE) > max.y) {
+            max.y <- max(y, na.rm = TRUE)
+            max.X <- p.X[which.max(y), ]
+            last.impr <- eval}
+
+          if ((abs(max.y - max.value) < abs(e.rel * max.value + e.abs)) |
+              (max.y > max.value)) {
+            m = 1/max.y; p = par$p; n = max.X; J = par$J;
+            K = m /((1 - p) * (c1 * n * J + c2 * J) +
+                      p * (c1t * n * J + c2t * J) + c3);
+            colnames(p.X) <- "n";
+            return(list(archive = pp, archive.design.pars = p.X,
+                        archive.design.pars = p.X,
+                        n.iter = n.iter, par = par, funName = funName,
+                        designType = designType,
+                        out = list(m = m, p = p, n = n,
+                                   J = J, K = K)))
+          }
+
+          # check if the maximum allowed number of objective function
+          # evaluations has not been exceeded
+          if (n.iter >= max.iter) {
+            m = 1/max.y; p = par$p; n = max.X; J = par$J;
+            K = m /((1 - p) * (c1 * n * J + c2 * J) +
+                      p * (c1t * n * J + c2t * J) + c3);
+            colnames(p.X) <- "n";
+            return(list(archive = pp, archive.design.pars = p.X,
+                        n.iter = n.iter, par = par, funName = funName,
+                        designType = designType,
+                        out = list(m = m, p = p, n = n,
+                                   J = J, K = K)))
+          }
+        }
+      } else if (is.null(par$p) & !is.null(par$n) & !is.null(J)){
+        # Contrained n and J
+
+        n.of.opt.pars <- 1
+        if (verbose) {cat('The ACO algorithm started initilization..',
+                          ".\n", sep = "")}
+        e.abs <- e # absolute error
+        e.rel <- e # relative error
+        # initiate parameters
+        eval <- 0
+        last.impr <- max.iter
+        design.pars <- data.frame()
+        outcome <- vector()
+        max.X <- rep(NA, n.of.opt.pars)
+        max.y <- -Inf
+        p.X <- vector()
+        pp <- data.frame(v = numeric(), sd = numeric(), gr = numeric());
+        outcome <- NULL
+        n.of.initial <- round(n.of.archive, 0)
+        p.initial <- seq(from = d.p[1], to = d.p[2], length = n.of.initial)
+        n.of.archive <- n.of.initial
+        nl <- matrix(NA, n.of.archive, n.of.archive-1)
+        X <- NULL
+        p.X <- NULL
+        y <- NULL
+        budget <- NULL
+        for (p in p.initial){
+          X <- rbind(X, p)
+          p.X <- rbind(p.X, p)
+          K <- stats::uniroot(function(K)
+            eval(pwr.expr) - power, Klim)$root
+          m = K*((1 - p) * (c1 * n * J + c2 * J) +
+                   p * (c1t * n * J + c2t * J) + c3)
+          y <- c(y, 1/m)
+          budget <- c(budget, m)
+        }
+        pp <- rbind(pp, data.frame(v = y, sd = 0, gr = 0, m = budget))
+        pp$gr <- rank(-pp$v, ties.method = "random")
+
+        for (i in 1:n.of.archive){
+          nl[i,] <- (1:n.of.archive)[1:n.of.archive!=i]
+        }
+        n.iter <- n.of.archive
+
+        if (verbose)
+        {cat('The ACO algorithm finished initilization of ', n.of.archive,
+             ' analyses',".\n", sep = "")}
+
+        while (TRUE) { # the algorithm will stop if one of the criteria is met
+          dist.mean <- p.X
+          # the algorithm will stop if it converges
+          if (sum(apply(dist.mean, 2, stats::sd)) <= e) {
+            m = 1/max.y; p = max.X; n = par$n; J = par$J;
+            K = m /((1 - p) * (c1 * n * J + c2 * J) +
+                      p * (c1t * n * J + c2t * J) + c3);
+            colnames(p.X) <- "p";
+            return(list(archive = pp, archive.design.pars = p.X,
+                        n.iter = n.iter, par = par, funName = funName,
+                        designType = designType,
+                        out = list(m = m, p = p, n = n,
+                                   J = J, K = K)))
+          }
+          dist.rank <- pp$gr
+          dim(dist.mean) <- c(length(pp$v), n.of.opt.pars)
+          o.X <- vector()
+          o.X <- gen.design.pars(dist.mean, dist.rank, n.of.ants,
+                                 nl, q.aco, n.of.archive, xi)
+          if (length(o.X) == 0) {
+            m = 1/max.y; p = max.X; n = par$n; J = par$J;
+            K = m /((1 - p) * (c1 * n * J + c2 * J) +
+                      p * (c1t * n * J + c2t * J) + c3);
+            colnames(p.X) <- "p";
+            return(list(archive = pp, archive.design.pars = p.X,
+                        n.iter = n.iter, par = par, funName = funName,
+                        designType = designType,
+                        out = list(m = m, p = p, n = n,
+                                   J = J, K = K)))
+          }
+          X <- NULL
+          for (i in 1:n.of.ants){ # exclude unreasonable values
+            if (sum(0.001 < o.X[i]  && o.X[i] < 0.999) == n.of.opt.pars) {
+              X <- rbind(X, o.X[i])
+            }
+          }
+          if(length(X)>0) {
+            p.X <- rbind(p.X, X)
+            dim(X) <- c(length(X)/n.of.opt.pars, n.of.opt.pars)
+
+            for (j in 1:dim(X)[1]) {
+              # redo power analysis with n.of.ants times for those reasonable
+              n.iter <- n.iter + 1
+              p <- X[j]
+              if (verbose) {
+                if(n.iter==n.of.archive+1){
+                  cat('The number of iterations is ', n.iter, sep = "")
+                }else if((n.iter>n.of.archive+1)&(n.iter < max.iter)){
+                  if (n.iter %in% c(seq(100, max.iter, by=100), max.iter)){
+                    cat(n.iter,
+                        " ", sep = "")
+                  }else{
+                    cat(".", sep = "")
+                  }
+                }
+              }
+              K <- stats::uniroot(function(K)
+                eval(pwr.expr) - power, Klim)$root
+              m = K*((1 - p) * (c1 * n * J + c2 * J) +
+                       p * (c1t * n * J + c2t * J) + c3)
+              y <- c(y, 1/m)
+              budget <- c(budget, m)
+              pp <- rbind(pp, data.frame(v = 1/m, sd = 0, gr = 0, m = m))
+            }
+          }
+
+          # recalculate the rank
+          pp$gr <- rank(-pp$v, ties.method = "random")
+          idx.final <- pp$gr <= n.of.archive
+          pp <- pp[idx.final,]
+          p.X <- p.X[idx.final,]
+          y <- y[idx.final]
+          dim(p.X) <- c(length(p.X)/n.of.opt.pars, n.of.opt.pars)
+          for (i in 1:n.of.archive)
+          {nl[i,] <- (1:n.of.archive)[1:n.of.archive!=i]}
+
+          # check if the required accuracy have been obtained
+          if (max(y, na.rm = TRUE) > max.y) {
+            max.y <- max(y, na.rm = TRUE)
+            max.X <- p.X[which.max(y), ]
+            last.impr <- eval}
+
+          if ((abs(max.y - max.value) < abs(e.rel * max.value + e.abs)) |
+              (max.y > max.value)) {
+            m = 1/max.y; p = max.X; n = par$n; J = par$J;
+            K = m /((1 - p) * (c1 * n * J + c2 * J) +
+                      p * (c1t * n * J + c2t * J) + c3);
+            colnames(p.X) <- "p";
+            return(list(archive = pp, archive.design.pars = p.X,
+                        archive.design.pars = p.X,
+                        n.iter = n.iter, par = par, funName = funName,
+                        designType = designType,
+                        out = list(m = m, p = p, n = n,
+                                   J = J, K = K)))
+          }
+
+          # check if the maximum allowed number of objective function
+          # evaluations has not been exceeded
+          if (n.iter >= max.iter) {
+            m = 1/max.y; p = max.X; n = par$n; J = par$J;
+            K = m /((1 - p) * (c1 * n * J + c2 * J) +
+                      p * (c1t * n * J + c2t * J) + c3);
+            colnames(p.X) <- "p";
+            return(list(archive = pp, archive.design.pars = p.X,
+                        n.iter = n.iter, par = par, funName = funName,
+                        designType = designType,
+                        out = list(m = m, p = p, n = n,
+                                   J = J, K = K)))
+          }
+        }
+      } else if (!is.null(par$p) & !is.null(par$n) & !is.null(J)){
+        cat("===============================\n",
+            "There is no optimization performed
+        because all p, n, and J are contrained",
+            ".\n===============================\n", sep = "")
+        p = par$p; n = par$n; J = par$J;
+        K <- stats::uniroot(function(K) eval(pwr.expr) - power, Klim)$root
+        m = K* ((1 - p) * (c1 * n * J + c2 * J) +
+                  p * (c1t * n * J + c2t * J) + c3);
+        return(list(archive = NA, archive.design.pars = NA,
+                    n.iter = NA, par = par, funName = funName,
+                    designType = designType,
+                    out = list(m = m, p = p, n = n,
+                               J = J, K = K)))
+      }
+  } else {
   if (is.null(n)) {
     n.expr <- quote({
       sqrt(((1 - icc2 - icc3) * (1 - r12)) /
@@ -286,4 +1485,7 @@ od.3m <- function(n = NULL, J = NULL, p = NULL, icc2 = NULL, icc3 = NULL,
   }
   par(figure)
   return(od.out)
+  }
 }
+
+

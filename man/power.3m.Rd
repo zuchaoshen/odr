@@ -93,7 +93,7 @@ otherwise one-tailed tests; default value is TRUE.}
 
 \item{c2}{The cost of sampling one level-2 unit in control condition.}
 
-\item{c3}{The cost of sampling one level-3 unit.}
+\item{c3}{The cost of sampling one level-3 unit (site).}
 
 \item{c1t}{The cost of sampling one level-1 unit in treatment condition.}
 
@@ -200,6 +200,8 @@ This function can calculate required budget for desired power,
 
 }
 \references{
-Shen, Z., & Kelcey, B. (in press). Optimal sampling ratios in three-level
-  multisite experiments. Journal of Research on Educational Effectiveness.
+Shen, Z., & Kelcey, B. (2022). Optimal sampling ratios in three-level
+  multisite experiments. Journal of Research on Educational Effectiveness,
+  15(1), 130-150.
+  <https://doi.org/10.1080/19345747.2021.1953200>
 }

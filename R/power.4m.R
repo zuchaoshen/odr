@@ -24,7 +24,7 @@
 #'     those from \code{expr}; default value is NULL.
 #' @param omega The standardized variance of site-specific treatment effect.
 #' @param r42m The proportion of variance of site-specific treatment effect explained by covariates.
-#' @param c4 The cost of sampling one level-4 unit.
+#' @param c4 The cost of sampling one level-4 unit (cite.
 #' @param p The proportion of level-3 units to be assigned to treatment.
 #' @param q The number of covariates at level 4.
 #' @param mlim The range for searching the root of budget (\code{m}) numerically,

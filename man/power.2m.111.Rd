@@ -82,11 +82,12 @@ Another choice is the Sobel test by specifying the argument as test = "sobel".}
 
 \item{c1t}{The cost of sampling one level-1 unit in treatment condition.}
 
-\item{c2}{The cost of sampling one level-2 unit.}
+\item{c2}{The cost of sampling one level-2 unit (site).}
 
 \item{r12}{The proportion of level-1 variance explained by covariates.}
 
-\item{r22m}{The proportion of variance of site-specific treatment effect explained by covariates.}
+\item{r22m}{The proportion of variance of site-specific treatment
+effect explained by covariates.}
 
 \item{r12m}{The proportion of within treatment mediator variance at the level one
 explained by covariates.}

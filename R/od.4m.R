@@ -17,6 +17,7 @@
 #' @inheritParams od.4
 #' @param m Total budget, default is the total costs of sampling 60
 #'     level-4 units.
+#' @param c4 The cost of sampling one level-4 unit (site).
 #' @param plots Logical, provide variance plots if TRUE, otherwise not; default value is TRUE.
 #' @param plot.by Plot the variance by \code{n}, \code{J}, \code{K} and/or \code{p};
 #'     default value is plot.by = list(n = "n", J = "J", K = 'K', p = "p").

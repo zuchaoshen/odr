@@ -11,7 +11,8 @@
 #' @inheritParams power.2
 #' @inheritParams power.3m
 #'
-#' @param expr Returned objects from function \code{\link{od.2m}}; default is NULL;
+#' @param expr Returned objects from function \code{\link{od.2m}} or
+#' \code{\link{od.2m.111m}}; default is NULL;
 #'     if \code{expr} is specified, parameter values of \code{icc},
 #'     \code{r12}, \code{r22m},
 #'     \code{c1}, \code{c2},
@@ -23,8 +24,9 @@
 #'     if \code{constraint} is specified.
 #' @param constraint Specify the constrained values of \code{p} and/or \code{n}
 #'     in list format to overwrite those from \code{expr}; default value is NULL.
-#' @param r22m The proportion of variance of site-specific treatment effect explained by covariates.
-#' @param c2 The cost of sampling one level-2 unit.
+#' @param r22m The proportion of variance of site-specific treatment
+#'     effect explained by covariates.
+#' @param c2 The cost of sampling one level-2 unit (site).
 #' @param p The proportion of level-1 units to be assigned to treatment.
 #' @param q The number of covariates at level 2.
 #' @param J The number of sites.
@@ -33,74 +35,78 @@
 #'     or c(4 * Jcost, 1e+10 * Jcost) with Jcost =
 #'     (1 - p) * c1 * n + p * c1t * n + c2.
 #'
-#' @return Required budget (and/or required level-2 sample size), statistical power, or MDES
-#'     depending on the specification of parameters.
+#' @return Required budget (and/or required level-2 sample size), s
+#'     tatistical power, or MDES  depending on the specification of parameters.
 #'     The function also returns the function name, design type,
 #'     and parameters used in the calculation.
 #'
 #' @export power.2m
 #'
 #' @references
-#'    Shen, Z., & Kelcey, B. (in press). Optimal sample
-#'    allocation in multisite randomized trials. The Journal of Experimental Education.
-#'    <https://doi.org/10.1080/00220973.2020.1830361>
+#'    Shen, Z., & Kelcey, B. (2022). Optimal sample
+#'    allocation in multisite randomized trials.
+#'    The Journal of Experimental Education, 90(3), 693-711.
+#'    <https://doi.org/10.1080/00220973.2020.1830361
 #'
 #' @examples
 #' # Unconstrained optimal design #---------
 #'   myod1 <- od.2m(icc = 0.2, omega = 0.02, r12 = 0.5, r22m = 0.5,
 #'               c1 = 1, c2 = 10, c1t = 10,
 #'               varlim = c(0, 0.005))
-#'   myod1$out # n = 19.8, p = 0.37
+#'   myod1$out # n = 23.5, p = 0.24
 #'
 #' # ------- Power analyses by default considering costs and budget -------
 #' # Required budget and sample size
 #'   mym.1 <- power.2m(expr = myod1, d = 0.2, q = 1, power = 0.8)
-#'   mym.1$out  # m = 2019, J = 20.9
+#'   mym.1$out  # m = 1882, J = 22.8
 #'   # mym.1$par  # parameters and their values used for the function
 #' # Or, equivalently, specify every argument in the function
 #'   mym.1 <- power.2m(d = 0.2, power = 0.8, q = 1,
 #'                  icc = 0.2, omega = 0.02, r12 = 0.5, r22m = 0.5,
 #'                  c1 = 1, c2 = 10, c1t = 10,
-#'                  n = 20, p = 0.37)
+#'                  n = 23.5, p = 0.24)
 #' # Required budget and sample size with constrained p
 #'   mym.2 <- power.2m(expr = myod1, d = 0.2, q = 1, power = 0.8,
 #'                  constraint = list(p = 0.5))
-#'   mym.2$out  # m = 2373, J = 19.8
+#'   mym.2$out  # m = 2424, J = 18
 #' # Required budget and sample size with constrained p and n
 #'   mym.3 <- power.2m(expr = myod1, d = 0.2, q = 1, power = 0.8,
 #'                  constraint = list(p = 0.5, n = 5))
 #'   mym.3$out  # m = 2502, J = 66.7
 #'
 #' # Power calculation
-#'   mypower <- power.2m(expr = myod1, q = 1, d = 0.2, m = 2019)
+#'   mypower <- power.2m(expr = myod1, q = 1, d = 0.2, m = 1882)
 #'   mypower$out  # power = 0.80
 #' # Power calculation under constrained p (p = 0.5)
-#'   mypower.1 <- power.2m(expr = myod1, q = 1, d = 0.2, m = 2019,
+#'   mypower.1 <- power.2m(expr = myod1, q = 1, d = 0.2, m = 1882,
 #'                  constraint = list(p = 0.5))
-#'   mypower.1$out  # power = 0.72
+#'   mypower.1$out  # power = 0.68
 #'
 #' # MDES calculation
-#'   mymdes <- power.2m(expr = myod1, q = 1, power = 0.80, m = 2019)
+#'   mymdes <- power.2m(expr = myod1, q = 1, power = 0.80, m = 1882)
 #'   mymdes$out  # d = 0.20
 #'
 #'
 #' # ------- Conventional power analyses with cost.model = FALSE-------
 #' # Required sample size
-#'   myJ <- power.2m(cost.model = FALSE, expr = myod1, d = 0.2, q = 1, power = 0.8)
-#'   myJ$out  # J = 6.3
+#'   myJ <- power.2m(cost.model = FALSE, expr = myod1, d = 0.2,
+#'   q = 1, power = 0.8)
+#'   myJ$out  # J = 22.8
 #'   # myL$par  # parameters and their values used for the function
 #' # Or, equivalently, specify every argument in the function
 #'   myJ <- power.2m(cost.model = FALSE, d = 0.2, power = 0.8, q = 1,
 #'                  icc = 0.2, omega = 0.02, r12 = 0.5, r22m = 0.5,
 #'                  c1 = 1, c2 = 10, c1t = 10,
-#'                  n = 20, p = 0.37)
+#'                  n = 23.5, p = 0.24)
 #'
 #' # Power calculation
-#'   mypower1 <- power.2m(cost.model = FALSE, expr = myod1, J = 6.3, d = 0.2, q = 1)
+#'   mypower1 <- power.2m(cost.model = FALSE, expr = myod1, J = 22.8,
+#'   d = 0.2, q = 1)
 #'   mypower1$out  # power = 0.80
 #'
 #' # MDES calculation
-#'   mymdes1 <- power.2m(cost.model = FALSE, expr = myod1, J = 6.3, power = 0.8, q = 1)
+#'   mymdes1 <- power.2m(cost.model = FALSE, expr = myod1, J = 22.8,
+#'   power = 0.8, q = 1)
 #'   mymdes1$out  # d = 0.20
 #'
 power.2m <- function(cost.model = TRUE, expr = NULL, constraint = NULL,
@@ -127,15 +133,13 @@ power.2m <- function(cost.model = TRUE, expr = NULL, constraint = NULL,
       stop("'m' must be NULL when cost.model is FALSE")
   }
   if (!is.null(expr)) {
-    if (expr$funName != "od.2m") {
-      stop("'expr' can only be NULL or
-           the return from the function of 'od.2m'")
-    } else {
+    if (expr$funName %in% c("od.2m", "od.2m.111m")) {
       if (sum(sapply(list(icc, r12, r22m, c1, c2,
                           c1t, omega, n, p), function(x) {!is.null(x)})) >= 1)
         stop("parameters of 'icc', 'r12', 'r22m',
              'c1', 'c2', 'c1t', 'omega', 'n', and 'p'
-             have been specified in expr of 'od.2m'")
+             have been specified in expr of 'od.2m' or a similar od function
+             ('od.2m.111m')")
       icc <- expr$par$icc
       r12 <- expr$par$r12
       r22m <- expr$par$r22m
@@ -150,6 +154,10 @@ power.2m <- function(cost.model = TRUE, expr = NULL, constraint = NULL,
         n <- expr$out$n
         p <- expr$out$p
       }
+    } else  {
+        stop("'expr' can only be NULL or
+           the return from the function of 'od.2m' or a similar od function
+             ('od.2m.111m')")
     }
   } else {
     if (!is.null(constraint))

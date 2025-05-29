@@ -233,6 +233,7 @@ power.2.221 <- function(cost.model = TRUE, expr = NULL, constraint = NULL,
           eval(pwr) - power, Jlim)$root)
       }
     }
+
       results <- list(funName = funName,
                designType = designType,
                par = par, test =test, out = out)
