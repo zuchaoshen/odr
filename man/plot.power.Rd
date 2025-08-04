@@ -43,13 +43,13 @@ and by = c("n", "p", "J") for three-level designs.}
 
 \item{legend}{Logical; present plot legend if TRUE. The default is TRUE.}
 
-\item{nlab}{Label for the x-axe when the plot is by the optimal design
+\item{nlab}{Label for the x-axis when the plot is by the optimal design
 parameter "n".}
 
-\item{plab}{Label for the x-axe when the plot is by the optimal design
+\item{plab}{Label for the x-axis when the plot is by the optimal design
 parameter "p".}
 
-\item{Jlab}{Label for the x-axe when the plot is by the optimal design
+\item{Jlab}{Label for the x-axis when the plot is by the optimal design
 parameter "J".}
 
 \item{powerlab}{The label for the statistical power.}

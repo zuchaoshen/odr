@@ -11,11 +11,11 @@
 #'     For example, default values are by = "p" for single-level designs,
 #'     by = c("n", "p") for two-level designs,
 #'     and by = c("n", "p", "J") for three-level designs.
-#' @param plab Label for the x-axe when the plot is by the optimal design
+#' @param plab Label for the x-axis when the plot is by the optimal design
 #'     parameter "p".
-#' @param nlab Label for the x-axe when the plot is by the optimal design
+#' @param nlab Label for the x-axis when the plot is by the optimal design
 #'     parameter "n".
-#' @param Jlab Label for the x-axe when the plot is by the optimal design
+#' @param Jlab Label for the x-axis when the plot is by the optimal design
 #'     parameter "J".
 #' @param powerlim The limit for plotting power curves.
 #' @param powerlab The label for the statistical power.
