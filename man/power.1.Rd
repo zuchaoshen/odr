@@ -17,7 +17,7 @@ power.1(
   n = NULL,
   p = NULL,
   r12 = NULL,
-  q = NULL,
+  q = 1,
   c1 = NULL,
   c1t = NULL,
   dlim = NULL,
@@ -63,7 +63,7 @@ otherwise one-tailed tests; default value is TRUE.}
 
 \item{r12}{The proportion of outcome variance explained by covariates.}
 
-\item{q}{The number of covariates.}
+\item{q}{The number of covariates. Default is 1.}
 
 \item{c1}{The cost of sampling one unit in control condition.}
 

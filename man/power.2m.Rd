@@ -20,7 +20,7 @@ power.2m(
   icc = NULL,
   r12 = NULL,
   r22m = NULL,
-  q = NULL,
+  q = 1,
   c1 = NULL,
   c2 = NULL,
   c1t = NULL,
@@ -39,7 +39,7 @@ if TRUE, otherwise conventional power analyses
 (e.g., required sample size, power, or MDES calculation); default value is TRUE.}
 
 \item{expr}{Returned objects from function \code{\link{od.2m}} or
-\code{\link{od.2m.111m}}; default is NULL;
+\code{\link{od.2m.mod}}; default is NULL;
     if \code{expr} is specified, parameter values of \code{icc},
     \code{r12}, \code{r22m},
     \code{c1}, \code{c2},
@@ -108,8 +108,8 @@ to two decimal places and integer, respectively if TRUE,
 otherwise no rounding; default value is TRUE.}
 }
 \value{
-Required budget (and/or required level-2 sample size), s
-    tatistical power, or MDES  depending on the specification of parameters.
+Required budget (and/or required level-2 sample size),
+    statistical power, or MDES  depending on the specification of parameters.
     The function also returns the function name, design type,
     and parameters used in the calculation.
 }

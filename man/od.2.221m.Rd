@@ -21,12 +21,11 @@ od.2.221m(
   r12m = NULL,
   r22m = NULL,
   m = NULL,
-  q.main = 0,
-  q.mod = 0,
-  tol = 1e-11,
+  q.main = 1,
+  q.mod = 1,
   power.mod = 0.8,
   power.main = 0.8,
-  d.p = c(0.5, 0.9),
+  d.p = c(0.1, 0.5),
   d.n = c(2, 1000),
   sig.level = 0.05,
   two.tailed = TRUE,
@@ -78,12 +77,12 @@ explained by covariates in the model with the moderator.}
 
 \item{m}{Total budget.}
 
-\item{q.main}{The  number of covariates in the outcome model testing main effects}
+\item{q.main}{The  number of covariates in the outcome model testing main
+effects (except the treatment indicator). The default value is 1.}
 
 \item{q.mod}{The number of cluster-level covariates in the model
-(except the treatment indicator, moderator, and the interaction term).}
-
-\item{tol}{convergence tolerance.}
+(except the treatment indicator, moderator, and the interaction term).
+The default value is 1.}
 
 \item{power.mod}{Statistical power specified for moderation.
 The default value is .80.}
@@ -91,7 +90,7 @@ The default value is .80.}
 \item{power.main}{Statistical power specified for the total/main effect.
 The default value is .80.}
 
-\item{d.p}{The initial sampling domains for p. Default is c(0.5, 0.9).}
+\item{d.p}{The initial sampling domain for p. Default is c(0.1, 0.5).}
 
 \item{d.n}{The initial sampling domain for n. Default is c(2, 100).}
 

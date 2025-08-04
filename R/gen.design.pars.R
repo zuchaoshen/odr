@@ -4,10 +4,13 @@
 #'     based on given distributions of the rank of optimization target
 #'     (or budget).
 #'
-#' @inheritParams od.2.221
 #' @param dist.mean List of means - coordinates
-#' @param dist.rank Rank of the archived values of objective function
+#' @param dist.rank Rank of the archived values of the objective function(s)
 #' @param nl Neighborhood of the search area
+#' @param q The locality of the search (0, 1)
+#' @param n.of.ants The number of artificial ants in the search.
+#' @param xi The convergence pressure (0, Inf)
+#' @param n.of.archive The number of the solution archive.
 #' @return
 #'     Generated optimal design parameter value(s) (i.e., a matrix with n.of.ants
 #'     rows and n.of.design.pars columns)
@@ -21,7 +24,7 @@
 #'   185(3), 1155-1173.
 #'
 #'   We thank Dr. Krzysztof Socha for providing us the
-#'   original code (http://iridia.ulb.ac.be/supp/IridiaSupp2008-001/)
+#'   original code (https://iridia.ulb.ac.be/supp/IridiaSupp2008-001/)
 #'   for this function.
 gen.design.pars <- function(dist.mean, dist.rank, n.of.ants, nl,
                           q = 0.0001, n.of.archive = 100, xi = 0.50) {
@@ -44,9 +47,9 @@ gen.design.pars <- function(dist.mean, dist.rank, n.of.ants, nl,
       dis <- apply(matrix(r.dist.mean[set,m:dim(r.dist.mean)[2]],
         length(set),length(m:dim(r.dist.mean)[2])),1, euc.dist)
       if (sum(dis)==0.0)  return(NULL) # if the distribution have converged
-      if (length(set)>1){ ## ADDED bracket
+      if (length(set)>1){
         choice <- sample(set,size=1,prob=dis^4)
-      } else { ## ADDED bracket
+      } else {
         choice <- set
       }
       vec <- cbind(vec,o.dist.mean[choice,])

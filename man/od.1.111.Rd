@@ -108,7 +108,7 @@ the default values are c(6, 1e7).}
 the stopping criterion. Default is infinite.}
 
 \item{max.iter}{Maximal number of function evaluations when used as
-the stopping criterion. Default is 200.}
+the stopping criterion. Default is 300.}
 
 \item{e}{Maximum error value used when solution quality used as
 the stopping criterion, default is 1e-10.}

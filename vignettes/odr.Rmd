@@ -58,7 +58,7 @@ kable(df,
 
 ## Rules for Function Names
 
-For experiments detecting main effects, this package includes three categorical of functions and they are *od*, *power*, and *re*. For *od* and *power* functions, if a function name follows .# (e.g., od.2), this function is for #-level designs with treatment assignment at the top level (# in 1, 2, 3, 4). If a function name follows .#m (e.g., od.2m), this function is for #-level multisite-randomized trials.
+For experiments detecting main effects, this package includes three categorical of functions and they are *od*, *power*, and *re*. For *od* and *power* functions, if a function name follows .# (e.g., od.2), this function is for #-level designs with treatment assignment at the top level (# in 1, 2, 3). If a function name follows .#m (e.g., od.2m), this function is for #-level multisite-randomized trials.
 
 ## Functions
 
@@ -83,9 +83,8 @@ the function for two-level multisite randomized trials is *power.2m*.
 This function calculates relative efficiency values between two designs. An alternative name for this function is *rpe* that stands for "relative precision and efficiency".
 
 
+
 # 3. Designs Detecting Mediation Effects
-
-
 
 ## Designs and Functions
 
@@ -109,7 +108,45 @@ There are two categories of functions for designs detecting mediation effects. T
 ## Functions
 There are two categorical functions for designs detecting mediation effects and they are *od* and *power*.  *od* function can calculate optimal design parameters with and without a constraint(s). *power* function can perform power analysis. 
 
-# 4. Examples for Main Effects
+
+# 4. Designs Detecting Moderation (and Main) Effects
+
+## Designs and Functions
+
+```{r, echo=FALSE}
+df = data.frame(
+  Design = c("Simple Experiments", "2-Level CRTs", "2-Level MRTs"),
+  OD_Function = c("od.1.111m", "od.2.221m", "od.2m.111m"),
+  Power_Function = c("power.1.111m", "power.2.221m", "power.2m.111m")
+)
+names(df) <- c("Design", "OD Function", "Power Function")
+library(knitr)
+kable(df,
+      caption = "Functions for Designs Detecting Moderation Effects (In Preparation)")
+```
+
+
+## Rules for Function Names
+There are two categories of functions for designs detecting moderation effects.
+They are *od* and *power* functions. The function names follow additional
+rules as these functions will add additional numbers to represent the levels 
+of the treatment assignment, the moderator and the outcome. For example,
+*od.2.221m* is the *od* function for two-level cluster-randomized trials (.2) 
+with the treatment assignment and the moderator at the level two, and 
+the outcome at the level 1 (.221), and for moderators (m) rather than 
+for mediators. 
+*od.2m.111m* is the *od* function for two-level multisite-randomized trials 
+(.2m) with the treatment assignment, the moderator, and the outcome at the 
+level one (.111) for moderators (m). 
+
+## Functions
+There are two categorical functions for designs detecting mediation effects and
+they are *od* and *power*.  *od* function can calculate optimal design
+parameters with and without a constraint(s). 
+*power* function can perform power analysis. 
+
+
+# 5. Examples for Main Effects
 ##  Function *od* 
 Given cost structure (i.e., the costs of sampling each unit at 
 different levels and treatment conditions), this function solves 
@@ -350,7 +387,7 @@ For additional examples, please see example sections in corresponding *od* funct
 # ?od.4m
 ```
 
-# 5. Examples for Mediation Effects
+# 6. Examples for Mediation Effects
 Below is a simple example to identify an optimal sample allocation and perform statistical power analyses for a mediation effect.
 
 ```{r}
@@ -364,3 +401,8 @@ mypower <- power.1.111(cost.model = FALSE, a = .3, b = .5, test = "joint",
                         power = .8, p =.5)
 # mypower
 ```
+
+
+# 7. Examples for Moderation Effects
+
+To be done!

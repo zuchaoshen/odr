@@ -35,7 +35,7 @@ od.2m(
   d.n = c(2, 1000),
   sig.level = 0.05,
   two.tailed = TRUE,
-  Jlim = c(6, 1e+10),
+  Jlim = c(2.5, 1e+10),
   nrange = c(2, 10000),
   max.value = Inf,
   max.iter = 300,
@@ -121,7 +121,10 @@ optimal allocations. Default is TRUE.}
 otherwise one-tailed tests; default value is TRUE.}
 
 \item{Jlim}{The range for solving the root of level-2 sample size
-(\code{J}) numerically, default value is c(6, 1e+10).}
+(\code{J}) numerically. Change the default values to a larger range
+(e.g., starting with a smaller value) if
+f() values at end points are not of opposite sign. For example,
+use Jlim = c(1.5, 1e10).}
 
 \item{nrange}{The range of the level-1 sample size per level-2 unit
 that used to exclude unreasonable values. Default value is c(2, 10000).}

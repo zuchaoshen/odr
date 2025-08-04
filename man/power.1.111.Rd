@@ -2,8 +2,9 @@
 % Please edit documentation in R/power.1.111.R
 \name{power.1.111}
 \alias{power.1.111}
-\title{Budget and/or sample size, power, MDES calculation for MRTs investigating
-    mediation effects with individual-level mediators}
+\title{Budget and/or sample size, power, MDES calculation for single-level
+    randomized controlled trials (RCTs) investigating
+    mediation effects}
 \usage{
 power.1.111(
   cost.model = TRUE,
@@ -96,7 +97,7 @@ covariate(s) in the mediator model.}
 indicator and the mediator), the default value is zero.}
 
 \item{max.iter}{Maximal number of function evaluations when used as
-the stopping criterion. Default is 200.}
+the stopping criterion. Default is 300.}
 
 \item{alim}{The range for identifying the root of a path
 effect (\code{a}) numerically. Default value is c(0, 4).}
@@ -124,8 +125,7 @@ Required budget (or required sample size), statistical power,
 \description{
 This function can calculate required budget for desired power and
     power under a fixed budget
-    for multisite-randomized trials (MRTs) with individual mediators
-    probing mediation effects.
+    for RCTs probing mediation effects.
     It also can perform conventional power analyses
     (e.g., required sample size and power calculation).
 }

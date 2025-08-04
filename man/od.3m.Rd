@@ -96,7 +96,10 @@ default value is plot.by = list(n = "n", J = "J", p = "p").}
 \item{nlim}{The plot range for n, default value is c(2, 50).}
 
 \item{Jlim}{The range for solving the root of level-2 sample size
-(\code{J}) numerically, default value is c(6, 1e+10).}
+(\code{J}) numerically. Change the default values to a larger range
+(e.g., starting with a smaller value) if
+f() values at end points are not of opposite sign. For example,
+use Jlim = c(1.5, 1e10).}
 
 \item{plim}{The plot range for p, default value is c(0, 1).}
 

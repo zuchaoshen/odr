@@ -1,9 +1,9 @@
-#' Budget and/or sample size, power, MDES calculation for MRTs investigating
-#'     mediation effects with individual-level mediators
+#' Budget and/or sample size, power, MDES calculation for single-level
+#'     randomized controlled trials (RCTs) investigating
+#'     mediation effects
 #' @description This function can calculate required budget for desired power and
 #'     power under a fixed budget
-#'     for multisite-randomized trials (MRTs) with individual mediators
-#'     probing mediation effects.
+#'     for RCTs probing mediation effects.
 #'     It also can perform conventional power analyses
 #'     (e.g., required sample size and power calculation).
 #' @inheritParams od.1.111

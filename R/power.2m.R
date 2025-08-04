@@ -12,7 +12,7 @@
 #' @inheritParams power.3m
 #'
 #' @param expr Returned objects from function \code{\link{od.2m}} or
-#' \code{\link{od.2m.111m}}; default is NULL;
+#' \code{\link{od.2m.mod}}; default is NULL;
 #'     if \code{expr} is specified, parameter values of \code{icc},
 #'     \code{r12}, \code{r22m},
 #'     \code{c1}, \code{c2},
@@ -35,8 +35,8 @@
 #'     or c(4 * Jcost, 1e+10 * Jcost) with Jcost =
 #'     (1 - p) * c1 * n + p * c1t * n + c2.
 #'
-#' @return Required budget (and/or required level-2 sample size), s
-#'     tatistical power, or MDES  depending on the specification of parameters.
+#' @return Required budget (and/or required level-2 sample size),
+#'     statistical power, or MDES  depending on the specification of parameters.
 #'     The function also returns the function name, design type,
 #'     and parameters used in the calculation.
 #'
@@ -113,33 +113,14 @@ power.2m <- function(cost.model = TRUE, expr = NULL, constraint = NULL,
                     sig.level = 0.05, two.tailed = TRUE,
                     d = NULL, power = NULL, m = NULL,
                     n = NULL, J = NULL, p = NULL,
-                    icc = NULL, r12 = NULL, r22m = NULL, q  = NULL,
+                    icc = NULL, r12 = NULL, r22m = NULL, q  = 1,
                     c1 = NULL, c2 = NULL, c1t = NULL,  omega = NULL,
                     dlim = NULL, powerlim = NULL, Jlim = NULL, mlim = NULL,
                     rounded = TRUE) {
   funName <- "power.2m"
   designType <- "two-level MRTs"
-  if (cost.model == TRUE) {
-    if (sum(sapply(list(m, d, power), is.null)) != 1)
-      stop("exactly one of 'm', 'd', and 'power' must be NULL
-           when cost.model is TRUE")
-    if (!is.null(J))
-      stop("'J' must be NULL when cost.model is TRUE")
-  } else {
-    if (sum(sapply(list(J, d, power), is.null)) != 1)
-      stop("exactly one of 'J', 'd', and 'power' must be NULL
-           when cost.model is FALSE")
-    if (!is.null(m))
-      stop("'m' must be NULL when cost.model is FALSE")
-  }
   if (!is.null(expr)) {
-    if (expr$funName %in% c("od.2m", "od.2m.111m")) {
-      if (sum(sapply(list(icc, r12, r22m, c1, c2,
-                          c1t, omega, n, p), function(x) {!is.null(x)})) >= 1)
-        stop("parameters of 'icc', 'r12', 'r22m',
-             'c1', 'c2', 'c1t', 'omega', 'n', and 'p'
-             have been specified in expr of 'od.2m' or a similar od function
-             ('od.2m.111m')")
+    if (expr$funName %in% c("od.2m", "od.2m.mod")) {
       icc <- expr$par$icc
       r12 <- expr$par$r12
       r22m <- expr$par$r22m
@@ -147,21 +128,19 @@ power.2m <- function(cost.model = TRUE, expr = NULL, constraint = NULL,
       c2 <- expr$par$c2
       c1t <- expr$par$c1t
       omega <- expr$par$omega
-      if (rounded == TRUE) {
-        n <- round(expr$out$n, 0)
-        p <- round(expr$out$p, 2)
+      if(is.null(q)){q <- expr$par$q}
+      if (rounded) {
+        if(is.null(n)){n <- round(expr$out$n, 0)}
+        if(is.null(p)){p <- round(expr$out$p, 2)}
       } else {
-        n <- expr$out$n
-        p <- expr$out$p
+        if(is.null(n)){n <- expr$out$n}
+        if(is.null(p)){p <- expr$out$p}
       }
     } else  {
-        stop("'expr' can only be NULL or
+      stop("'expr' can only be NULL or
            the return from the function of 'od.2m' or a similar od function
-             ('od.2m.111m')")
+             ('od.2m.mod')")
     }
-  } else {
-    if (!is.null(constraint))
-      stop("'constraint' must be NULL when 'expr' is NULL")
   }
   NumberCheck <- function(x) {!is.null(x) && !is.numeric(x)}
   if (!is.null(constraint) && !is.list(constraint))
@@ -187,7 +166,7 @@ power.2m <- function(cost.model = TRUE, expr = NULL, constraint = NULL,
   if (sum(sapply(list(r12, r22m), function(x) {
     NumberCheck(x) || any(0 > x | x > 1)
   })) >= 1) stop("'r12', and 'r22m' must be numeric in [0, 1]")
-  if (cost.model == TRUE){
+  if (cost.model){
     if (sum(sapply(list(c1, c2, c1t), function(x) {
       NumberCheck(x)})) >= 1)
       stop("'c1', 'c2', 'c1t' must be numeric")
@@ -253,7 +232,7 @@ power.2m <- function(cost.model = TRUE, expr = NULL, constraint = NULL,
   Jlim <- limFun(x = Jlim, y = c(4, 1e+10))
   powerlim <- limFun(x = powerlim, y = c(1e-10, 1 - 1e-10))
   dlim <- limFun(x = dlim, y = c(0, 5))
-  if(cost.model == TRUE) {
+  if(cost.model) {
     mlim <- limFun(x = mlim, y = c(Jlim[1] * Jcost, Jlim[2] * Jcost))
     if (is.null(power)) {
       out <- list(power = eval(pwr.expr))

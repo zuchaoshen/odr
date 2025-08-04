@@ -1,10 +1,9 @@
 #' Optimal sample allocation identification for two-level multisite randomized
-#'     trials investigating main and moderation effects with individual-level
-#'     moderators
+#'     trials (MRTs) investigating main and moderation effects
 #'
 #' @description The optimal design of two-level
-#'     multisite-randomized trials (MRTs) probing main and moderation effects
-#'     with individual-level mediators identify the optimal sample allocations.
+#'     MRTs probing main and moderation effects
+#'     identify the optimal sample allocations.
 #'     The optimal design parameters include
 #'     the level-1 sample size per level-2 unit (\code{n})
 #'     and the proportion of level-1 individuals/units assigned to
@@ -13,47 +12,51 @@
 #'     with and without a constraint.
 #' @inheritParams od.2m
 #' @param omega The treatment-by-site variance of the outcome.
-#' @param power Statistical power specified for the main effect, default is .80.
-#' @param power.dis Statistical power distance between main and moderation
-#'     effects. Default is 0. The power for moderation = power - power.dis.
+#' @param power Statistical power specified for the main effect. The default is .80.
+#' @param power.mod Statistical power for the moderation
+#'     effect. The default is .80.
 #' @param gamma The standardized moderated treatment effect.
 #' @param Q The proportion of units in one group for the binary moderator.
 #'     Default is 0.5.
-#' @param random.slope Logical, the model is a random slope one if TURE. Default
-#'     is TRUE.
-#' @param binary Logical; binary moderator if TURE and continuous moderator if
-#'     FALSE. Default is TRUE.
-#' @export od.2m.111m
+#' @param binary Logical; The moderator is binary if TRUE, and continuous if
+#'     FALSE. The default is TRUE.
+#' @param mod.level The level of the moderator is at. The moderator is at level 1
+#'     if mod.level is 1, and at level 2 if mod.level is 2. The default is
+#'     mod.level = 1.
+#' @param q The number of covariates in the model detecting the main/average
+#'     treatment effect. The default is 1.
+#' @param q.mod The number of predictors at the moderator level
+#'     in the moderation model.
+#' @param q.aco The locality of the search (0, 1)
+#' @export od.2m.mod
 #' @return
 #'     Unconstrained or constrained optimal sample allocation (\code{n} and \code{p}).
-#'     The function also returns statistical power,
+#'     The function also returns statistical power formulas,
 #'     function name, design type,
 #'     and parameters used in the calculation.
 #' @examples
-#' myod <- od.2m.111m(icc = .2, r12 = .5, r22m = .5,
+#' myod <- od.2m.mod(icc = .2, r12 = .5, r22m = .5,
 #'                    c1 = 10, c1t = 100, c2 = 50, omega = .01, gamma = 0.1)
 #' myod$out
 
-od.2m.111m <- function(n = NULL, p = NULL, icc = NULL,
+od.2m.mod <- function(n = NULL, p = NULL, icc = NULL,
                        r12 = NULL, r22m = NULL,
                        c1 = NULL, c2 = NULL,
                        c1t = NULL, omega = NULL,
                        m = NULL, plots = TRUE, plot.by = list(n = "n", p = "p"),
-                       nlim = c(2, 50), plim = c(0.01, 0.99), varlim = NULL,
-                       nlab = NULL, plab = NULL, varlab = NULL,
-                       vartitle = NULL, verbose = TRUE, iter = 100,
-                       tol = 1e-10, q = 1, d = 0.1, gamma = 0.1,
-                       power = 0.8, random.slope = TRUE,
+                       verbose = TRUE, iter = 100,
+                       tol = 1e-10, q = 1, q.mod = 1, d = 0.1, gamma = 0.1,
+                       power = .80, power.mod = .80, mod.level = 1,
                        d.p = c(0.1, 0.5), d.n = c(2, 1000),
                        sig.level = 0.05, two.tailed = TRUE,
-                       Jlim = c(4, 1e+10), binary = TRUE,
-                       nrange = c(2, 10000), power.dis = 0,
+                       Jlim = c(2.5, 1e+10), binary = TRUE,
+                       nrange = c(2, 10000),
                        Q = 0.5,
                        max.value = Inf, max.iter = 300,  e = 1e-10,
                        n.of.ants = 10, n.of.archive = 50, q.aco = 0.0001,
                        xi = 0.5) {
-  funName <- "od.2m.111m"
-  designType <- "two-level MRTs with individaul-level moderators"
+  funName <- "od.2m.mod"
+  designType <- "two-level MRTs with moderators"
   NumberCheck <- function(x) {!is.null(x) && !is.numeric(x)}
   if (sum(sapply(list(icc, r12, r22m,
                       c1, c2, c1t, omega),
@@ -71,16 +74,15 @@ od.2m.111m <- function(n = NULL, p = NULL, icc = NULL,
   if (sum(sapply(list(c1, c2, c1t), function(x) {
     NumberCheck(x)})) >= 1)
     stop("'c1', 'c2', and 'c1t' must be numeric")
-  if (!is.null(plot.by) && !is.list(plot.by))
-    stop("'plot.by' must be in list format (e.g., plot.by = list(n = 'n'))")
   if (!is.numeric(iter) || iter < 2)
     stop("'iter' must be numeric with iter >= 2")
   par <- list(icc = icc,
               r12 = r12, r22m = r22m,
               c1 = c1, c2 = c2, c1t = c1t, omega = omega,
-              m = m,
+              m = m, Q = Q,
               n = n, p = p, iter = iter, gamma = gamma, binary = binary,
-              power = power, power.dis = power.dis, d = d, q = q,
+              power = power, power.mod = power.mod, mod.level = mod.level,
+              d = d, q = q, q.mod = q.mod,
               sig.level = sig.level, two.tailed = two.tailed,
               max.iter = max.iter,
               n.of.ants = n.of.ants, n.of.archive = n.of.archive,
@@ -90,7 +92,7 @@ od.2m.111m <- function(n = NULL, p = NULL, icc = NULL,
 
   tside <- ifelse(two.tailed == TRUE, 2, 1)
     if (two.tailed) {#power for main
-      pwr.expr <- quote({
+      pwr.main <- quote({
         lambda <- d * sqrt((p * (1 - p) * n * J) /
                              (p * (1 - p) * n * omega * (1 - r22m) +
                                 (1 - icc) * (1 - r12)));
@@ -100,53 +102,50 @@ od.2m.111m <- function(n = NULL, p = NULL, icc = NULL,
              df = J - q - 1, lambda)
       })
      } else {
-      pwr.expr <- quote({
+      pwr.main <- quote({
         lambda <- d * sqrt((p * (1 - p) * n * J) /
                              (p * (1 - p) * n * omega * (1 - r22m) +
                                 (1 - icc) * (1 - r12)));
         1 - pt(qt(1 - sig.level / tside, J - q - 1),
                df = J - q - 1, lambda)
       })}
-  if(binary){
-    var.mod <- Q*(1-Q)
-  } else {
-    var.mod <- 1
-  }
-  if(random.slope){#power for moderation
+  if(binary){var.mod <- Q*(1-Q)} else {var.mod <- 1}
+
+  if(mod.level==1){#moderator at level 1
     if (two.tailed) {
-      pwr2.expr <- quote({
-        lambda <- gamma * sqrt((p * (1 - p) * n * J*var.mod) /
-                             (p * (1 - p) * n * omega * var.mod +
-                                (1 - icc) * (1 - r12)));
-        1 - pt(qt(1 - sig.level / tside, df = J - 1),
-               df = J - 1, lambda) +
-          pt(qt(sig.level / tside, df = J - 1),
-             df = J - 1, lambda)
+      pwr.mod <- quote({
+        lambda <- gamma*sqrt((p * (1 - p) * n * J*var.mod) /
+                             ((1 - icc) * (1 - r12)));
+        1 - pt(qt(1 - sig.level / tside, df = J*(n-1)-q.mod),
+               df = J*(n-1)-q.mod, lambda) +
+          pt(qt(sig.level / tside, df = J*(n-1)-q.mod),
+             df = J*(n-1)-q.mod, lambda)
       })
     } else {
-      pwr2.expr <- quote({
-        lambda <- gamma * sqrt((p * (1 - p) * n * J*var.mod) /
-                                 (p * (1 - p) * n * omega * var.mod +
-                                    (1 - icc) * (1 - r12)));
-        1 - pt(qt(1 - sig.level / tside, J - 1),
-               df = J - 1, lambda)
+      pwr.mod <- quote({
+        lambda <- gamma*sqrt((p * (1 - p) * n * J*var.mod) /
+                               ((1 - icc) * (1 - r12)));
+        1 - pt(qt(1 - sig.level / tside, J*(n-1)-q.mod),
+               df = J*(n-1)-q.mod, lambda)
       })}
-  } else {
+  } else if (mod.level==2) {#moderator at level 2
     if (two.tailed) {
-      pwr2.expr <- quote({
-        lambda <- gamma * sqrt((p * (1 - p) * n * J*var.mod) /
-                                 ((1 - icc) * (1 - r12)));
-        1 - pt(qt(1 - sig.level / tside, df = J*(n-1) - 4),
-               df = J*(n-1) - 4, lambda) +
-          pt(qt(sig.level / tside, df = J*(n-1) - 4),
-             df = J*(n-1) - 4, lambda)
+      pwr.mod <- quote({
+        lambda <- gamma*sqrt((p * (1 - p) * n * J*var.mod) /
+                               (omega*(1-r22m)*p * (1 - p) * n *var.mod+
+                                  (1 - icc) * (1 - r12)));
+        1 - pt(qt(1 - sig.level / tside, df = J-q.mod-1),
+               df = J-q.mod-1, lambda) +
+          pt(qt(sig.level / tside, df = J-q.mod-1),
+             df = J-q.mod-1, lambda)
       })
     } else {
-      pwr2.expr <- quote({
-        lambda <- gamma * sqrt((p * (1 - p) * n * J*var.mod) /
-                                 ((1 - icc) * (1 - r12)));
-        1 - pt(qt(1 - sig.level / tside, J*(n-1) - 4),
-               df = J*(n-1) - 4, lambda)
+      pwr.mod <- quote({
+        lambda <- gamma*sqrt((p * (1 - p) * n * J*var.mod) /
+                               (omega*(1-r22m)*p * (1 - p) * n *var.mod+
+                                  (1 - icc) * (1 - r12)));
+        1 - pt(qt(1 - sig.level / tside, J-q.mod-1),
+               df = J-q.mod-1, lambda)
       })}
   }
 
@@ -180,12 +179,12 @@ od.2m.111m <- function(n = NULL, p = NULL, icc = NULL,
           X <- rbind(X, c(p, n))
           p.X <- rbind(p.X, c(p, n))
           J <- stats::uniroot(function(J)
-            eval(pwr.expr) - power, Jlim)$root
+            eval(pwr.main) - power, Jlim)$root
           m <- J *((1 - p) * c1 * n + p * c1t * n + c2)
-          J.m <- stats::uniroot(function(J)
-            eval(pwr2.expr) - (power-power.dis), Jlim)$root
-          m.m <- J.m *((1 - p) * c1 * n + p * c1t * n + c2)
-          m <- max(m, m.m)
+          J.mod <- stats::uniroot(function(J)
+            eval(pwr.mod) - power.mod, Jlim)$root
+          m.mod <- J.mod *((1 - p) * c1 * n + p * c1t * n + c2)
+          m <- max(m, m.mod)
           y <- c(y, 1/m)
           budget <- c(budget, m)
         }
@@ -259,12 +258,12 @@ od.2m.111m <- function(n = NULL, p = NULL, icc = NULL,
               }
             }
             J <- stats::uniroot(function(J)
-              eval(pwr.expr) - power, Jlim)$root
+              eval(pwr.main) - power, Jlim)$root
             m <- J *((1 - p) * c1 * n + p * c1t * n + c2)
-            J.m <- stats::uniroot(function(J)
-              eval(pwr2.expr) - (power-power.dis), Jlim)$root
-            m.m <- J.m *((1 - p) * c1 * n + p * c1t * n + c2)
-            m <- max(m, m.m)
+            J.mod <- stats::uniroot(function(J)
+              eval(pwr.mod) - power.mod, Jlim)$root
+            m.mod <- J.mod *((1 - p) * c1 * n + p * c1t * n + c2)
+            m <- max(m, m.mod)
             y <- c(y, 1/m)
             budget <- c(budget, m)
             pp <- rbind(pp, data.frame(v = 1/m, sd = 0, gr = 0, m = m))
@@ -341,12 +340,12 @@ od.2m.111m <- function(n = NULL, p = NULL, icc = NULL,
         X <- rbind(X, p)
         p.X <- rbind(p.X, p)
         J <- stats::uniroot(function(J)
-          eval(pwr.expr) - power, Jlim)$root
+          eval(pwr.main) - power, Jlim)$root
         m <- J *((1 - p) * c1 * n + p * c1t * n + c2)
-        J.m <- stats::uniroot(function(J)
-          eval(pwr2.expr) - (power-power.dis), Jlim)$root
-        m.m <- J.m *((1 - p) * c1 * n + p * c1t * n + c2)
-        m <- max(m, m.m)
+        J.mod <- stats::uniroot(function(J)
+          eval(pwr.mod) - power.mod, Jlim)$root
+        m.mod <- J.mod *((1 - p) * c1 * n + p * c1t * n + c2)
+        m <- max(m, m.mod)
         y <- c(y, 1/m)
         budget <- c(budget, m)
       }
@@ -421,12 +420,12 @@ od.2m.111m <- function(n = NULL, p = NULL, icc = NULL,
               }
             }
             J <- stats::uniroot(function(J)
-              eval(pwr.expr) - power, Jlim)$root
+              eval(pwr.main) - power, Jlim)$root
             m <- J *((1 - p) * c1 * n + p * c1t * n + c2)
-            J.m <- stats::uniroot(function(J)
-              eval(pwr2.expr) - (power-power.dis), Jlim)$root
-            m.m <- J.m *((1 - p) * c1 * n + p * c1t * n + c2)
-            m <- max(m, m.m)
+            J.mod <- stats::uniroot(function(J)
+              eval(pwr.mod) - power.mod, Jlim)$root
+            m.mod <- J.mod *((1 - p) * c1 * n + p * c1t * n + c2)
+            m <- max(m, m.mod)
             y <- c(y, 1/m)
             budget <- c(budget, m)
             pp <- rbind(pp, data.frame(v = 1/m, sd = 0, gr = 0, m = m))
@@ -503,12 +502,12 @@ od.2m.111m <- function(n = NULL, p = NULL, icc = NULL,
         X <- rbind(X, n)
         p.X <- rbind(p.X, n)
         J <- stats::uniroot(function(J)
-          eval(pwr.expr) - power, Jlim)$root
+          eval(pwr.main) - power, Jlim)$root
         m <- J *((1 - p) * c1 * n + p * c1t * n + c2)
-        J.m <- stats::uniroot(function(J)
-          eval(pwr2.expr) - (power-power.dis), Jlim)$root
-        m.m <- J.m *((1 - p) * c1 * n + p * c1t * n + c2)
-        m <- max(m, m.m)
+        J.mod <- stats::uniroot(function(J)
+          eval(pwr.mod) - power.mod, Jlim)$root
+        m.mod <- J.mod *((1 - p) * c1 * n + p * c1t * n + c2)
+        m <- max(m, m.mod)
         y <- c(y, 1/m)
         budget <- c(budget, m)
       }
@@ -579,12 +578,12 @@ od.2m.111m <- function(n = NULL, p = NULL, icc = NULL,
               }
             }
             J <- stats::uniroot(function(J)
-              eval(pwr.expr) - power, Jlim)$root
+              eval(pwr.main) - power, Jlim)$root
             m <- J *((1 - p) * c1 * n + p * c1t * n + c2)
-            J.m <- stats::uniroot(function(J)
-              eval(pwr2.expr) - (power-power.dis), Jlim)$root
-            m.m <- J.m *((1 - p) * c1 * n + p * c1t * n + c2)
-            m <- max(m, m.m)
+            J.mod <- stats::uniroot(function(J)
+              eval(pwr.mod) - power.mod, Jlim)$root
+            m.mod <- J.mod *((1 - p) * c1 * n + p * c1t * n + c2)
+            m <- max(m, m.mod)
             y <- c(y, 1/m)
             budget <- c(budget, m)
             pp <- rbind(pp, data.frame(v = 1/m, sd = 0, gr = 0, m = m))
@@ -638,18 +637,18 @@ od.2m.111m <- function(n = NULL, p = NULL, icc = NULL,
         because both p and n are contrained",
           ".\n===============================\n", sep = "")
       J <- stats::uniroot(function(J)
-        eval(pwr.expr) - power, Jlim)$root
+        eval(pwr.main) - power, Jlim)$root
       m <- J *((1 - p) * c1 * n + p * c1t * n + c2)
-      J.m <- stats::uniroot(function(J)
-        eval(pwr2.expr) - (power-power.dis), Jlim)$root
-      m.m <- J.m *((1 - p) * c1 * n + p * c1t * n + c2)
-      m <- max(m, m.m)
-      J <- max(J, J.m)
+      J.mod <- stats::uniroot(function(J)
+        eval(pwr.mod) - power.mod, Jlim)$root
+      m.mod <- J.mod *((1 - p) * c1 * n + p * c1t * n + c2)
+      m <- max(m, m.mod)
+      J <- max(J, J.mod)
       return(list(par = par, funName = funName,
                   designType = designType,
                   out = list(m = m,
                              p = par$p,
                              n = par$n, J = J)))
     }
-  }
+}
 

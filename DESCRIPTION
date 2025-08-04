@@ -2,8 +2,8 @@ Package: odr
 Type: Package
 Title: Optimal Design and Statistical Power for Experimental Studies
     Investigating Main, Mediation, and Moderation Effects
-Version: 1.5.0
-Date: 2025-5-29
+Version: 1.6.0
+Date: 2025-8-3
 Authors@R: c(person(given = "Zuchao", 
                     family = "Shen", 
                     email = "zuchao.shen@gmail.com", 

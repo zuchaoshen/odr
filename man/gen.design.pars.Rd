@@ -17,18 +17,17 @@ gen.design.pars(
 \arguments{
 \item{dist.mean}{List of means - coordinates}
 
-\item{dist.rank}{Rank of the archived values of objective function}
+\item{dist.rank}{Rank of the archived values of the objective function(s)}
 
-\item{n.of.ants}{Number of ants used in each iteration after the initialization
-of power analysis for calculating required budget, default value is 10.}
+\item{n.of.ants}{The number of artificial ants in the search.}
 
 \item{nl}{Neighborhood of the search area}
 
-\item{q}{Locality of the search (0,1), default is 0.0001.}
+\item{q}{The locality of the search (0, 1)}
 
-\item{n.of.archive}{Size of the solution archive, default is 100.}
+\item{n.of.archive}{The number of the solution archive.}
 
-\item{xi}{Convergence pressure (0, Inf), suggested: (0, 1), default is 0.5.}
+\item{xi}{The convergence pressure (0, Inf)}
 }
 \value{
 Generated optimal design parameter value(s) (i.e., a matrix with n.of.ants
@@ -45,6 +44,6 @@ Socha, K., & Dorigo, M. (2008). Ant colony optimization for
   185(3), 1155-1173.
 
   We thank Dr. Krzysztof Socha for providing us the
-  original code (http://iridia.ulb.ac.be/supp/IridiaSupp2008-001/)
+  original code (https://iridia.ulb.ac.be/supp/IridiaSupp2008-001/)
   for this function.
 }

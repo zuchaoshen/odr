@@ -43,7 +43,7 @@
 #'     the stopping criterion. Default is infinite.
 #' @param d.p The initial sampling domains for p. Default is c(0.10, 0.50).
 #' @param max.iter Maximal number of function evaluations when used as
-#'     the stopping criterion. Default is 200.
+#'     the stopping criterion. Default is 300.
 #' @param n.of.archive  Size of the solution archive, default is 20.
 #' @param q Locality of the search (0,1), default is 0.0001.
 #' @param xi  Convergence pressure (0, Inf), suggested: (0, 1), default is 0.5.

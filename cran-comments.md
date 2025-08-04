@@ -1,9 +1,9 @@
 ## Resubmission
 
-This is for updating the package. In this version, we added the ant colony 
-optimization algorithm to identify optimal sample allocations for od.2m and 
-od.3m functions. We also added functions to identify sample allocations for 
-experiments investigating mediation and moderation effects.
+This is for updating the package. In this version, we added a couple of functions
+(od.2m.only.mod, od.2m.mod, power.2m.mod) for identifying the (jointly) optimal
+sample allocation for moderation (and main) effects in two-level multisite
+randomized trials.
 
 Across operational systems we tested, there is one note that 
 can be ignored (detailed below).

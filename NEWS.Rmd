@@ -14,10 +14,21 @@ knitr::opts_chunk$set(
 )
 ```
 
+# Updates (Version 1.6.0)
+## Function Updates
+Added the od.2m.mod function for identifying the jointly optimal allocation for main and moderation effects in multisite randomized trials with binary and continuous moderators at level 1 or level 2. 
+
+Deleted the od.2m.111m function as it is now a part of the od.2m.mod function.
+
+Added the od.2m.only.mod function for identifying optimal allocation for 
+moderation effects in two-level multisite randomized trials.
+
+Added the power.2m.mod function for power analysis for 
+moderation effects in two-level multisite randomized trials.
 
 # Updates (Version 1.5.0)
 ## Function Updates
-Added od functions to identify the joint optimal allocation for various
+Added od functions to identify the jointly optimal allocation for various
 experiments investigating main and moderation effects.
 
 ## New Features

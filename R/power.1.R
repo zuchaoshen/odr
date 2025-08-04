@@ -24,7 +24,7 @@
 #' @param c1t The cost of sampling one unit in treatment condition.
 #' @param n The total sample size.
 #' @param p The proportion of individuals to be assigned to treatment.
-#' @param q The number of covariates.
+#' @param q The number of covariates. Default is 1.
 #' @param nlim The range for searching the root of sample size (\code{n}) numerically,
 #'     default value is c(4, 10e10).
 #' @param mlim The range for searching the root of budget (\code{m}) numerically,
@@ -93,12 +93,60 @@ power.1 <- function(cost.model = TRUE, expr = NULL, constraint = NULL,
                     sig.level = 0.05, two.tailed = TRUE,
                     d = NULL, power = NULL, m = NULL,
                     n = NULL, p = NULL,
-                    r12 = NULL, q = NULL,
+                    r12 = NULL, q = 1,
                     c1 = NULL, c1t = NULL,
                     dlim = NULL, powerlim = NULL, nlim = NULL, mlim = NULL,
                     rounded = TRUE) {
   funName <- "power.1"
   designType <- "individual RCTs"
+  if (!is.null(expr)) {
+    if (sum(expr$funName == "od.1", expr$funName == "od.1.111m",
+        expr$funName == "od.1.111")==0) {
+      stop("'expr' can only be NULL or
+            the return from one of functions of 'od.1',
+           'od.1.111', 'od.1.111m'")
+    } else {
+      if (expr$funName == "od.1"){
+        if (sum(sapply(list(r12, c1, c1t, p),
+                       function(x) {!is.null(x)})) >= 1)
+          stop("parameters of 'r12', 'c1', 'c1t', 'p'
+             have been specified in expr of 'od.1'")
+        r12 <- expr$par$r12
+        c1 <- expr$par$c1
+        c1t <- expr$par$c1t
+        if (rounded == TRUE) {
+          p <- round(expr$out$p, 2)
+        } else {
+          p <- expr$out$p
+        }
+      } else if(expr$funName == "od.1.111"){
+        r12 <- expr$par$r12
+        c1 <- expr$par$c1
+        c1t <- expr$par$c1t
+        d <- expr$par$d
+        q <- expr$par$q.main
+        if (rounded == TRUE) {
+          p <- round(expr$out$p, 2)
+        } else {
+          p <- expr$out$p
+        }
+      } else if (expr$funName == "od.1.111m"){
+        r12 <- expr$par$r12
+        c1 <- expr$par$c1
+        c1t <- expr$par$c1t
+        d <- expr$par$d
+        q <- expr$par$q.main
+        if (rounded == TRUE) {
+          p <- round(expr$out$p, 2)
+        } else {
+          p <- expr$out$p
+        }
+      }
+    }
+  } else {
+    if (!is.null(constraint))
+      stop("'constraint' must be NULL when 'expr' is NULL")
+  }
   if (cost.model == TRUE) {
     if (sum(sapply(list(m, d, power), is.null)) != 1)
       stop("exactly one of 'm', 'd', and 'power' must be NULL
@@ -112,28 +160,7 @@ power.1 <- function(cost.model = TRUE, expr = NULL, constraint = NULL,
     if (!is.null(m))
       stop("'m' must be NULL when cost.model is FALSE")
   }
-  if (!is.null(expr)) {
-    if (expr$funName != "od.1") {
-      stop("'expr' can only be NULL or
-            the return from the function of 'od.1'")
-    } else {
-      if (sum(sapply(list(r12, c1, c1t, p),
-                     function(x) {!is.null(x)})) >= 1)
-        stop("parameters of 'r12', 'c1', 'c1t', 'p'
-             have been specified in expr of 'od.1'")
-      r12 <- expr$par$r12
-      c1 <- expr$par$c1
-      c1t <- expr$par$c1t
-      if (rounded == TRUE) {
-        p <- round(expr$out$p, 2)
-      } else {
-        p <- expr$out$p
-      }
-    }
-  } else {
-    if (!is.null(constraint))
-      stop("'constraint' must be NULL when 'expr' is NULL")
-    }
+
   NumberCheck <- function(x) {!is.null(x) && !is.numeric(x)}
   if (!is.null(constraint) && !is.list(constraint))
     stop("'constraint' must be in list format
@@ -218,26 +245,26 @@ power.1 <- function(cost.model = TRUE, expr = NULL, constraint = NULL,
   powerlim <- limFun(x = powerlim, y = c(1e-10, 1 - 1e-10))
   dlim <- limFun(x = dlim, y = c(0, 5))
   if(cost.model == TRUE){
-    if (is.null(power)) {
+    if (is.null(par$power)) {
       out <- list(power = eval(pwr.expr))
-    } else if (is.null(m)) {
+    } else if (is.null(par$m)) {
       ncost <- ((1 - p) * c1 + p * c1t)
       mlim <- limFun(x = mlim, y = c(nlim[1] * ncost, nlim[2] * ncost))
       out <- list(m = stats::uniroot(function(m)
         eval(pwr.expr) - power, mlim)$root)
       out <- c(out, list(n = out$m / (((1 - p) * c1
                                        + p * c1t))))
-    } else if (is.null(d)) {
+    } else if (is.null(par$d)) {
       out <- list(d = stats::uniroot(function(d)
         eval(pwr.expr) - power, dlim)$root)
     }
   } else {
-    if (is.null(power)) {
+    if (is.null(par$power)) {
       out <- list(power = eval(pwr.expr))
-    } else if (is.null(n)) {
+    } else if (is.null(par$n)) {
       out <- list(n = stats::uniroot(function(n)
         eval(pwr.expr) - power, nlim)$root)
-    } else if (is.null(d)) {
+    } else if (is.null(par$d)) {
       out <- list(d = stats::uniroot(function(d)
         eval(pwr.expr) - power, dlim)$root)
     }

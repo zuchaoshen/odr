@@ -21,7 +21,9 @@
 #' @param Q The proportion of binary moderator that coded as 1.
 #' @param q.mod The number of cluster-level covariates in the model
 #'     (except the treatment indicator, moderator, and the interaction term).
-#' @param q.main The  number of covariates in the outcome model testing main effects
+#'     The default value is 1.
+#' @param q.main The  number of covariates in the outcome model testing main
+#'     effects (except the treatment indicator). The default value is 1.
 #' @param r12m The proportion of outcome variance at the individual level
 #'     explained by covariates in the model with the moderator.
 #' @param r22m The proportion of outcome variance at the cluster level
@@ -36,7 +38,7 @@
 #'     the stopping criterion, default is 1e-10.
 #' @param max.value Maximal value of optimization when used as
 #'     the stopping criterion. Default is -Inf.
-#' @param d.p The initial sampling domains for p. Default is c(0.5, 0.9).
+#' @param d.p The initial sampling domain for p. Default is c(0.1, 0.5).
 #' @param d.n The initial sampling domain for n. Default is c(2, 100).
 #' @param max.iter Maximal number of function evaluations when used as
 #'     the stopping criterion.
@@ -50,7 +52,6 @@
 #'     that used to exclude unreasonable values. Default value is c(1.5, 10000).
 #' @param n.of.ants Number of ants used in each iteration after the initialization
 #'     of power analysis for calculating required budget, default value is 10.
-#' @param tol convergence tolerance.
 #'
 #'
 #' @return
@@ -69,9 +70,9 @@ od.2.221m <- function(d = NULL, gamma = NULL, n = NULL, Q = NULL,
                      r12 = NULL, r22 = NULL,
                      r12m = NULL, r22m = NULL,
                      m = NULL,
-                     q.main = 0, q.mod = 0,
-                     tol = 1e-11, power.mod = 0.80, power.main = 0.80,
-                     d.p = c(0.5, 0.9), d.n = c(2, 1000),
+                     q.main = 1, q.mod = 1,
+                     power.mod = 0.80, power.main = 0.80,
+                     d.p = c(0.1, 0.5), d.n = c(2, 1000),
                      sig.level = 0.05, two.tailed = TRUE,
                      Jlim = NULL,
                      verbose = TRUE, nrange = c(1.5, 10000),
