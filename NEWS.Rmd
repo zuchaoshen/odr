@@ -14,7 +14,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# Updates (Version 1.6.1)
+# Updates (Version 1.6.3)
 ## Function Updates
 Added the od.2m.mod function for identifying the jointly optimal allocation for main and moderation effects in multisite randomized trials with binary and continuous moderators at level 1 or level 2. 
 
