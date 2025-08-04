@@ -30,7 +30,7 @@ od.2m(
   q = 1,
   d = 0.1,
   power = 0.8,
-  ACO = TRUE,
+  aco = TRUE,
   d.p = c(0.1, 0.5),
   d.n = c(2, 1000),
   sig.level = 0.05,
@@ -106,7 +106,7 @@ and \code{p} if TRUE, otherwise not; default value is TRUE.}
 
 \item{power}{Statistical power.}
 
-\item{ACO}{Logic. If TRUE, the function will use the ant colony
+\item{aco}{Logic. If TRUE, the function will use the ant colony
 optimization (ACO) algorithm to identify optimal allocations. If FALSE,
 the function will use the first-order derivative method to identify
 optimal allocations. Default is TRUE.}

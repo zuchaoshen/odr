@@ -162,6 +162,7 @@ The optimal design of two-level
 }
 \examples{
 myod <- od.2m.mod(icc = .2, r12 = .5, r22m = .5,
-                   c1 = 10, c1t = 100, c2 = 50, omega = .01, gamma = 0.1)
+                  c1 = 10, c1t = 100, c2 = 50, omega = .01,
+                  gamma = 0.1)
 myod$out
 }
