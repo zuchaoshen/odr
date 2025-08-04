@@ -41,7 +41,7 @@
 #' @param q The number of covariates at level 2. Default is 1.
 #' @param d.p The initial sampling domains for p. Default is c(0.1, 0.5).
 #' @param d.n The initial sampling domain for n. Default is c(2, 1000).
-#' @param ACO Logic. If TRUE, the function will use the ant colony
+#' @param aco Logic. If TRUE, the function will use the ant colony
 #'     optimization (ACO) algorithm to identify optimal allocations. If FALSE,
 #'     the function will use the first-order derivative method to identify
 #'     optimal allocations. Default is TRUE.
@@ -103,7 +103,7 @@ od.2m <- function(n = NULL, p = NULL, icc = NULL,
                  nlab = NULL, plab = NULL, varlab = NULL,
                  vartitle = NULL, verbose = TRUE, iter = 100,
                  tol = 1e-10, q = 1, d = 0.1,
-                 power = 0.8, ACO = TRUE,
+                 power = 0.8, aco = TRUE,
                  d.p = c(0.1, 0.5), d.n = c(2, 1000),
                  sig.level = 0.05, two.tailed = TRUE,
                  Jlim = c(2.5, 1e+10),
@@ -139,7 +139,7 @@ od.2m <- function(n = NULL, p = NULL, icc = NULL,
               c1 = c1, c2 = c2, c1t = c1t, omega = omega,
               m = m,
               n = n, p = p, iter = iter,
-              power = power, ACO = ACO, d = d, q = q,
+              power = power, aco = aco, d = d, q = q,
               sig.level = sig.level, two.tailed = two.tailed,
               max.iter = max.iter,
               n.of.ants = n.of.ants, n.of.archive = n.of.archive,
@@ -147,7 +147,7 @@ od.2m <- function(n = NULL, p = NULL, icc = NULL,
               xi = xi
   )
 
- if(ACO){#ACO = TRUE
+ if(aco){#ACO = TRUE
     tside <- ifelse(two.tailed == TRUE, 2, 1)
     if (two.tailed) {
       pwr.expr <- quote({
@@ -659,7 +659,7 @@ od.2m <- function(n = NULL, p = NULL, icc = NULL,
      if (is.null(par$p)) {
        p.expr <- quote({
          (c1t - c1) * omega * (1 - r22m) * n^2 * p^2 * (1 - p)^2 +
-           (1 - icc) * (1 - r12) * n * p^2 -
+           (1 - icc) * (1 - r12) * (c1t - c1)* n * p^2 -
            (1 - 2 * p) * (1 - icc) * (1 - r12) * (n * c1 + c2)
        })
      }
