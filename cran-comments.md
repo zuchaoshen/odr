@@ -1,7 +1,8 @@
 ## Resubmission
 
 This is for updating the package. In this version, we updated the plot.power 
-function so it can plot power curved against sample allocations.
+function so it can plot power curved against sample allocations for many designs
+covered in this package.
 
 Across operational systems we tested, there are no issues (no notes or warnings).
 
