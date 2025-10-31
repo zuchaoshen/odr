@@ -1,16 +1,14 @@
 ## ----echo=FALSE---------------------------------------------------------------
 df = data.frame(
   Design = c("Simple Experiments", "2-Level CRTs", "2-Level MRTs",
-             "3-Level CRTs", "3-Level MRTs",
-             "4-Level CRTs", "4-Level MRTs"),
+             "3-Level CRTs", "3-Level MRTs"),
   OD_Function = c("od.1", "od.2", "od.2m",
-                  "od.3", "od.3m",
-                  "od.4", "od.4m"),
+                  "od.3", "od.3m"),
+  Plot_Function = c("plot.power", "plot.power", "plot.power",
+                     "plot.power", "plot.power"),
   Power_Function = c("power.1", "power.2", "power.2m",
-                     "power.3", "power.3m",
-                     "power.4", "power.4m"),
+                     "power.3", "power.3m"),
   RE_Function = c("re", "re", "re",
-                     "re", "re",
                      "re", "re")
   
 )
@@ -79,6 +77,10 @@ myod4 <- od.2(icc = 0.2, r12 = 0.5, r22 = 0.5, c1 = 1, c2 = 5, c1t = 1, c2t = 50
 # ?od.2m
 # ?od.3m
 # ?od.4m
+
+## ----fig.width = 7, fig.height = 3.5------------------------------------------
+myplot <- plot.power(expr = myod1, q = 1, d = .1)
+myplot
 
 ## -----------------------------------------------------------------------------
 mym <- power.2(expr = myod1, d = 0.3, q = 1, power = 0.8)

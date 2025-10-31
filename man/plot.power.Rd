@@ -6,13 +6,17 @@
 parameters}
 \usage{
 \method{plot}{power}(
-  expr,
+  expr = NULL,
   nlim = c(2, 300),
   plim = c(0.01, 0.99),
+  Jlim = c(3, 300),
   powerlim = c(0, 1),
   plot.title = NULL,
   m = NULL,
-  by = c("n", "p"),
+  d = NULL,
+  power = 0.8,
+  q = NULL,
+  by = c("n", "p", "J"),
   legend = TRUE,
   nlab = "Level-One Sample Size (n)",
   plab = "Proportion (p)",
@@ -27,6 +31,12 @@ parameters}
 
 \item{plim}{The plot range for p, default value is c(0, 1).}
 
+\item{Jlim}{The range for solving the root of level-2 sample size
+(\code{J}) numerically. Change the default values to a larger range
+(e.g., starting with a smaller value) if
+f() values at end points are not of opposite sign. For example,
+use Jlim = c(1.5, 1e10).}
+
 \item{powerlim}{The limit for plotting power curves.}
 
 \item{plot.title}{The title of the plot (e.g., plot.title = "Power Curves").
@@ -34,6 +44,12 @@ The default is NULL.}
 
 \item{m}{Total budget, default is the total costs of sampling 60
 sites.}
+
+\item{d}{Standardized effect size, default is 0.1.}
+
+\item{power}{Statistical power.}
+
+\item{q}{The number of covariates at level 2. Default is 1.}
 
 \item{by}{Dimensions to plot power curves by the optimal design parameters.
 The default value is by all optimal design parameters for a type of design.

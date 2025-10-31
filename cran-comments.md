@@ -1,9 +1,7 @@
 ## Resubmission
 
-This is for updating the package. In this version, we added a couple of functions
-(od.2m.only.mod, od.2m.mod, power.2m.mod) for identifying the (jointly) optimal
-sample allocation for moderation (and main) effects in two-level multisite
-randomized trials.
+This is for updating the package. In this version, we updated the plot.power 
+function so it can plot power curved against sample allocations.
 
 Across operational systems we tested, there are no issues (no notes or warnings).
 

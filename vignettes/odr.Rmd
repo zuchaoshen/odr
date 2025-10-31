@@ -37,16 +37,14 @@ of optimal design parameters.
 ```{r, echo=FALSE}
 df = data.frame(
   Design = c("Simple Experiments", "2-Level CRTs", "2-Level MRTs",
-             "3-Level CRTs", "3-Level MRTs",
-             "4-Level CRTs", "4-Level MRTs"),
+             "3-Level CRTs", "3-Level MRTs"),
   OD_Function = c("od.1", "od.2", "od.2m",
-                  "od.3", "od.3m",
-                  "od.4", "od.4m"),
+                  "od.3", "od.3m"),
+  Plot_Function = c("plot.power", "plot.power", "plot.power",
+                     "plot.power", "plot.power"),
   Power_Function = c("power.1", "power.2", "power.2m",
-                     "power.3", "power.3m",
-                     "power.4", "power.4m"),
+                     "power.3", "power.3m"),
   RE_Function = c("re", "re", "re",
-                     "re", "re",
                      "re", "re")
   
 )
@@ -58,7 +56,7 @@ kable(df,
 
 ## Rules for Function Names
 
-For experiments detecting main effects, this package includes three categorical of functions and they are *od*, *power*, and *re*. For *od* and *power* functions, if a function name follows .# (e.g., od.2), this function is for #-level designs with treatment assignment at the top level (# in 1, 2, 3). If a function name follows .#m (e.g., od.2m), this function is for #-level multisite-randomized trials.
+For experiments detecting main effects, this package includes four categorical of functions and they are *od*, *plot.power*, *power*, and *re*. For *od* and *power* functions, if a function name follows .# (e.g., od.2), this function is for #-level designs with treatment assignment at the top level (# in 1, 2, 3). If a function name follows .#m (e.g., od.2m), this function is for #-level multisite-randomized trials.
 
 ## Functions
 
@@ -210,6 +208,26 @@ Please see additional examples in corresponding functions by uncommenting below 
 # ?od.4m
 ```
 
+## Function *plot.power*
+This function plots the statistical power curves for the identified optimal 
+sample allocation. It takes the output from an *od* function as the key inputs. 
+Other arguments include
+
+- q: the number of covariates at the proper level, which depends on the type of the design
+- d: standardized main treatment effect
+- power: the power level for the main effect
+- other parameters that vary across designs
+
+The function will first calculate the required budget to achieve the target power
+level (80%) if the budget is not explicitly specified. Then, it calculate the power
+under different allocations under the same budget and plot the power curve(s) against
+the sample allocations.
+
+```{r fig.width = 7, fig.height = 3.5}
+myplot <- plot.power(expr = myod1, q = 1, d = .1)
+myplot
+```
+
 ## Function *power*
 This function by default can perform power analyses accommodating cost structures 
 (i.e., cost.model = TRUE), one of 'power', 'm', and 'd' must be NULL. For example,
@@ -289,6 +307,7 @@ mymdes <- power.2(expr = myod1, q = 1, power = 0.80, m = 1702)
 # mymdes$out  # d = 0.30
 ```
 - Effects on minimum detectable effect size under same budget when designs depart from the optimal one 
+
 ```{r fig.width = 7, fig.height = 3.5}
 figure <- par(mfrow = c (1, 2))
 MDES <- NULL
