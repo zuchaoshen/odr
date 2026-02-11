@@ -10,10 +10,15 @@ parameters}
   nlim = c(2, 300),
   plim = c(0.01, 0.99),
   Jlim = c(3, 300),
+  n = NULL,
+  p = NULL,
+  J = NULL,
   powerlim = c(0, 1),
   plot.title = NULL,
   m = NULL,
   d = NULL,
+  gamma = NULL,
+  omega = NULL,
   power = 0.8,
   q = NULL,
   by = c("n", "p", "J"),
@@ -27,17 +32,22 @@ parameters}
 \arguments{
 \item{expr}{Returned objects from an od function (e.g., od.2m, od.2m.mod).}
 
-\item{nlim}{The plot range for n, default value is c(2, 50).}
+\item{nlim}{The limits of the level-1 sample size (n) for calculating
+and plotting power curves.}
 
-\item{plim}{The plot range for p, default value is c(0, 1).}
+\item{plim}{The limits of the proportion to the treated (p) for calculating
+and plotting power curves.}
 
-\item{Jlim}{The range for solving the root of level-2 sample size
-(\code{J}) numerically. Change the default values to a larger range
-(e.g., starting with a smaller value) if
-f() values at end points are not of opposite sign. For example,
-use Jlim = c(1.5, 1e10).}
+\item{Jlim}{The limits of the level-2 sample size (J) for calculating
+and plotting power curves.}
 
-\item{powerlim}{The limit for plotting power curves.}
+\item{n}{The sample size at level 1 per level-2 unit.}
+
+\item{p}{The proportion of units in the treatment condition.}
+
+\item{J}{Level-2 sample size.}
+
+\item{powerlim}{The power limit for plotting power curves.}
 
 \item{plot.title}{The title of the plot (e.g., plot.title = "Power Curves").
 The default is NULL.}
@@ -45,11 +55,15 @@ The default is NULL.}
 \item{m}{Total budget, default is the total costs of sampling 60
 sites.}
 
-\item{d}{Standardized effect size, default is 0.1.}
+\item{d}{Standardized effect size for a main/average effect.}
+
+\item{gamma}{Standardized effect size for a moderation effect.}
+
+\item{omega}{The treatment-by-site variance.}
 
 \item{power}{Statistical power.}
 
-\item{q}{The number of covariates at level 2. Default is 1.}
+\item{q}{The number of covariates.}
 
 \item{by}{Dimensions to plot power curves by the optimal design parameters.
 The default value is by all optimal design parameters for a type of design.

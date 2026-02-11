@@ -47,7 +47,7 @@ od.2m.mod <- function(n = NULL, p = NULL, icc = NULL,
                        m = NULL, plots = TRUE, plot.by = list(n = "n", p = "p"),
                        verbose = TRUE, iter = 100,
                        tol = 1e-10, q = 1, q.mod = 1, d = 0.1, gamma = 0.1,
-                       power = .80, power.mod = .80, mod.level = 1,
+                       power = .80, power.mod = .80, mod.level = 2,
                        d.p = c(0.1, 0.5), d.n = c(2, 1000),
                        sig.level = 0.05, two.tailed = TRUE,
                        Jlim = c(2.5, 1e+10), binary = TRUE,
@@ -133,7 +133,7 @@ od.2m.mod <- function(n = NULL, p = NULL, icc = NULL,
     if (two.tailed) {
       pwr.mod <- quote({
         lambda <- gamma*sqrt((p * (1 - p) * n * J*var.mod) /
-                               (omega*(1-r22m)*p * (1 - p) * n *var.mod+
+                               (omega*(1-r22m)*p * (1 - p) * n +
                                   (1 - icc) * (1 - r12)));
         1 - pt(qt(1 - sig.level / tside, df = J-q.mod-1),
                df = J-q.mod-1, lambda) +
@@ -143,7 +143,7 @@ od.2m.mod <- function(n = NULL, p = NULL, icc = NULL,
     } else {
       pwr.mod <- quote({
         lambda <- gamma*sqrt((p * (1 - p) * n * J*var.mod) /
-                               (omega*(1-r22m)*p * (1 - p) * n *var.mod+
+                               (omega*(1-r22m)*p * (1 - p) * n +
                                   (1 - icc) * (1 - r12)));
         1 - pt(qt(1 - sig.level / tside, J-q.mod-1),
                df = J-q.mod-1, lambda)
@@ -293,7 +293,6 @@ od.2m.mod <- function(n = NULL, p = NULL, icc = NULL,
           J = m/((1 - p) * c1 * n + p * c1t * n + c2);
           colnames(p.X) <- c("p", "n");
           return(list(archive = pp, archive.design.pars = p.X,
-                      archive.design.pars = p.X,
                       n.iter = n.iter, par = par, funName = funName,
                       designType = designType,
                       out = list(m = m, p = p, n = n,

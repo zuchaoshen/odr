@@ -57,7 +57,7 @@ power.2m.mod <- function(cost.model = TRUE, expr = NULL, constraint = NULL,
                           c1 = NULL, c2 = NULL, c1t = NULL,
                           gammalim = c(0, 5), powerlim = c(1e-10, 1 - 1e-10),
                           Jlim = c(2.5, 1e+10),
-                          mod.level = 1, binary = TRUE,
+                          mod.level = 2, binary = TRUE,
                           mlim = NULL,
                           rounded = TRUE, Q = 0.5) {
   funName <- "power.2m.mod"
@@ -180,7 +180,7 @@ power.2m.mod <- function(cost.model = TRUE, expr = NULL, constraint = NULL,
       pwr.mod <- quote({
         J <- m / ((1 - p) * c1 * n +  p * c1t * n + c2);
         lambda <- gamma*sqrt((p * (1 - p) * n * J*var.mod) /
-                               (omega*(1-r22m)*p * (1 - p) * n *var.mod+
+                               (omega*(1-r22m)*p * (1 - p) * n +
                                   (1 - icc) * (1 - r12)));
         1 - pt(qt(1 - sig.level / tside, df = J-q.mod-1),
                df = J-q.mod-1, lambda) +
@@ -191,7 +191,7 @@ power.2m.mod <- function(cost.model = TRUE, expr = NULL, constraint = NULL,
       pwr.mod <- quote({
         J <- m / ((1 - p) * c1 * n +  p * c1t * n + c2);
         lambda <- gamma*sqrt((p * (1 - p) * n * J*var.mod) /
-                               (omega*(1-r22m)*p * (1 - p) * n *var.mod+
+                               (omega*(1-r22m)*p * (1 - p) * n +
                                   (1 - icc) * (1 - r12)));
         1 - pt(qt(1 - sig.level / tside, J-q.mod-1),
                df = J-q.mod-1, lambda)
@@ -201,7 +201,7 @@ power.2m.mod <- function(cost.model = TRUE, expr = NULL, constraint = NULL,
       if (two.tailed) {
         pwr.mod <- quote({
           lambda <- gamma*sqrt((p * (1 - p) * n * J*var.mod) /
-                                 (omega*(1-r22m)*p * (1 - p) * n *var.mod+
+                                 (omega*(1-r22m)*p * (1 - p) * n +
                                     (1 - icc) * (1 - r12)));
           1 - pt(qt(1 - sig.level / tside, df = J-q.mod-1),
                  df = J-q.mod-1, lambda) +
@@ -211,7 +211,7 @@ power.2m.mod <- function(cost.model = TRUE, expr = NULL, constraint = NULL,
       } else {
         pwr.mod <- quote({
           lambda <- gamma*sqrt((p * (1 - p) * n * J*var.mod) /
-                                 (omega*(1-r22m)*p * (1 - p) * n *var.mod+
+                                 (omega*(1-r22m)*p * (1 - p) * n +
                                     (1 - icc) * (1 - r12)));
           1 - pt(qt(1 - sig.level / tside, J-q.mod-1),
                  df = J-q.mod-1, lambda)

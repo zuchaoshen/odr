@@ -27,7 +27,7 @@ od.2m.mod(
   gamma = 0.1,
   power = 0.8,
   power.mod = 0.8,
-  mod.level = 1,
+  mod.level = 2,
   d.p = c(0.1, 0.5),
   d.n = c(2, 1000),
   sig.level = 0.05,

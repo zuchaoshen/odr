@@ -64,19 +64,19 @@ od.2m.only.mod <- function (icc = NULL, r12 = NULL, r22m = NULL,
     # variance of a moderation effect estimator
     var.expr <- quote({
       J <- m / ((1 - p) * c1 * n +  p * c1t * n + c2);
-      (omega*(1-r22m)*p * (1 - p) * n *var.mod +(1 - icc) * (1 - r12))/
+      (omega*(1-r22m)*p * (1 - p) * n +(1 - icc) * (1 - r12))/
         (p * (1 - p) * n * J*var.mod) })
     # n expression
     if(is.null(par$n)){
       n.expr <- quote({
-        (1 - icc) * (1 - r12)*c2/(omega*(1-r22m)*p * (1 - p) *var.mod*
-                                    ((1 - p) * c1 * n +  p * c1t * n))
+        sqrt((1 - icc) * (1 - r12)*c2/(omega*(1-r22m)*p * (1 - p) *
+                                    ((1 - p) * c1 +  p * c1t)))
       })
     }else{n.expr <- n}
     # p expression
     if(is.null(par$p)){
       p.expr <- quote({
-        (omega*(1-r22m)*n*p * (1 - p) *var.mod + (1 - icc) * (1 - r12))*
+        (omega*(1-r22m)*n*p * (1 - p) + (1 - icc) * (1 - r12))*
           (n*c1t-n*c1)*p*(1-p) -
         (1-2*p)*(1 - icc) * (1 - r12)*((1 - p) * c1 * n +  p * c1t * n+c2)
       })

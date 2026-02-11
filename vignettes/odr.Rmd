@@ -80,6 +80,10 @@ the function for two-level multisite randomized trials is *power.2m*.
 
 This function calculates relative efficiency values between two designs. An alternative name for this function is *rpe* that stands for "relative precision and efficiency".
 
+### *plot.power* function
+
+This function plots the power curves across sample allocations. It uses returned 
+objects from an "od" function as the main argument, among others.
 
 
 # 3. Designs Detecting Mediation Effects
@@ -114,8 +118,8 @@ There are two categorical functions for designs detecting mediation effects and 
 ```{r, echo=FALSE}
 df = data.frame(
   Design = c("Simple Experiments", "2-Level CRTs", "2-Level MRTs"),
-  OD_Function = c("od.1.111m", "od.2.221m", "od.2m.111m"),
-  Power_Function = c("power.1.111m", "power.2.221m", "power.2m.111m")
+  OD_Function = c("od.1.111m", "od.2.221m", "od.2m.mod"),
+  Power_Function = c("power.1.111m", "power.2.221m", "power.2m.mod")
 )
 names(df) <- c("Design", "OD Function", "Power Function")
 library(knitr)
@@ -133,13 +137,14 @@ of the treatment assignment, the moderator and the outcome. For example,
 with the treatment assignment and the moderator at the level two, and 
 the outcome at the level 1 (.221), and for moderators (m) rather than 
 for mediators. 
-*od.2m.111m* is the *od* function for two-level multisite-randomized trials 
-(.2m) with the treatment assignment, the moderator, and the outcome at the 
-level one (.111) for moderators (m). 
+*od.2m.mod* is the joint *od* function for two-level multisite-randomized trials 
+(.2m) detecting moderation and main effects (.mod). 
+
+ 
 
 ## Functions
 There are two categorical functions for designs detecting mediation effects and
-they are *od* and *power*.  *od* function can calculate optimal design
+they are *od* and *power*.  *od* function can identify optimal design
 parameters with and without a constraint(s). 
 *power* function can perform power analysis. 
 
@@ -424,4 +429,4 @@ mypower <- power.1.111(cost.model = FALSE, a = .3, b = .5, test = "joint",
 
 # 7. Examples for Moderation Effects
 
-To be done!
+TBD.

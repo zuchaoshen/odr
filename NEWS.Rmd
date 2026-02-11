@@ -14,6 +14,14 @@ knitr::opts_chunk$set(
 )
 ```
 
+# Updates (Version 1.8.3)
+## Function Updates
+Updated od.2.mod and power.2.mod functions, 
+Deleted od.2m.111m function, which has been integrated in the od.2m.mod function.
+Deleted power.2m.111m function, which has been integrated in the power.2m.mod function.
+
+Fixed bugs in the plot.power function (so it can specify parameter values for  d, 
+gamma, q, m, and omega).
 
 
 # Updates (Version 1.7.3)

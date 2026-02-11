@@ -2,8 +2,8 @@ Package: odr
 Type: Package
 Title: Optimal Design and Statistical Power for Experimental Studies
     Investigating Main, Mediation, and Moderation Effects
-Version: 1.7.3
-Date: 2025-10-31
+Version: 1.8.3
+Date: 2026-2-11
 Authors@R: c(person(given = "Zuchao", 
                     family = "Shen", 
                     email = "zuchao.shen@gmail.com", 
@@ -48,6 +48,6 @@ Language: en-US
 Depends: R (>= 3.3.0), stats (>= 3.0.0), graphics (>= 3.0.0), base(>= 3.0.0)
 License: GPL-3
 Encoding: UTF-8
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 Suggests: rmarkdown, knitr, markdown
 VignetteBuilder: rmarkdown, knitr, markdown

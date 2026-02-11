@@ -643,9 +643,9 @@ od.2m <- function(n = NULL, p = NULL, icc = NULL,
  } else{ #ACO != TRUE
      if (is.null(par$n)) {
        n.expr <- quote({
-         sqrt(((1 - icc) * (1 - r12)) /
-                (p * (1 - p) * omega * (1 - r22m)) *
-                c2 / ((1 - p) * c1 + p * c1t))
+         sqrt(((1 - icc) * (1 - r12)*c2) /
+                ((p * (1 - p) * omega * (1 - r22m)) *
+                ((1 - p) * c1 + p * c1t)))
        })
      } else {
        n.expr <- ({par$n})
@@ -658,9 +658,9 @@ od.2m <- function(n = NULL, p = NULL, icc = NULL,
      varlim <- limFun(x = varlim, y = c(0, 0.05))
      if (is.null(par$p)) {
        p.expr <- quote({
-         (c1t - c1) * omega * (1 - r22m) * n^2 * p^2 * (1 - p)^2 +
-           (1 - icc) * (1 - r12) * (c1t - c1)* n * p^2 -
-           (1 - 2 * p) * (1 - icc) * (1 - r12) * (n * c1 + c2)
+         (omega*(1-r22m)*n*p * (1 - p) + (1 - icc) * (1 - r12))*
+           (n*c1t-n*c1)*p*(1-p) -
+           (1-2*p)*(1 - icc) * (1 - r12)*((1 - p) * c1 * n +  p * c1t * n+c2)
        })
      }
      if (!is.null(par$n)) {

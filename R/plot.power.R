@@ -6,6 +6,13 @@
 #'     across optimal design parameters.
 #' @inheritParams od.2m
 #' @inheritParams od.2
+#' @param d Standardized effect size for a main/average effect.
+#' @param gamma Standardized effect size for a moderation effect.
+#' @param omega The treatment-by-site variance.
+#' @param q The number of covariates.
+#' @param n The sample size at level 1 per level-2 unit.
+#' @param J Level-2 sample size.
+#' @param p The proportion of units in the treatment condition.
 #' @param expr Returned objects from an od function (e.g., od.2m, od.2m.mod).
 #' @param by Dimensions to plot power curves by the optimal design parameters.
 #'     The default value is by all optimal design parameters for a type of design.
@@ -18,7 +25,13 @@
 #'     parameter "n".
 #' @param Jlab Label for the x-axis when the plot is by the optimal design
 #'     parameter "J".
-#' @param powerlim The limit for plotting power curves.
+#' @param plim The limits of the proportion to the treated (p) for calculating
+#'       and plotting power curves.
+#' @param nlim The limits of the level-1 sample size (n) for calculating
+#'       and plotting power curves.
+#' @param Jlim The limits of the level-2 sample size (J) for calculating
+#'       and plotting power curves.
+#' @param powerlim The power limit for plotting power curves.
 #' @param powerlab The label for the statistical power.
 #' @param legend Logical; present plot legend if TRUE. The default is TRUE.
 #' @param plot.title The title of the plot (e.g., plot.title = "Power Curves").
@@ -27,9 +40,10 @@
 
 
 plot.power <- function(expr = NULL, nlim = c(2, 300), plim = c(0.01, 0.99),
-                       Jlim = c(3, 300),
+                       Jlim = c(3, 300), n = NULL, p = NULL, J = NULL,
                        powerlim = c(0, 1), plot.title = NULL,
                        m = NULL, d = NULL,
+                       gamma = NULL, omega = NULL,
                        power = .80, q = NULL,
                        by = c("n", "p", "J"), legend = TRUE,
                        nlab = "Level-One Sample Size (n)",
@@ -37,8 +51,6 @@ plot.power <- function(expr = NULL, nlim = c(2, 300), plim = c(0.01, 0.99),
                        Jlab = "Level-Two Sample Size (J)",
                        powerlab = "Statistical Power"){
   if(expr$funName == "od.2m.mod"){
-    n = expr$out$n
-    p = expr$out$p
     icc <- expr$par$icc
     r12 <- expr$par$r12
     r22m <- expr$par$r22m
@@ -46,15 +58,16 @@ plot.power <- function(expr = NULL, nlim = c(2, 300), plim = c(0.01, 0.99),
     c2 <- expr$par$c2
     c1t <- expr$par$c1t
     omega <- expr$par$omega
-    gamma <- expr$par$gamma
-    q <- expr$par$q
     q.mod <- expr$par$q.mod
     Q <- expr$par$Q
-    d <- expr$par$d
     binary <- expr$par$binary
     mod.level <- expr$par$mod.level
+    if(is.null(q)){q <- expr$par$q}
+    if(is.null(gamma)){gamma <- expr$par$gamma}
+    if(is.null(d)){d <- expr$par$d}
     if(is.null(m)){m <- expr$out$m}
-
+    if(is.null(n)){n = expr$out$n}
+    if(is.null(p)){p = expr$out$p}
   nrange <- seq(nlim[1], nlim[2], by = 1)
   prange <- seq(plim[1], plim[2], by = 0.01)
   if (length(by) >= 2) figure <- graphics::par(mfrow = c (1, 2))
@@ -121,9 +134,11 @@ plot.power <- function(expr = NULL, nlim = c(2, 300), plim = c(0.01, 0.99),
     c2 <- expr$par$c2
     c1t <- expr$par$c1t
     omega <- expr$par$omega
-    q <- expr$par$q
-    d <- expr$par$d
-    if(is.null(m)){m <- expr$out$m}
+    if(is.null(q)){q <- expr$par$q}
+    if(is.null(d)){d <- expr$par$d}
+    if(is.null(n)){n = expr$out$n}
+    if(is.null(p)){p = expr$out$p}
+    if(is.null(m)){m <- power.2m(expr = expr, d = d, q = q, power = power)$out$m}
 
     nrange <- seq(nlim[1], nlim[2], by = 1)
     prange <- seq(plim[1], plim[2], by = 0.01)
@@ -167,8 +182,6 @@ plot.power <- function(expr = NULL, nlim = c(2, 300), plim = c(0.01, 0.99),
       graphics::abline(v = expr$out$p, lty = 2, col = "black")
     }
   } else if (expr$funName == "od.2") {
-    n = expr$out$n
-    p = expr$out$p
     icc <- expr$par$icc
     r12 <- expr$par$r12
     r22 <- expr$par$r22
@@ -176,6 +189,10 @@ plot.power <- function(expr = NULL, nlim = c(2, 300), plim = c(0.01, 0.99),
     c2 <- expr$par$c2
     c1t <- expr$par$c1t
     c2t <- expr$par$c2t
+    if(is.null(q)){q <- expr$par$q}
+    if(is.null(d)){d <- expr$par$d}
+    if(is.null(n)){n = expr$out$n}
+    if(is.null(p)){p = expr$out$p}
     if(is.null(m)){m <- power.2(expr = expr, d = d, q = q, power = power)$out$m}
 
     nrange <- seq(nlim[1], nlim[2], by = 1)
@@ -219,9 +236,6 @@ plot.power <- function(expr = NULL, nlim = c(2, 300), plim = c(0.01, 0.99),
     }
 
   } else if (expr$funName == "od.3") {
-    n = expr$out$n
-    p = expr$out$p
-    J = expr$out$J
     icc2 <- expr$par$icc2
     icc3 <- expr$par$icc3
     r12 <- expr$par$r12
@@ -233,6 +247,11 @@ plot.power <- function(expr = NULL, nlim = c(2, 300), plim = c(0.01, 0.99),
     c1t <- expr$par$c1t
     c2t <- expr$par$c2t
     c3t <- expr$par$c3t
+    if(is.null(q)){q <- expr$par$q}
+    if(is.null(d)){d <- expr$par$d}
+    if(is.null(n)){n = expr$out$n}
+    if(is.null(p)){p = expr$out$p}
+    if(is.null(J)){J = expr$out$J}
     if(is.null(m)){m <- power.3(expr = expr, d = d, q = q, power = power)$out$m}
 
     nrange <- seq(nlim[1], nlim[2], by = 1)
@@ -302,9 +321,6 @@ plot.power <- function(expr = NULL, nlim = c(2, 300), plim = c(0.01, 0.99),
 
 
   } else if (expr$funName == "od.3m") {
-    n = expr$out$n
-    p = expr$out$p
-    J = expr$out$J
     icc2 <- expr$par$icc2
     icc3 <- expr$par$icc3
     r12 <- expr$par$r12
@@ -315,7 +331,12 @@ plot.power <- function(expr = NULL, nlim = c(2, 300), plim = c(0.01, 0.99),
     c3 <- expr$par$c3
     c1t <- expr$par$c1t
     c2t <- expr$par$c2t
-    omega <- expr$par$omega
+    if(is.null(q)){q <- expr$par$q}
+    if(is.null(d)){d <- expr$par$d}
+    if(is.null(omega)){omega <- expr$par$omega}
+    if(is.null(n)){n = expr$out$n}
+    if(is.null(p)){p = expr$out$p}
+    if(is.null(J)){J = expr$out$J}
     if(is.null(m)){m <- power.3m(expr = expr, d = d, q = q, power = power)$out$m}
 
     nrange <- seq(nlim[1], nlim[2], by = 1)
@@ -383,10 +404,12 @@ plot.power <- function(expr = NULL, nlim = c(2, 300), plim = c(0.01, 0.99),
     }
 
   } else if (expr$funName == "od.1") {
-    p <- expr$out$p
     r12 <- expr$par$r12
     c1 <- expr$par$c1
     c1t <- expr$par$c1t
+    if(is.null(q)){q <- expr$par$q}
+    if(is.null(d)){d <- expr$par$d}
+    if(is.null(p)){p = expr$out$p}
     if(is.null(m)){m <- power.1(expr = expr, d = d, q = q, power = power)$out$m}
     prange <- seq(plim[1], plim[2], by = 0.01)
     if (length(by) >= 1) figure <- graphics::par(mfrow = c(1, 1))
@@ -408,7 +431,6 @@ plot.power <- function(expr = NULL, nlim = c(2, 300), plim = c(0.01, 0.99),
     }
 
   }
-
 return(figure)
 }
 

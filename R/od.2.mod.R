@@ -18,7 +18,10 @@
 #' @param gamma The standardized moderated treatment effect
 #'     (i.e., regression coefficient of the interaction
 #'     term of moderator and treatment).
+#' @param binary Logical; The moderator is binary if TRUE,
+#'     and continuous if FALSE. The default is TRUE.
 #' @param Q The proportion of binary moderator that coded as 1.
+#'     Default is 0.50.
 #' @param q.mod The number of cluster-level covariates in the model
 #'     (except the treatment indicator, moderator, and the interaction term).
 #'     The default value is 1.
@@ -53,7 +56,6 @@
 #' @param n.of.ants Number of ants used in each iteration after the initialization
 #'     of power analysis for calculating required budget, default value is 10.
 #'
-#'
 #' @return
 #'     Unconstrained or constrained optimal sample allocation
 #'     (\code{n} and \code{p}).
@@ -61,15 +63,15 @@
 #'     function name, design type,
 #'     and parameters used in the calculation.
 #'
-#' @export od.2.221m
+#' @export od.2.mod
 #'
 
-od.2.221m <- function(d = NULL, gamma = NULL, n = NULL, Q = NULL,
+od.2.mod <- function(d = NULL, gamma = NULL, n = NULL, Q = .50,
                      p = NULL, icc = NULL,
                      c1 = NULL, c1t = NULL, c2 = NULL, c2t = NULL,
                      r12 = NULL, r22 = NULL,
                      r12m = NULL, r22m = NULL,
-                     m = NULL,
+                     m = NULL, binary = TRUE,
                      q.main = 1, q.mod = 1,
                      power.mod = 0.80, power.main = 0.80,
                      d.p = c(0.1, 0.5), d.n = c(2, 1000),
@@ -80,7 +82,7 @@ od.2.221m <- function(d = NULL, gamma = NULL, n = NULL, Q = NULL,
                      n.of.ants = 10, n.of.archive = 50, q = 0.0001,
                      xi = 0.5
                  ) {
-  funName <- "od.2.m221"
+  funName <- "od.2.mod"
   designType <- "2-2-1 moderation in 2-level CRTs"
   if(is.null(r12m)) {r12m = r12}
   if(is.null(r22m)) {r22m = r22}
@@ -88,7 +90,8 @@ od.2.221m <- function(d = NULL, gamma = NULL, n = NULL, Q = NULL,
               r12 = r12, r22 = r22,
               r12m = r12m, r22m = r22m,
               c1 = c1, c2 = c2, c1t =c1t, c2t = c2t,
-              m = m, q.mod = q.mod, q.main = q.main,
+              m = m, binary = binary,
+              q.mod = q.mod, q.main = q.main,
               sig.level = sig.level, two.tailed = two.tailed,
               max.iter = max.iter,
               n.of.ants = n.of.ants, n.of.archive = n.of.archive,
@@ -119,11 +122,12 @@ od.2.221m <- function(d = NULL, gamma = NULL, n = NULL, Q = NULL,
   }
   if(is.null(Jlim)){Jlim <- c(max(q.mod, q.main) + 7, 1e6)}
   tside <- ifelse(two.tailed == TRUE, 2, 1)
+  if(binary){var.mod <- Q*(1-Q)} else{var.mod <- 1}
 
       if (two.tailed) {
       pwr.mod <- quote({
-        lambda <- gamma/sqrt((icc*(1-r22m)+(1-icc)*(1-r12m))/
-                               (p*(1-p)*Q*(1-Q)*J));
+        lambda <- gamma/sqrt((icc*(1-r22m)+(1-icc)*(1-r12m)/n)/
+                               (p*(1-p)*var.mod*J));
         1 - pt(qt(1 - sig.level/tside, df = J - q.mod - 4),
                df = J - q.mod - 4, lambda) +
           pt(qt(sig.level/tside, df = J - q.mod - 4),
@@ -131,7 +135,7 @@ od.2.221m <- function(d = NULL, gamma = NULL, n = NULL, Q = NULL,
       })
       pwr.main <- quote({
         lambda <- d * sqrt(p * (1 - p) * J) /
-          sqrt(icc * (1 - r22) + (1 - icc) * (1 - r12) / n);
+          sqrt(icc * (1 - r22) + (1 - icc) * (1 - r12)/n);
         1 - pt(qt(1 - sig.level / tside, df = J - q.main - 2),
                df = J - q.main - 2, lambda) +
           pt(qt(sig.level / tside, df = J - q.main - 2),
@@ -139,14 +143,14 @@ od.2.221m <- function(d = NULL, gamma = NULL, n = NULL, Q = NULL,
       })
     } else {
       pwr.mod <- quote({
-        lambda <- gamma/sqrt((icc*(1-r22m)+(1-icc)*(1-r12m))/
-                               (p*(1-p)*Q*(1-Q)*J));
+        lambda <- gamma/sqrt((icc*(1-r22m)+(1-icc)*(1-r12m)/n)/
+                               (p*(1-p)*var.mod*J));
         1 - pt(qt(1 - sig.level/tside, df = J - q.mod - 4),
                df = J - q.mod - 4, lambda)
       })
       pwr.main <- quote({
         lambda <- d * sqrt(p * (1 - p) * J) /
-          sqrt(icc * (1 - r22) + (1 - icc) * (1 - r12) / n);
+          sqrt(icc * (1 - r22) + (1 - icc) * (1 - r12)/n);
         1 - pt(qt(1 - sig.level / tside, df = J - q.main - 2),
                df = J - q.main - 2, lambda)
       })

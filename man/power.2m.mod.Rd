@@ -29,7 +29,7 @@ power.2m.mod(
   gammalim = c(0, 5),
   powerlim = c(1e-10, 1 - 1e-10),
   Jlim = c(2.5, 1e+10),
-  mod.level = 1,
+  mod.level = 2,
   binary = TRUE,
   mlim = NULL,
   rounded = TRUE,

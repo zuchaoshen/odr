@@ -1,8 +1,7 @@
 ## Resubmission
 
-This is for updating the package. In this version, we updated the plot.power 
-function so it can plot power curved against sample allocations for many designs
-covered in this package.
+This is for updating the package. In this version, we fixed an equation error
+for a moderation effect and other bugs (e.g., in plot.power).
 
 Across operational systems we tested, there are no issues (no notes or warnings).
 
